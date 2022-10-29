@@ -1,10 +1,68 @@
 import 'package:flutter/material.dart';
+import 'package:myworkout/core/services/database_provider.dart';
+import 'package:myworkout/exercises/model/dao/exercises_dao.dart';
+import 'package:myworkout/exercises/model/entity/exercise.dart';
+import 'package:myworkout/exercises/model/entity/exercise_group.dart';
 import '../../core/theme/styles.dart' as styles;
+import '../../core/util/search_bar.dart';
 
-class ExercisesView extends StatelessWidget {
+class ExercisesView extends StatefulWidget {
   const ExercisesView({Key? key}) : super(key: key);
 
-  Widget buildGroup(BuildContext context) {
+  @override
+  State<ExercisesView> createState() => _ExercisesViewState();
+}
+
+class _ExercisesViewState extends State<ExercisesView> {
+  List<ExerciseGroup> allExerciseGroups = [];
+  List<ExerciseGroup> filteredExerciseGroups = [];
+  List<Exercise> allExercises = [];
+  List<Exercise> filteredExercises = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getData();
+  }
+
+  void getData() async {
+    final exercisesDao = ExercisesDao();
+    List<ExerciseGroup> _exerciseGroups =
+        await exercisesDao.getExerciseGroups();
+    List<Exercise> _exercises = await exercisesDao.getExercises();
+    setState(() {
+      allExercises = _exercises;
+      filteredExercises = _exercises;
+      allExerciseGroups = _exerciseGroups;
+      filteredExerciseGroups = _exerciseGroups
+          .where((exerciseGroup) =>
+              getExercisesFromGroup(exerciseGroup.id).length > 0)
+          .toList();
+    });
+  }
+
+  List<Exercise> getExercisesFromGroup(groupId) {
+    return filteredExercises
+        .where((exercise) => exercise.groupId == groupId)
+        .toList();
+  }
+
+  void search(String input) {
+    setState(() {
+      filteredExercises = allExercises
+          .where((exercise) =>
+              exercise.name!.toLowerCase().contains(input.toLowerCase()))
+          .toList();
+      filteredExerciseGroups = allExerciseGroups
+          .where((exerciseGroup) =>
+              getExercisesFromGroup(exerciseGroup.id).length > 0)
+          .toList();
+    });
+  }
+
+  Widget buildGroup(BuildContext context, ExerciseGroup exerciseGroup) {
+    List<Exercise> exercisesList = getExercisesFromGroup(exerciseGroup.id);
+
     return Container(
       margin: styles.list.margin,
       child: ClipRRect(
@@ -22,15 +80,16 @@ class ExercisesView extends StatelessWidget {
                   width: 40,
                   child: Placeholder(),
                 ),
-                title: Text('Group', style: styles.list.title),
-                trailing: Text('5', style: styles.list.title),
+                title: Text(exerciseGroup.name ?? "", style: styles.list.title),
+                trailing: Text(exercisesList.length.toString(),
+                    style: styles.list.title),
                 children: [
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: 5,
-                    itemBuilder: (_, index) {
-                      return buildExercise(context);
+                    itemCount: exercisesList.length,
+                    itemBuilder: (context, i) {
+                      return buildExercise(context, exercisesList[i]);
                     },
                   )
                 ],
@@ -42,7 +101,7 @@ class ExercisesView extends StatelessWidget {
     );
   }
 
-  Widget buildExercise(BuildContext context) {
+  Widget buildExercise(BuildContext context, Exercise exercise) {
     return WillPopScope(
       onWillPop: () async {
         return false;
@@ -58,11 +117,11 @@ class ExercisesView extends StatelessWidget {
             ],
           ),
           title: Text(
-            'exercise name',
+            exercise.name ?? "",
             style: styles.list.title,
           ),
           subtitle: Text(
-            'Lorem ipsum dolor sit amet. Sit voluptatem corrupti et laborum',
+            exercise.description ?? "",
             style: styles.list.description,
           ),
           isThreeLine: true,
@@ -73,12 +132,21 @@ class ExercisesView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      shrinkWrap: true,
-      itemCount: 20,
-      itemBuilder: (context, i) {
-        return buildGroup(context);
-      },
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          SearchBar(onChanged: search),
+          const SizedBox(height: 12),
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: filteredExerciseGroups.length,
+            itemBuilder: (context, i) {
+              return buildGroup(context, filteredExerciseGroups[i]);
+            },
+          )
+        ],
+      ),
     );
   }
 }
