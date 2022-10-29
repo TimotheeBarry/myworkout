@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myworkout/core/util/custom_floating_button.dart';
 
 import '../../exercises/view/exercises_view.dart';
 import '../../profile/view/profile_view.dart';
@@ -21,6 +22,10 @@ class _MainPagesState extends State<MainPages> {
 
   void setPage(index) {
     setState(() => {currentIndex = index});
+  }
+
+  Widget? buildFloatingActionButton() {
+    return currentIndex! >= 2 ? CustomFloatingButton() : null;
   }
 
   @override
@@ -46,6 +51,7 @@ class _MainPagesState extends State<MainPages> {
           currentIndex: currentIndex!,
           pageController: _pageController,
         ),
+        floatingActionButton: buildFloatingActionButton(),
         body: PageView(
           onPageChanged: (index) {
             setPage(index);
