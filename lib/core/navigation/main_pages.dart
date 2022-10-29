@@ -33,7 +33,14 @@ class _MainPagesState extends State<MainPages> {
     return Container(
       decoration: styles.page.boxDecoration,
       child: Scaffold(
-        appBar: const CustomAppBar(title: 'MyWorkout'),
+        appBar: CustomAppBar(title: 'MyWorkout', actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.settings,
+            ),
+            onPressed: () {},
+          )
+        ]),
         backgroundColor: Colors.transparent,
         bottomNavigationBar: CustomNavigationBar(
           currentIndex: currentIndex!,

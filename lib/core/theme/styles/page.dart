@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 const darkBlue = [Color(0xff242365), Color(0xff0B0A28)];
+
 class Page {
   Page();
   BoxDecoration get boxDecoration => const BoxDecoration(
@@ -8,4 +10,5 @@ class Page {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter),
       );
+  EdgeInsets margin = EdgeInsets.symmetric(horizontal: 10);
 }
