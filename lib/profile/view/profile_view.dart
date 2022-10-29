@@ -45,7 +45,8 @@ class ProfileView extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              FaIcon(FontAwesomeIcons.mars, color: styles.frame.color),
+              FaIcon(FontAwesomeIcons.mars,
+                  color: styles.frame.primaryTextColor),
             ],
           ),
         ],
@@ -89,7 +90,7 @@ class ProfileView extends StatelessWidget {
           height: 20,
           width: 30,
           child: Center(
-            child: FaIcon(icon, size: 16, color: styles.frame.color),
+            child: FaIcon(icon, size: 16, color: styles.frame.primaryTextColor),
           ),
         ),
         Text(text, textAlign: TextAlign.left, style: styles.frame.subtitle),
@@ -104,17 +105,18 @@ class ProfileView extends StatelessWidget {
         IconButton(
           onPressed: () {},
           icon: FaIcon(FontAwesomeIcons.solidPenToSquare,
-              color: styles.frame.color),
+              color: styles.frame.primaryTextColor),
         ),
         const SizedBox(width: 20),
         IconButton(
             onPressed: () {},
-            icon:
-                FaIcon(FontAwesomeIcons.chartLine, color: styles.frame.color)),
+            icon: FaIcon(FontAwesomeIcons.chartLine,
+                color: styles.frame.primaryTextColor)),
         const SizedBox(width: 20),
         IconButton(
           onPressed: () {},
-          icon: FaIcon(FontAwesomeIcons.shareNodes, color: styles.frame.color),
+          icon: FaIcon(FontAwesomeIcons.shareNodes,
+              color: styles.frame.primaryTextColor),
         ),
       ],
     );

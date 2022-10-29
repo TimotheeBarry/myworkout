@@ -106,27 +106,30 @@ class _ExercisesViewState extends State<ExercisesView> {
       onWillPop: () async {
         return false;
       },
-      child: ListTile(
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: const [
-              SizedBox(
-                width: 80,
-                child: Placeholder(),
-              ),
-            ],
-          ),
-          title: Text(
-            exercise.name ?? "",
-            style: styles.list.title,
-          ),
-          subtitle: Text(
-            exercise.description ?? "",
-            style: styles.list.description,
-          ),
-          isThreeLine: true,
-          onLongPress: () {},
-          onTap: () {}),
+      child: Container(
+        decoration: styles.list.separator,
+        child: ListTile(
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                SizedBox(
+                  width: 80,
+                  child: Placeholder(),
+                ),
+              ],
+            ),
+            title: Text(
+              exercise.name ?? "",
+              style: styles.list.subtitle,
+            ),
+            subtitle: Text(
+              exercise.description ?? "blabla bla bla blabla blablabla",
+              style: styles.list.description,
+            ),
+            isThreeLine: true,
+            onLongPress: () {},
+            onTap: () {}),
+      ),
     );
   }
 
