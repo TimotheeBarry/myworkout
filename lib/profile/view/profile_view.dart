@@ -1,9 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:myworkout/profile/model/dao/user_dao.dart';
 import '../../core/theme/styles.dart' as styles;
+import '../model/entity/user.dart';
 
-class ProfileView extends StatelessWidget {
-  ProfileView({Key? key}) : super(key: key);
+class ProfileView extends StatefulWidget {
+  const ProfileView({Key? key}) : super(key: key);
+
+  @override
+  State<ProfileView> createState() => _ProfileViewState();
+}
+
+class _ProfileViewState extends State<ProfileView> {
+  var user = User();
+
+  @override
+  void initState() {
+    super.initState();
+    synchronize();
+  }
+
+  void synchronize() async {
+    final userDao = UserDao();
+    User _user = await userDao.getUser();
+    setState(() {
+      user = _user;
+    });
+  }
 
   Widget buildPersonalDataFrame(BuildContext context) {
     return Container(
@@ -39,8 +62,11 @@ class ProfileView extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text('Tim', style: styles.frame.subtitle),
-          Text('22 y.o', style: styles.frame.subtitle),
+          Text(user.username ?? '?', style: styles.frame.subtitle),
+          Text(
+            '${user.age() ?? '?'} y.o',
+            style: styles.frame.subtitle,
+          ),
           const SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -62,19 +88,19 @@ class ProfileView extends StatelessWidget {
           buildPersonalDataRow(
               context: context,
               icon: FontAwesomeIcons.rulerVertical,
-              text: '180 cm'),
+              text: '${user.height ?? '?'} cm'),
           buildPersonalDataRow(
               context: context,
               icon: FontAwesomeIcons.weightScale,
-              text: '77 kg'),
+              text: '${user.weight ?? '?'} kg'),
           buildPersonalDataRow(
               context: context,
               icon: FontAwesomeIcons.droplet,
-              text: '15 % BF'),
+              text: '${user.bodyfat ?? '?'} % BF'),
           buildPersonalDataRow(
               context: context,
               icon: FontAwesomeIcons.calculator,
-              text: '23.8 BMI'),
+              text: '${user.bmi() ?? '?'} BMI'),
         ],
       ),
     );
