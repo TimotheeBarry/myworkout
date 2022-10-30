@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myworkout/core/util/custom_floating_button.dart';
 import 'package:myworkout/exercises/view/create_exercise_view.dart';
-
+import 'package:myworkout/workouts/view/create_workout_view.dart';
 import '../../exercises/view/exercises_view.dart';
 import '../../profile/view/profile_view.dart';
 import '../../statistics/view/statistics_view.dart';
@@ -20,6 +20,8 @@ class MainPages extends StatefulWidget {
 class _MainPagesState extends State<MainPages> {
   int? currentIndex;
   final PageController _pageController = PageController(initialPage: 0);
+  final GlobalKey<ExercisesViewState> _exercisesKey = GlobalKey();
+  final GlobalKey<ExercisesViewState> _workoutsKey = GlobalKey();
 
   void setPage(index) {
     setState(() => {currentIndex = index});
@@ -34,10 +36,17 @@ class _MainPagesState extends State<MainPages> {
             MaterialPageRoute(
               builder: (context) => const CreateExerciseView(),
             ),
-          ),
+          ).then((_) => _exercisesKey.currentState!.synchronize()),
         );
       case 3:
-        return null;
+        return CustomFloatingButton(
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const CreateWorkoutView(),
+            ),
+          ).then((_) => _workoutsKey.currentState!.synchronize()),
+        );
       default:
         return null;
     }
@@ -75,7 +84,7 @@ class _MainPagesState extends State<MainPages> {
           children: [
             ProfileView(),
             StatisticsView(),
-            ExercisesView(),
+            ExercisesView(key: _exercisesKey),
             WorkoutsView(),
           ],
         ),

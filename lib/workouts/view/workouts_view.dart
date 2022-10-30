@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:myworkout/workouts/model/dao/workouts_dao.dart';
 import 'package:myworkout/workouts/model/entity/workout.dart';
 import 'package:myworkout/workouts/model/entity/workout_group.dart';
+import 'package:myworkout/workouts/view/edit_workout_view.dart';
 import '../../core/theme/styles.dart' as styles;
 
 class WorkoutsView extends StatefulWidget {
@@ -12,16 +14,18 @@ class WorkoutsView extends StatefulWidget {
 }
 
 class _WorkoutsViewState extends State<WorkoutsView> {
-  List<WorkoutGroup> workoutGroups = [];
-  List<Workout> workouts = [];
+  late List<WorkoutGroup> workoutGroups = []; //liste des groupes de workout
+  late List<Workout> workouts = []; //liste des workouts
+  late List<int> workoutsSelected =
+      []; // =liste des id workout sélectionné (long press)
 
   @override
   void initState() {
     super.initState();
-    getData();
+    synchronize();
   }
 
-  void getData() async {
+  void synchronize() async {
     final workoutsDao = WorkoutsDao();
     List<WorkoutGroup> _workoutGroups = await workoutsDao.getWorkoutGroups();
     List<Workout> _workouts = await workoutsDao.getWorkouts();
@@ -82,10 +86,69 @@ class _WorkoutsViewState extends State<WorkoutsView> {
                 workout.name ?? "",
                 style: styles.list.subtitle,
               ),
-              
-              onLongPress: () {},
-              onTap: () {}),
+              trailing: buildAction(context: context, itemId: workout.id!),
+              onLongPress: () {
+                /*ajout de la séance dans la liste des séances sélectionnées*/
+                setState(() {
+                  workoutsSelected.add(workout.id!);
+                  print(workoutsSelected);
+                });
+              },
+              onTap: () {
+                /*check ou uncheck workout si en est en édition, sinon on va sur la page edition*/
+                if (workoutsSelected.isNotEmpty) {
+                  if (workoutsSelected.contains(workout.id)) {
+                    setState(() {
+                      workoutsSelected.remove(workout.id);
+                    });
+                  } else {
+                    setState(() {
+                      workoutsSelected.add(workout.id!);
+                    });
+                  }
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditWorkoutView(
+                        workout: workout,
+                      ),
+                    ),
+                  );
+                }
+              }),
         ));
+  }
+
+  Widget buildAction({required BuildContext context, required int itemId}) {
+    if (workoutsSelected.isNotEmpty) {
+      return Transform.scale(
+        scale: 1.2,
+        child: Checkbox(
+            activeColor: Theme.of(context).primaryColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+            ),
+            value: workoutsSelected.contains(itemId),
+            onChanged: (value) {
+              if (value!) {
+                setState(() {
+                  workoutsSelected.add(itemId);
+                });
+              } else {
+                setState(() {
+                  workoutsSelected.remove(itemId);
+                });
+              }
+            }),
+      );
+    } else {
+      return IconButton(
+        icon: FaIcon(FontAwesomeIcons.play,
+            color: styles.frame.primaryTextColor),
+        onPressed: () {},
+      );
+    }
   }
 
   @override
