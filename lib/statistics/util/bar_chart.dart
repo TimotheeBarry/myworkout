@@ -39,7 +39,11 @@ class BarChart extends StatelessWidget {
             text: 'Statistiques de séance',
             alignment: ChartAlignment.center,
             textStyle: styles.frame.subtitle),
-        legend: Legend(isVisible: true, position: LegendPosition.bottom,textStyle: styles.frame.text),
+        legend: Legend(
+            isVisible: true,
+            position: LegendPosition.bottom,
+            textStyle: styles.frame.legend,
+            overflowMode: LegendItemOverflowMode.wrap),
         series: buildSeries(),
         primaryXAxis: CategoryAxis(),
       ),
