@@ -27,8 +27,8 @@ class ExercisesDao {
     var db = await dbProvider.db;
     List<Map<String, dynamic>> result;
 
-    result =
-        await db!.query('exercise_groups', columns: ExerciseGroupFields.values);
+    result = await db!.query('exercise_groups',
+        columns: ExerciseGroupFields.values, orderBy: 'name');
 
     List<ExerciseGroup> exerciseGroups = result.isNotEmpty
         ? result.map((item) => ExerciseGroup.fromJSON(item)).toList()
@@ -41,7 +41,8 @@ class ExercisesDao {
     var db = await dbProvider.db;
     List<Map<String, dynamic>> result;
 
-    result = await db!.query('exercises', columns: ExerciseFields.values);
+    result = await db!
+        .query('exercises', columns: ExerciseFields.values, orderBy: 'name');
 
     List<Exercise> exercises = result.isNotEmpty
         ? result.map((item) => Exercise.fromJSON(item)).toList()
@@ -52,7 +53,8 @@ class ExercisesDao {
   Future<Exercise> createExercise(Exercise exercise) async {
     /*creer un nouvel exercice*/
     var db = await dbProvider.db;
-    final id = await db!.insert('exercises', exercise.toJSON()).then((value) => null);
+    final id =
+        await db!.insert('exercises', exercise.toJSON()).then((value) => null);
     return exercise.copy(id: id);
   }
 
