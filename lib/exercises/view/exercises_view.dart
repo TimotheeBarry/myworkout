@@ -3,6 +3,7 @@ import 'package:myworkout/core/services/database_provider.dart';
 import 'package:myworkout/exercises/model/dao/exercises_dao.dart';
 import 'package:myworkout/exercises/model/entity/exercise.dart';
 import 'package:myworkout/exercises/model/entity/exercise_group.dart';
+import 'package:myworkout/exercises/view/create_exercise_view.dart';
 import '../../core/theme/styles.dart' as styles;
 import '../../core/util/search_bar.dart';
 
@@ -128,7 +129,14 @@ class _ExercisesViewState extends State<ExercisesView> {
             ),
             isThreeLine: true,
             onLongPress: () {},
-            onTap: () {}),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CreateExerciseView(exercise: exercise),
+                ),
+              );
+            }),
       ),
     );
   }

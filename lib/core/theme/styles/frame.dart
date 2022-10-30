@@ -3,13 +3,16 @@ import 'package:flutter/material.dart';
 class Frame {
   Frame();
 
+  Color get primaryTextColor => Colors.white;
+  Color get secondaryTextColor => Colors.grey[400]!;
+  Color get backgroundColor => const Color(0x20ffffff);
+
   EdgeInsets get margin => const EdgeInsets.all(10);
   BoxDecoration get boxDecoration => BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        color: const Color(0x20ffffff),
+        color: backgroundColor,
       );
-  Color get primaryTextColor => Colors.white;
-  Color get secondaryTextColor => Colors.grey[400]!;
+  
   TextStyle get title => TextStyle(
         color: primaryTextColor,
         fontSize: 20,
@@ -23,5 +26,9 @@ class Frame {
   TextStyle get text => TextStyle(
         color: primaryTextColor,
         fontSize: 16,
+      );
+  TextStyle get legend => TextStyle(
+        color: secondaryTextColor,
+        fontSize: 10,
       );
 }

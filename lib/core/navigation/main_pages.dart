@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myworkout/core/util/custom_floating_button.dart';
+import 'package:myworkout/exercises/view/create_exercise_view.dart';
 
 import '../../exercises/view/exercises_view.dart';
 import '../../profile/view/profile_view.dart';
@@ -25,7 +26,21 @@ class _MainPagesState extends State<MainPages> {
   }
 
   Widget? buildFloatingActionButton() {
-    return currentIndex! >= 2 ? CustomFloatingButton() : null;
+    switch (currentIndex) {
+      case 2:
+        return CustomFloatingButton(
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const CreateExerciseView(),
+            ),
+          ),
+        );
+      case 3:
+        return null;
+      default:
+        return null;
+    }
   }
 
   @override

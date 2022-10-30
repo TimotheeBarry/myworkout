@@ -20,7 +20,7 @@ class SearchBar extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: TextFormField(
-              style: const TextStyle(color: Colors.white),
+              style: styles.frame.text,
               onChanged: onChanged,
               decoration: const InputDecoration(
                 hintText: 'Rechercher...',
