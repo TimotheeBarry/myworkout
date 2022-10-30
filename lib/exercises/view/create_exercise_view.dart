@@ -221,7 +221,7 @@ class _CreateExerciseViewState extends State<CreateExerciseView> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: CustomAppBar(
-            title: edit ? 'Editer l\'exercise' : 'Créer un exercice'),
+            title: edit ? 'Editer l\'exercice' : 'Créer un exercice'),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),

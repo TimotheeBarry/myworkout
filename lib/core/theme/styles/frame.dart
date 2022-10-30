@@ -12,7 +12,7 @@ class Frame {
         borderRadius: BorderRadius.circular(16),
         color: backgroundColor,
       );
-  
+
   TextStyle get title => TextStyle(
         color: primaryTextColor,
         fontSize: 20,
@@ -25,7 +25,11 @@ class Frame {
       );
   TextStyle get text => TextStyle(
         color: primaryTextColor,
-        fontSize: 16,
+        fontSize: 14,
+      );
+  TextStyle get smallText => TextStyle(
+        color: primaryTextColor,
+        fontSize: 12,
       );
   TextStyle get legend => TextStyle(
         color: secondaryTextColor,
