@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:myworkout/profile/model/dao/user_dao.dart';
+import 'package:myworkout/profile/model/entity/user_measurements.dart';
+import 'package:myworkout/profile/model/entity/user_statistic.dart';
 import '../../core/theme/styles.dart' as styles;
 import '../model/entity/user.dart';
 
@@ -13,6 +15,7 @@ class ProfileView extends StatefulWidget {
 
 class _ProfileViewState extends State<ProfileView> {
   var user = User();
+  var userMeasurement = UserMeasurements();
 
   @override
   void initState() {
@@ -26,15 +29,22 @@ class _ProfileViewState extends State<ProfileView> {
     setState(() {
       user = _user;
     });
+    UserMeasurements _userMeasurement = await userDao.getUserMeasurements();
+    setState(() {
+      userMeasurement = _userMeasurement;
+    });
   }
 
   Widget buildPersonalDataFrame(BuildContext context) {
     return Container(
         margin: styles.frame.margin,
-        child: Ink(
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-            decoration: styles.frame.boxDecoration,
-            child: buildFrameData(context: context)));
+        child: Material(
+            color: Colors.transparent,
+            child: Ink(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                decoration: styles.frame.boxDecoration,
+                child: buildFrameData(context: context))));
   }
 
   Widget buildFrameData({required BuildContext context}) {
@@ -88,19 +98,19 @@ class _ProfileViewState extends State<ProfileView> {
           buildPersonalDataRow(
               context: context,
               icon: FontAwesomeIcons.rulerVertical,
-              text: '${user.height ?? '?'} cm'),
+              text: '${userMeasurement.height?.value ?? '?'} cm'),
           buildPersonalDataRow(
               context: context,
               icon: FontAwesomeIcons.weightScale,
-              text: '${user.weight ?? '?'} kg'),
+              text: '${userMeasurement.weight?.value ?? '?'} kg'),
           buildPersonalDataRow(
               context: context,
               icon: FontAwesomeIcons.droplet,
-              text: '${user.bodyfat ?? '?'} % BF'),
+              text: '${userMeasurement.bodyfat?.value ?? '?'} % BF'),
           buildPersonalDataRow(
               context: context,
               icon: FontAwesomeIcons.calculator,
-              text: '${user.bmi() ?? '?'} BMI'),
+              text: '${userMeasurement.bmi() ?? '?'} BMI'),
         ],
       ),
     );
@@ -148,11 +158,122 @@ class _ProfileViewState extends State<ProfileView> {
     );
   }
 
+  TableRow customTableRow(String name, double? value, {Color? color}) {
+    return TableRow(
+      decoration: BoxDecoration(color: color ?? Colors.transparent),
+      children: [
+        TableCell(
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 12),
+            child: Center(
+              child: Text(
+                name,
+                style: styles.frame.subtitle,
+              ),
+            ),
+          ),
+        ),
+        TableCell(
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Center(
+              child: Text(
+                value != null ? '$value cm' : 'non renseigné',
+                style: value != null
+                    ? styles.frame.bigText
+                    : styles.list.description,
+              ),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  List<TableRow> createTable(BuildContext context) {
+    return [
+      TableRow(
+        children: [
+          TableCell(
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 12),
+              child: Center(
+                child: Text(
+                  'Mensurations',
+                  style: styles.frame.title,
+                ),
+              ),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: FaIcon(FontAwesomeIcons.solidPenToSquare,
+                    color: styles.frame.primaryTextColor),
+                onPressed: () {},
+              ),
+              const SizedBox(width: 24),
+              IconButton(
+                icon: FaIcon(FontAwesomeIcons.chartLine,
+                    color: styles.frame.primaryTextColor),
+                onPressed: () {},
+              )
+            ],
+          )
+        ],
+      ),
+      customTableRow('Cou', userMeasurement.neck?.value, color: Colors.white10),
+      customTableRow('Epaules', userMeasurement.shoulders?.value),
+      customTableRow('Pecs', userMeasurement.chest?.value,
+          color: Colors.white10),
+      customTableRow('Biceps (G)', userMeasurement.bicepsL?.value),
+      customTableRow('Biceps (D)', userMeasurement.bicepsR?.value,
+          color: Colors.white10),
+      customTableRow('Avant-Bras (G)', userMeasurement.forearmL?.value),
+      customTableRow('Avant-Bras (D)', userMeasurement.forearmR?.value,
+          color: Colors.white10),
+      customTableRow('Poignet (G)', userMeasurement.wristL?.value),
+      customTableRow('Poignet (D)', userMeasurement.wristR?.value,
+          color: Colors.white10),
+      customTableRow('Taille', userMeasurement.waist?.value),
+      customTableRow('Hanches', userMeasurement.hips?.value,
+          color: Colors.white10),
+      customTableRow('Cuisse (G)', userMeasurement.waist?.value),
+      customTableRow('Cuisse (D)', userMeasurement.waist?.value,
+          color: Colors.white10),
+      customTableRow('Mollet (G)', userMeasurement.waist?.value),
+      customTableRow('Mollet (D)', userMeasurement.waist?.value,
+          color: Colors.white10),
+      customTableRow('Cheville (G)', userMeasurement.waist?.value),
+      customTableRow('Cheville (D)', userMeasurement.waist?.value,
+          color: Colors.white10),
+    ];
+  }
+
+  Widget buildMeasurementsTable(BuildContext context) {
+    return Container(
+      margin: styles.frame.margin,
+      child: Material(
+        color: Colors.transparent,
+        child: Ink(
+          decoration: styles.frame.boxDecoration,
+          child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Table(children: createTable(context))),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
         child: Column(
-      children: [buildPersonalDataFrame(context)],
+      children: [
+        buildPersonalDataFrame(context),
+        buildMeasurementsTable(context),
+      ],
     ));
   }
 }
