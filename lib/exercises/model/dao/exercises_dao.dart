@@ -27,13 +27,23 @@ class ExercisesDao {
     var db = await dbProvider.db;
     List<Map<String, dynamic>> result;
 
-    result = await db!.query('exercise_groups',
-        columns: ExerciseGroupFields.values, orderBy: 'name');
+    var exercises = await getExercises();
+
+    result = await db!.query(
+      'exercise_groups',
+      columns: ExerciseGroupFields.values,
+      orderBy: 'name',
+    );
 
     List<ExerciseGroup> exerciseGroups = result.isNotEmpty
         ? result.map((item) => ExerciseGroup.fromJSON(item)).toList()
         : [];
-    return exerciseGroups;
+    return exerciseGroups
+        .map((exerciseGroup) => exerciseGroup.copy(
+            exercises: exercises
+                .where((exercise) => exercise.groupId == exerciseGroup.id)
+                .toList()))
+        .toList();
   }
 
   Future<List<Exercise>> getExercises() async {

@@ -24,15 +24,24 @@ class WorkoutsDao {
   Future<List<WorkoutGroup>> getWorkoutGroups() async {
     /*récupérer les données de tous les groupes*/
     var db = await dbProvider.db;
-    List<Map<String, dynamic>> result;
+    
+    var workouts = await getWorkouts();
 
-    result =
-        await db!.query('workout_groups', columns: WorkoutGroupFields.values);
+    var result = await db!.query(
+      'workout_groups',
+      columns: WorkoutGroupFields.values,
+    );
 
     List<WorkoutGroup> workoutGroups = result.isNotEmpty
         ? result.map((item) => WorkoutGroup.fromJSON(item)).toList()
         : [];
-    return workoutGroups;
+    return workoutGroups
+        .map((workoutGroup) => workoutGroup.copy(
+            workouts: workouts
+                .where((workout) => workout.groupId == workoutGroup.id)
+                .toList()))
+        .toList();
+    ;
   }
 
   Future<List<Workout>> getWorkouts() async {

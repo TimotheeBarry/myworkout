@@ -1,11 +1,15 @@
+import 'package:myworkout/workouts/model/entity/workout.dart';
+
 class WorkoutGroup {
   final int? id;
   final String? name;
   final bool stillExists;
+  final List<Workout>? workouts;
   WorkoutGroup({
     this.id,
     this.name = "",
     this.stillExists = true,
+    this.workouts = const [],
   });
 
   Map<String, Object?> toJSON() => {
@@ -20,11 +24,18 @@ class WorkoutGroup {
         stillExists: (json[WorkoutGroupFields.stillExists] == 1),
       );
 
-  WorkoutGroup copy({int? id, String? name, bool? stillExists}) =>
+  WorkoutGroup copy({
+    int? id,
+    String? name,
+    bool? stillExists,
+    List<Workout>? workouts,
+  }) =>
       WorkoutGroup(
-          id: id ?? this.id,
-          name: name ?? this.name,
-          stillExists: stillExists ?? this.stillExists);
+        id: id ?? this.id,
+        name: name ?? this.name,
+        stillExists: stillExists ?? this.stillExists,
+        workouts: workouts ?? this.workouts,
+      );
 }
 
 class WorkoutGroupFields {

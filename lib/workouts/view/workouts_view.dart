@@ -14,9 +14,8 @@ class WorkoutsView extends StatefulWidget {
 }
 
 class _WorkoutsViewState extends State<WorkoutsView> {
-  late List<WorkoutGroup> workoutGroups = []; //liste des groupes de workout
-  late List<Workout> workouts = []; //liste des workouts
-  late List<int> workoutsSelected =
+  List<WorkoutGroup> workoutGroups = []; //liste des groupes de workout
+  List<int> workoutsSelected =
       []; // =liste des id workout sélectionné (long press)
 
   @override
@@ -28,19 +27,13 @@ class _WorkoutsViewState extends State<WorkoutsView> {
   void synchronize() async {
     final workoutsDao = WorkoutsDao();
     List<WorkoutGroup> _workoutGroups = await workoutsDao.getWorkoutGroups();
-    List<Workout> _workouts = await workoutsDao.getWorkouts();
     setState(() {
-      workouts = _workouts;
       workoutGroups = _workoutGroups;
     });
   }
 
-  List<Workout> getWorkoutsFromGroup(groupId) {
-    return workouts.where((workout) => workout.groupId == groupId).toList();
-  }
-
   Widget buildGroup(BuildContext context, WorkoutGroup workoutGroup) {
-    List<Workout> workoutsList = getWorkoutsFromGroup(workoutGroup.id);
+    List<Workout> workoutsList = workoutGroup.workouts!;
     return Container(
       margin: styles.list.margin,
       child: ClipRRect(
@@ -144,8 +137,8 @@ class _WorkoutsViewState extends State<WorkoutsView> {
       );
     } else {
       return IconButton(
-        icon: FaIcon(FontAwesomeIcons.play,
-            color: styles.frame.primaryTextColor),
+        icon:
+            FaIcon(FontAwesomeIcons.play, color: styles.frame.primaryTextColor),
         onPressed: () {},
       );
     }

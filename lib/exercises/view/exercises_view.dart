@@ -1,4 +1,3 @@
-import 'package:diacritic/diacritic.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:myworkout/exercises/model/dao/exercises_dao.dart';
@@ -16,8 +15,8 @@ class ExercisesView extends StatefulWidget {
 }
 
 class ExercisesViewState extends State<ExercisesView> {
+  List<ExerciseGroup> allExerciseGroups = [];
   List<ExerciseGroup> exerciseGroups = [];
-  List<Exercise> exercises = [];
   List<int> exercisesSelected = [];
   String searchInput = "";
 
@@ -31,34 +30,37 @@ class ExercisesViewState extends State<ExercisesView> {
     final exercisesDao = ExercisesDao();
     List<ExerciseGroup> _exerciseGroups =
         await exercisesDao.getExerciseGroups();
-    List<Exercise> _exercises = await exercisesDao.getExercises();
     setState(() {
-      /*recherche les exercices avec un nom correpondant à l'input (enleve majuscule et accents)*/
-      exercises = _exercises
-          .where((exercise) => removeDiacritics(exercise.name!.toLowerCase())
-              .contains(removeDiacritics(searchInput.toLowerCase())))
-          .toList();
-
-      exerciseGroups = _exerciseGroups
+      allExerciseGroups = _exerciseGroups;
+      exerciseGroups = allExerciseGroups
           .where((exerciseGroup) =>
-              getExercisesFromGroup(exerciseGroup.id).isNotEmpty)
+              exerciseGroup.getFilteredExercises(searchInput).isNotEmpty)
           .toList();
     });
-  }
-
-  List<Exercise> getExercisesFromGroup(groupId) {
-    return exercises.where((exercise) => exercise.groupId == groupId).toList();
   }
 
   void search(String input) async {
     setState(() {
       searchInput = input;
+      exerciseGroups = allExerciseGroups
+          .where((exerciseGroup) =>
+              exerciseGroup.getFilteredExercises(input).isNotEmpty)
+          .toList();
     });
-    synchronize();
+  }
+
+  void toggleLikeExercise(Exercise exercise) async {
+    var exercisesDao = ExercisesDao();
+    await exercisesDao
+        .updateExercise(exercise.copy(isLiked: !exercise.isLiked!))
+        .then((_) {
+      synchronize();
+    });
   }
 
   Widget buildGroup(BuildContext context, ExerciseGroup exerciseGroup) {
-    List<Exercise> exercisesList = getExercisesFromGroup(exerciseGroup.id);
+    List<Exercise> exercisesList =
+        exerciseGroup.getFilteredExercises(searchInput);
 
     return Container(
       margin: styles.list.margin,
@@ -190,14 +192,7 @@ class ExercisesViewState extends State<ExercisesView> {
           size: 20,
           color: styles.frame.primaryTextColor,
         ),
-        onPressed: () async {
-          var exercisesDao = ExercisesDao();
-          await exercisesDao
-              .updateExercise(exercise.copy(isLiked: !exercise.isLiked!))
-              .then((_) {
-            synchronize();
-          });
-        },
+        onPressed: () => toggleLikeExercise(exercise),
       );
     }
   }
