@@ -1,5 +1,6 @@
+import 'package:diacritic/diacritic.dart';
 import 'package:flutter/material.dart';
-import 'package:myworkout/core/services/database_provider.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:myworkout/exercises/model/dao/exercises_dao.dart';
 import 'package:myworkout/exercises/model/entity/exercise.dart';
 import 'package:myworkout/exercises/model/entity/exercise_group.dart';
@@ -11,54 +12,49 @@ class ExercisesView extends StatefulWidget {
   const ExercisesView({Key? key}) : super(key: key);
 
   @override
-  State<ExercisesView> createState() => _ExercisesViewState();
+  State<ExercisesView> createState() => ExercisesViewState();
 }
 
-class _ExercisesViewState extends State<ExercisesView> {
-  List<ExerciseGroup> allExerciseGroups = [];
-  List<ExerciseGroup> filteredExerciseGroups = [];
-  List<Exercise> allExercises = [];
-  List<Exercise> filteredExercises = [];
+class ExercisesViewState extends State<ExercisesView> {
+  List<ExerciseGroup> exerciseGroups = [];
+  List<Exercise> exercises = [];
+  List<int> exercisesSelected = [];
+  String searchInput = "";
 
   @override
   void initState() {
     super.initState();
-    getData();
+    synchronize();
   }
 
-  void getData() async {
+  void synchronize() async {
     final exercisesDao = ExercisesDao();
     List<ExerciseGroup> _exerciseGroups =
         await exercisesDao.getExerciseGroups();
     List<Exercise> _exercises = await exercisesDao.getExercises();
     setState(() {
-      allExercises = _exercises;
-      filteredExercises = _exercises;
-      allExerciseGroups = _exerciseGroups;
-      filteredExerciseGroups = _exerciseGroups
+      /*recherche les exercices avec un nom correpondant à l'input (enleve majuscule et accents)*/
+      exercises = _exercises
+          .where((exercise) => removeDiacritics(exercise.name!.toLowerCase())
+              .contains(removeDiacritics(searchInput.toLowerCase())))
+          .toList();
+
+      exerciseGroups = _exerciseGroups
           .where((exerciseGroup) =>
-              getExercisesFromGroup(exerciseGroup.id).length > 0)
+              getExercisesFromGroup(exerciseGroup.id).isNotEmpty)
           .toList();
     });
   }
 
   List<Exercise> getExercisesFromGroup(groupId) {
-    return filteredExercises
-        .where((exercise) => exercise.groupId == groupId)
-        .toList();
+    return exercises.where((exercise) => exercise.groupId == groupId).toList();
   }
 
-  void search(String input) {
+  void search(String input) async {
     setState(() {
-      filteredExercises = allExercises
-          .where((exercise) =>
-              exercise.name!.toLowerCase().contains(input.toLowerCase()))
-          .toList();
-      filteredExerciseGroups = allExerciseGroups
-          .where((exerciseGroup) =>
-              getExercisesFromGroup(exerciseGroup.id).length > 0)
-          .toList();
+      searchInput = input;
     });
+    synchronize();
   }
 
   Widget buildGroup(BuildContext context, ExerciseGroup exerciseGroup) {
@@ -76,11 +72,13 @@ class _ExercisesViewState extends State<ExercisesView> {
               data:
                   Theme.of(context).copyWith(dividerColor: Colors.transparent),
               child: ExpansionTile(
+                key: ValueKey('${exerciseGroup.id}${searchInput.isNotEmpty}'),
                 leading: const SizedBox(
                   height: 40,
                   width: 40,
                   child: Placeholder(),
                 ),
+                initiallyExpanded: searchInput.isNotEmpty,
                 title: Text(exerciseGroup.name ?? "", style: styles.list.title),
                 trailing: Text(exercisesList.length.toString(),
                     style: styles.list.title),
@@ -112,11 +110,12 @@ class _ExercisesViewState extends State<ExercisesView> {
         child: ListTile(
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
-              children: const [
-                SizedBox(
+              children: [
+                const SizedBox(
                   width: 80,
                   child: Placeholder(),
                 ),
+                buildAction(context: context, exercise: exercise),
               ],
             ),
             title: Text(
@@ -128,17 +127,79 @@ class _ExercisesViewState extends State<ExercisesView> {
               style: styles.list.description,
             ),
             isThreeLine: true,
-            onLongPress: () {},
+            onLongPress: () {
+              setState(() {
+                exercisesSelected.add(exercise.id!);
+              });
+            },
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CreateExerciseView(exercise: exercise),
-                ),
-              );
+              /*check ou uncheck workout si en est en édition, sinon on va sur la page edition*/
+              if (exercisesSelected.isNotEmpty) {
+                if (exercisesSelected.contains(exercise.id)) {
+                  setState(() {
+                    exercisesSelected.remove(exercise.id);
+                  });
+                } else {
+                  setState(() {
+                    exercisesSelected.add(exercise.id!);
+                  });
+                }
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        CreateExerciseView(exercise: exercise),
+                  ),
+                ).then((_) => synchronize());
+              }
             }),
       ),
     );
+  }
+
+  Widget buildAction(
+      {required BuildContext context, required Exercise exercise}) {
+    if (exercisesSelected.isNotEmpty) {
+      return Transform.scale(
+        scale: 1.2,
+        child: Checkbox(
+            activeColor: Theme.of(context).primaryColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+            ),
+            value: exercisesSelected.contains(exercise.id),
+            onChanged: (value) {
+              if (value!) {
+                setState(() {
+                  exercisesSelected.add(exercise.id!);
+                });
+              } else {
+                setState(() {
+                  exercisesSelected.remove(exercise.id!);
+                });
+              }
+            }),
+      );
+    } else {
+      return IconButton(
+        icon: FaIcon(
+          exercise.isLiked!
+              ? FontAwesomeIcons.solidHeart
+              : FontAwesomeIcons.heart,
+          size: 20,
+          color: styles.frame.primaryTextColor,
+        ),
+        onPressed: () async {
+          var exercisesDao = ExercisesDao();
+          await exercisesDao
+              .updateExercise(exercise.copy(isLiked: !exercise.isLiked!))
+              .then((_) {
+            synchronize();
+          });
+        },
+      );
+    }
   }
 
   @override
@@ -151,9 +212,9 @@ class _ExercisesViewState extends State<ExercisesView> {
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: filteredExerciseGroups.length,
+            itemCount: exerciseGroups.length,
             itemBuilder: (context, i) {
-              return buildGroup(context, filteredExerciseGroups[i]);
+              return buildGroup(context, exerciseGroups[i]);
             },
           )
         ],
