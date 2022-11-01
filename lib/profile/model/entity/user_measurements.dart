@@ -1,28 +1,26 @@
 import 'package:myworkout/core/util/functions.dart';
-import 'package:myworkout/profile/model/entity/user_statistic.dart';
-import 'package:time_machine/time_machine.dart';
 
 class UserMeasurements {
-  final UserStatistic? height;
-  final UserStatistic? weight;
-  final UserStatistic? bodyfat;
-  final UserStatistic? neck;
-  final UserStatistic? shoulders;
-  final UserStatistic? chest;
-  final UserStatistic? bicepsL;
-  final UserStatistic? bicepsR;
-  final UserStatistic? forearmL;
-  final UserStatistic? forearmR;
-  final UserStatistic? wristL;
-  final UserStatistic? wristR;
-  final UserStatistic? waist;
-  final UserStatistic? hips;
-  final UserStatistic? thighL;
-  final UserStatistic? thighR;
-  final UserStatistic? calveL;
-  final UserStatistic? calveR;
-  final UserStatistic? ankleL;
-  final UserStatistic? ankleR;
+  final double? height;
+  final double? weight;
+  final double? bodyfat;
+  final double? neck;
+  final double? shoulders;
+  final double? chest;
+  final double? bicepsL;
+  final double? bicepsR;
+  final double? forearmL;
+  final double? forearmR;
+  final double? wristL;
+  final double? wristR;
+  final double? waist;
+  final double? hips;
+  final double? thighL;
+  final double? thighR;
+  final double? calveL;
+  final double? calveR;
+  final double? ankleL;
+  final double? ankleR;
   UserMeasurements({
     this.height,
     this.weight,
@@ -46,27 +44,51 @@ class UserMeasurements {
     this.ankleR,
   });
 
+  static UserMeasurements fromJSON(Map<String, Object?> json) =>
+      UserMeasurements(
+        height: json[UserMeasurementsFields.height] as double?,
+        weight: json[UserMeasurementsFields.weight] as double?,
+        bodyfat: json[UserMeasurementsFields.bodyfat] as double?,
+        neck: json[UserMeasurementsFields.neck] as double?,
+        shoulders: json[UserMeasurementsFields.shoulders] as double?,
+        chest: json[UserMeasurementsFields.chest] as double?,
+        bicepsL: json[UserMeasurementsFields.bicepsL] as double?,
+        bicepsR: json[UserMeasurementsFields.bicepsR] as double?,
+        forearmL: json[UserMeasurementsFields.forearmL] as double?,
+        forearmR: json[UserMeasurementsFields.forearmR] as double?,
+        wristL: json[UserMeasurementsFields.wristL] as double?,
+        wristR: json[UserMeasurementsFields.wristR] as double?,
+        waist: json[UserMeasurementsFields.waist] as double?,
+        hips: json[UserMeasurementsFields.hips] as double?,
+        thighL: json[UserMeasurementsFields.thighL] as double?,
+        thighR: json[UserMeasurementsFields.thighR] as double?,
+        calveL: json[UserMeasurementsFields.calveL] as double?,
+        calveR: json[UserMeasurementsFields.calveR] as double?,
+        ankleL: json[UserMeasurementsFields.ankleL] as double?,
+        ankleR: json[UserMeasurementsFields.ankleR] as double?,
+      );
+
   UserMeasurements copy({
-    UserStatistic? height,
-    UserStatistic? weight,
-    UserStatistic? bodyfat,
-    UserStatistic? neck,
-    UserStatistic? shoulders,
-    UserStatistic? chest,
-    UserStatistic? bicepsL,
-    UserStatistic? bicepsR,
-    UserStatistic? forearmL,
-    UserStatistic? forearmR,
-    UserStatistic? wristL,
-    UserStatistic? wristR,
-    UserStatistic? waist,
-    UserStatistic? hips,
-    UserStatistic? thighL,
-    UserStatistic? thighR,
-    UserStatistic? calveL,
-    UserStatistic? calveR,
-    UserStatistic? ankleL,
-    UserStatistic? ankleR,
+    double? height,
+    double? weight,
+    double? bodyfat,
+    double? neck,
+    double? shoulders,
+    double? chest,
+    double? bicepsL,
+    double? bicepsR,
+    double? forearmL,
+    double? forearmR,
+    double? wristL,
+    double? wristR,
+    double? waist,
+    double? hips,
+    double? thighL,
+    double? thighR,
+    double? calveL,
+    double? calveR,
+    double? ankleL,
+    double? ankleR,
   }) =>
       UserMeasurements(
         height: height ?? this.height,
@@ -93,18 +115,14 @@ class UserMeasurements {
 
   double? bmi() {
     if (weight != null && height != null && height != 0) {
-      double bmi =
-          weight!.value! / ((height!.value! / 100) * (height!.value! / 100));
+      double bmi = weight! / ((height! / 100) * (height! / 100));
       return roundDecimal(bmi, 1);
     }
     return null;
   }
-
- 
 }
 
 class UserMeasurementsFields {
-  
   static final List<String> values = [
     height,
     weight,

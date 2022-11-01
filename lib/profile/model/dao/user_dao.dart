@@ -1,7 +1,6 @@
 import 'package:myworkout/core/services/database_provider.dart';
 import 'package:myworkout/profile/model/entity/user.dart';
 import 'package:myworkout/profile/model/entity/user_measurements.dart';
-import 'package:myworkout/profile/model/entity/user_statistic.dart';
 
 class UserDao {
   final dbProvider = DatabaseProvider.dbProvider;
@@ -22,59 +21,15 @@ class UserDao {
     }
   }
 
-  Future<UserMeasurements> getUserMeasurements() async {
+  Future<UserMeasurements> getLatestUserMeasurements() async {
     /* récupérer les données de l'utilisateur*/
-    const userId = 1;
+    var db = await dbProvider.db;
+    final result = await db!.rawQuery('SELECT * from latest_measurements_view');
 
-    var height = await getLastStatistic(userId, UserMeasurementsFields.height);
-    var weight = await getLastStatistic(userId, UserMeasurementsFields.weight);
-    var bodyfat =
-        await getLastStatistic(userId, UserMeasurementsFields.bodyfat);
-    var neck = await getLastStatistic(userId, UserMeasurementsFields.neck);
-    var chest = await getLastStatistic(userId, UserMeasurementsFields.chest);
-    var shoulders =
-        await getLastStatistic(userId, UserMeasurementsFields.shoulders);
-    var bicepsL =
-        await getLastStatistic(userId, UserMeasurementsFields.bicepsL);
-    var bicepsR =
-        await getLastStatistic(userId, UserMeasurementsFields.bicepsR);
-    var forearmL =
-        await getLastStatistic(userId, UserMeasurementsFields.forearmL);
-    var forearmR =
-        await getLastStatistic(userId, UserMeasurementsFields.forearmR);
-    var wristL = await getLastStatistic(userId, UserMeasurementsFields.wristL);
-    var wristR = await getLastStatistic(userId, UserMeasurementsFields.wristR);
-    var waist = await getLastStatistic(userId, UserMeasurementsFields.waist);
-    var hips = await getLastStatistic(userId, UserMeasurementsFields.hips);
-    var thighL = await getLastStatistic(userId, UserMeasurementsFields.thighL);
-    var thighR = await getLastStatistic(userId, UserMeasurementsFields.thighR);
-    var calveL = await getLastStatistic(userId, UserMeasurementsFields.calveL);
-    var calveR = await getLastStatistic(userId, UserMeasurementsFields.calveR);
-    var ankleL = await getLastStatistic(userId, UserMeasurementsFields.ankleL);
-    var ankleR = await getLastStatistic(userId, UserMeasurementsFields.ankleR);
-
-    return UserMeasurements(
-      height: height,
-      weight: weight,
-      bodyfat: bodyfat,
-      neck: neck,
-      shoulders: shoulders,
-      chest: chest,
-      bicepsL: bicepsL,
-      bicepsR: bicepsR,
-      forearmL: forearmL,
-      forearmR: forearmR,
-      wristL: wristL,
-      wristR: wristR,
-      waist: waist,
-      hips: hips,
-      thighL: thighL,
-      thighR: thighR,
-      calveL: calveL,
-      calveR: calveR,
-      ankleL: ankleL,
-      ankleR: ankleR,
-    );
+    UserMeasurements? userMeasurements = result.isNotEmpty
+        ? result.map((item) => UserMeasurements.fromJSON(item)).toList().first
+        : UserMeasurements();
+    return userMeasurements;
   }
 
   Future<int> updateUser(User user) async {
@@ -88,21 +43,4 @@ class UserDao {
     );
   }
 
-  Future<UserStatistic?> getLastStatistic(userId, type) async {
-    /* récupérer les dernières statistiques de l'utilisateur du type 'type'*/
-
-    var db = await dbProvider.db;
-    final result = await db!.query('user_statistics',
-        columns: UserStatisticFields.values,
-        where:
-            '${UserStatisticFields.userId} =  ? AND ${UserStatisticFields.type} = ?',
-        whereArgs: [userId, type],
-        orderBy: 'date',
-        limit: 1);
-
-    UserStatistic? userStatistics = result.isNotEmpty
-        ? result.map((item) => UserStatistic.fromJSON(item)).toList().first
-        : null;
-    return userStatistics;
-  }
 }

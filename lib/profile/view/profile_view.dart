@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:myworkout/profile/model/dao/user_dao.dart';
 import 'package:myworkout/profile/model/entity/user_measurements.dart';
-import 'package:myworkout/profile/model/entity/user_statistic.dart';
 import '../../core/theme/styles.dart' as styles;
 import '../model/entity/user.dart';
 
@@ -29,7 +28,8 @@ class _ProfileViewState extends State<ProfileView> {
     setState(() {
       user = _user;
     });
-    UserMeasurements _userMeasurement = await userDao.getUserMeasurements();
+    UserMeasurements _userMeasurement =
+        await userDao.getLatestUserMeasurements();
     setState(() {
       userMeasurement = _userMeasurement;
     });
@@ -98,15 +98,15 @@ class _ProfileViewState extends State<ProfileView> {
           buildPersonalDataRow(
               context: context,
               icon: FontAwesomeIcons.rulerVertical,
-              text: '${userMeasurement.height?.value ?? '?'} cm'),
+              text: '${userMeasurement.height ?? '?'} cm'),
           buildPersonalDataRow(
               context: context,
               icon: FontAwesomeIcons.weightScale,
-              text: '${userMeasurement.weight?.value ?? '?'} kg'),
+              text: '${userMeasurement.weight ?? '?'} kg'),
           buildPersonalDataRow(
               context: context,
               icon: FontAwesomeIcons.droplet,
-              text: '${userMeasurement.bodyfat?.value ?? '?'} % BF'),
+              text: '${userMeasurement.bodyfat ?? '?'} % BF'),
           buildPersonalDataRow(
               context: context,
               icon: FontAwesomeIcons.calculator,
@@ -223,30 +223,28 @@ class _ProfileViewState extends State<ProfileView> {
           )
         ],
       ),
-      customTableRow('Cou', userMeasurement.neck?.value, color: Colors.white10),
-      customTableRow('Epaules', userMeasurement.shoulders?.value),
-      customTableRow('Pecs', userMeasurement.chest?.value,
+      customTableRow('Cou', userMeasurement.neck, color: Colors.white10),
+      customTableRow('Epaules', userMeasurement.shoulders),
+      customTableRow('Pecs', userMeasurement.chest, color: Colors.white10),
+      customTableRow('Biceps (G)', userMeasurement.bicepsL),
+      customTableRow('Biceps (D)', userMeasurement.bicepsR,
           color: Colors.white10),
-      customTableRow('Biceps (G)', userMeasurement.bicepsL?.value),
-      customTableRow('Biceps (D)', userMeasurement.bicepsR?.value,
+      customTableRow('Avant-Bras (G)', userMeasurement.forearmL),
+      customTableRow('Avant-Bras (D)', userMeasurement.forearmR,
           color: Colors.white10),
-      customTableRow('Avant-Bras (G)', userMeasurement.forearmL?.value),
-      customTableRow('Avant-Bras (D)', userMeasurement.forearmR?.value,
+      customTableRow('Poignet (G)', userMeasurement.wristL),
+      customTableRow('Poignet (D)', userMeasurement.wristR,
           color: Colors.white10),
-      customTableRow('Poignet (G)', userMeasurement.wristL?.value),
-      customTableRow('Poignet (D)', userMeasurement.wristR?.value,
+      customTableRow('Taille', userMeasurement.waist),
+      customTableRow('Hanches', userMeasurement.hips, color: Colors.white10),
+      customTableRow('Cuisse (G)', userMeasurement.thighL),
+      customTableRow('Cuisse (D)', userMeasurement.thighR,
           color: Colors.white10),
-      customTableRow('Taille', userMeasurement.waist?.value),
-      customTableRow('Hanches', userMeasurement.hips?.value,
+      customTableRow('Mollet (G)', userMeasurement.calveL),
+      customTableRow('Mollet (D)', userMeasurement.calveR,
           color: Colors.white10),
-      customTableRow('Cuisse (G)', userMeasurement.waist?.value),
-      customTableRow('Cuisse (D)', userMeasurement.waist?.value,
-          color: Colors.white10),
-      customTableRow('Mollet (G)', userMeasurement.waist?.value),
-      customTableRow('Mollet (D)', userMeasurement.waist?.value,
-          color: Colors.white10),
-      customTableRow('Cheville (G)', userMeasurement.waist?.value),
-      customTableRow('Cheville (D)', userMeasurement.waist?.value,
+      customTableRow('Cheville (G)', userMeasurement.ankleL),
+      customTableRow('Cheville (D)', userMeasurement.ankleR,
           color: Colors.white10),
     ];
   }

@@ -1,5 +1,4 @@
 import 'package:myworkout/core/util/functions.dart';
-import 'package:myworkout/profile/model/entity/user_statistic.dart';
 import 'package:time_machine/time_machine.dart';
 
 class User {
