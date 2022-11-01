@@ -29,7 +29,6 @@ class StatisticsView extends StatelessWidget {
       child: Column(
         children: [
           const ChartOptions(),
-          const SizedBox(height: 1),
           BarChart(),
           const SizedBox(height: 12),
           ListView.builder(

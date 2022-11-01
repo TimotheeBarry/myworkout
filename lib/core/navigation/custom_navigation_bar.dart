@@ -15,11 +15,11 @@ class CustomNavigationBar extends StatelessWidget {
     return BottomNavigationBar(
       type:
           BottomNavigationBarType.fixed, // Fixed --> no animation when clicking
-      backgroundColor: Color(0x7f000000),
+      backgroundColor: Colors.black26,
       iconSize: 30,
       selectedItemColor: Colors.white,
       selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-      unselectedItemColor: Colors.grey,
+      unselectedItemColor: Colors.white54,
       currentIndex: currentIndex,
       onTap: (index) {
         pageController.animateToPage(index,

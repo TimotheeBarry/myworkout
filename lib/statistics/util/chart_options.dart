@@ -16,7 +16,7 @@ class _ChartOptionsState extends State<ChartOptions> {
     bool isSelected = index == selectedOption;
     return Container(
       width: screenWidth / 5,
-      height: 40,
+      height: 32,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: Material(
