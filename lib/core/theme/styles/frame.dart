@@ -7,9 +7,12 @@ class Frame {
   Color get secondaryTextColor => Colors.grey[400]!;
   Color get backgroundColor => Colors.white12;
 
-  EdgeInsets get margin => const EdgeInsets.symmetric(horizontal:10, vertical: 4);
+  EdgeInsets get margin =>
+      const EdgeInsets.symmetric(horizontal: 10, vertical: 4);
+  BorderRadius get borderRadius => BorderRadius.circular(16);
+  
   BoxDecoration get boxDecoration => BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: borderRadius,
         color: backgroundColor,
       );
 

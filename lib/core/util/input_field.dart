@@ -35,7 +35,7 @@ class InputField extends StatelessWidget {
       height: height,
       width: width,
       decoration: BoxDecoration(
-        color: Color(0x63ffffff),
+        color: styles.input.backgroundColor,
         borderRadius: BorderRadius.circular(
             radius ?? ((height == null) ? 30 : height! / 2)),
       ),
@@ -48,7 +48,7 @@ class InputField extends StatelessWidget {
         initialValue: initialValue,
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: TextStyle(color: Colors.grey),
+          hintStyle: styles.input.hintStyle,
           border: InputBorder.none,
         ),
       ),

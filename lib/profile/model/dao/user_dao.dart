@@ -43,4 +43,16 @@ class UserDao {
     );
   }
 
+  Future<void> saveUserMeasurements(
+      UserMeasurements userMeasurements, DateTime date) async {
+    /* sauvegarder les nouvelles mensurations d'un user */
+    var db = await dbProvider.db;
+    var dateString = date.toIso8601String();
+    userMeasurements.toJSON().forEach((key, value) async {
+      if (value != null) {
+        await db!.rawInsert(
+            'INSERT into user_statistics (type,value,date) VALUES (\'$key\',$value,\'$dateString\');');
+      }
+    });
+  }
 }

@@ -10,7 +10,7 @@ class SearchBar extends StatelessWidget {
       margin: styles.page.margin,
       padding: const EdgeInsets.only(left: 16),
       decoration: BoxDecoration(
-        color: Color(0x63ffffff),
+        color: styles.input.backgroundColor,
         borderRadius: BorderRadius.circular(50),
       ),
       child: Row(
@@ -22,9 +22,9 @@ class SearchBar extends StatelessWidget {
             child: TextFormField(
               style: styles.frame.text,
               onChanged: onChanged,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Rechercher...',
-                hintStyle: TextStyle(color: Colors.grey),
+                hintStyle: styles.input.hintStyle,
                 border: InputBorder.none,
               ),
             ),

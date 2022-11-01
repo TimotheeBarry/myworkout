@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myworkout/core/util/custom_app_bar.dart';
+import 'package:myworkout/core/util/custom_button.dart';
 import 'package:myworkout/core/util/input_field.dart';
 import 'package:myworkout/workouts/model/dao/workouts_dao.dart';
 import 'package:myworkout/workouts/model/entity/workout.dart';
@@ -31,8 +32,7 @@ class _CreateWorkoutViewState extends State<CreateWorkoutView> {
 
   void getData() async {
     final workoutsDao = WorkoutsDao();
-    List<WorkoutGroup> _workoutGroups =
-        await workoutsDao.getWorkoutGroups();
+    List<WorkoutGroup> _workoutGroups = await workoutsDao.getWorkoutGroups();
     setState(() {
       workoutGroups = _workoutGroups;
     });
@@ -195,25 +195,6 @@ class _CreateWorkoutViewState extends State<CreateWorkoutView> {
     }
   }
 
-  Widget buildSaveButton({required BuildContext context}) {
-    return ClipRRect(
-      borderRadius: styles.button.borderRadius,
-      child: Material(
-        child: InkWell(
-          onTap: () {
-            saveWorkout();
-          },
-          child: Ink(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 32),
-            decoration: BoxDecoration(color: styles.button.backgroundColor),
-            child:
-                Text(edit ? 'Editer' : 'Créer', style: styles.button.bigText),
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -224,22 +205,28 @@ class _CreateWorkoutViewState extends State<CreateWorkoutView> {
             CustomAppBar(title: edit ? 'Editer la séance' : 'Créer une séance'),
         body: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: [
                 buildNameInput(context: context),
-                const SizedBox(height: 16),
+                styles.form.mediumVoidSpace,
                 const Placeholder(
                   fallbackHeight: 200,
                 ),
-                const SizedBox(height: 16),
+                styles.form.mediumVoidSpace,
                 buildImageIcons(),
-                const SizedBox(height: 16),
+                styles.form.mediumVoidSpace,
                 buildGroupsSelector(context: context),
-                const SizedBox(height: 16),
+                styles.form.mediumVoidSpace,
                 buildDescriptionArea(context: context),
-                const SizedBox(height: 16),
-                buildSaveButton(context: context),
+                styles.form.mediumVoidSpace,
+                CustomButton(
+                  title: Text(
+                    edit ? 'Editer' : 'Créer',
+                    style: styles.button.bigText,
+                  ),
+                  onTap: saveWorkout,
+                ),
               ],
             ),
           ),

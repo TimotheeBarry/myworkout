@@ -2,10 +2,10 @@ import 'package:myworkout/core/util/functions.dart';
 import 'package:time_machine/time_machine.dart';
 
 class User {
-  final int? id;
-  final String? username;
-  final DateTime? birthdate;
-  final String? gender;
+  int? id;
+  String? username;
+  DateTime? birthdate;
+  String? gender;
 
   User({
     this.id,

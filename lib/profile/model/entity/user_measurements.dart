@@ -1,26 +1,26 @@
 import 'package:myworkout/core/util/functions.dart';
 
 class UserMeasurements {
-  final double? height;
-  final double? weight;
-  final double? bodyfat;
-  final double? neck;
-  final double? shoulders;
-  final double? chest;
-  final double? bicepsL;
-  final double? bicepsR;
-  final double? forearmL;
-  final double? forearmR;
-  final double? wristL;
-  final double? wristR;
-  final double? waist;
-  final double? hips;
-  final double? thighL;
-  final double? thighR;
-  final double? calveL;
-  final double? calveR;
-  final double? ankleL;
-  final double? ankleR;
+  double? height;
+  double? weight;
+  double? bodyfat;
+  double? neck;
+  double? shoulders;
+  double? chest;
+  double? bicepsL;
+  double? bicepsR;
+  double? forearmL;
+  double? forearmR;
+  double? wristL;
+  double? wristR;
+  double? waist;
+  double? hips;
+  double? thighL;
+  double? thighR;
+  double? calveL;
+  double? calveR;
+  double? ankleL;
+  double? ankleR;
   UserMeasurements({
     this.height,
     this.weight,
@@ -67,6 +67,29 @@ class UserMeasurements {
         ankleL: json[UserMeasurementsFields.ankleL] as double?,
         ankleR: json[UserMeasurementsFields.ankleR] as double?,
       );
+
+  Map<String, Object?> toJSON() => {
+        UserMeasurementsFields.height: height,
+        UserMeasurementsFields.weight: weight,
+        UserMeasurementsFields.bodyfat: bodyfat,
+        UserMeasurementsFields.neck: neck,
+        UserMeasurementsFields.shoulders: shoulders,
+        UserMeasurementsFields.chest: chest,
+        UserMeasurementsFields.bicepsL: bicepsL,
+        UserMeasurementsFields.bicepsR: bicepsR,
+        UserMeasurementsFields.forearmL: forearmL,
+        UserMeasurementsFields.forearmR: forearmR,
+        UserMeasurementsFields.wristL: wristL,
+        UserMeasurementsFields.wristR: wristR,
+        UserMeasurementsFields.waist: waist,
+        UserMeasurementsFields.hips: hips,
+        UserMeasurementsFields.thighL: thighL,
+        UserMeasurementsFields.thighR: thighR,
+        UserMeasurementsFields.calveL: calveL,
+        UserMeasurementsFields.calveR: calveR,
+        UserMeasurementsFields.ankleL: ankleL,
+        UserMeasurementsFields.ankleR: ankleR,
+      };
 
   UserMeasurements copy({
     double? height,
@@ -145,7 +168,6 @@ class UserMeasurementsFields {
     ankleL,
     ankleR,
   ];
-
   static const String height = 'height';
   static const String weight = 'weight';
   static const String bodyfat = 'bodyfat';

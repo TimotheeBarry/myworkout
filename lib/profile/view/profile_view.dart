@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:myworkout/profile/model/dao/user_dao.dart';
 import 'package:myworkout/profile/model/entity/user_measurements.dart';
+import 'package:myworkout/profile/view/edit_measurements_view.dart';
+import 'package:myworkout/profile/view/edit_user_info_view.dart';
 import '../../core/theme/styles.dart' as styles;
 import '../model/entity/user.dart';
 
@@ -138,17 +140,27 @@ class _ProfileViewState extends State<ProfileView> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        /* bouton d'edition des informations*/
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => EditUserInfoView(user: user),
+              ),
+            ).then((_) => synchronize());
+          },
           icon: FaIcon(FontAwesomeIcons.solidPenToSquare,
               color: styles.frame.primaryTextColor),
         ),
         const SizedBox(width: 20),
+        /*bouton pour les statistiques*/
         IconButton(
             onPressed: () {},
             icon: FaIcon(FontAwesomeIcons.chartLine,
                 color: styles.frame.primaryTextColor)),
         const SizedBox(width: 20),
+        /*Bouton partager??*/
         IconButton(
           onPressed: () {},
           icon: FaIcon(FontAwesomeIcons.shareNodes,
@@ -191,7 +203,9 @@ class _ProfileViewState extends State<ProfileView> {
   }
 
   List<TableRow> createTable(BuildContext context) {
+    /*creer le tableau des mensurations (la liste)*/
     return [
+      /*premiere ligne: titre et boutons*/
       TableRow(
         children: [
           TableCell(
@@ -208,12 +222,21 @@ class _ProfileViewState extends State<ProfileView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              /*bouton pour editer*/
               IconButton(
                 icon: FaIcon(FontAwesomeIcons.solidPenToSquare,
                     color: styles.frame.primaryTextColor),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditMeasurementsView(user: user),
+                    ),
+                  ).then((_) => synchronize());
+                },
               ),
               const SizedBox(width: 24),
+              /*bouton pour voir les stats*/
               IconButton(
                 icon: FaIcon(FontAwesomeIcons.chartLine,
                     color: styles.frame.primaryTextColor),
@@ -257,7 +280,7 @@ class _ProfileViewState extends State<ProfileView> {
         child: Ink(
           decoration: styles.frame.boxDecoration,
           child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: styles.frame.borderRadius,
               child: Table(children: createTable(context))),
         ),
       ),
