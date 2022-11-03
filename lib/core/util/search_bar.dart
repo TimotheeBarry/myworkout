@@ -7,7 +7,6 @@ class SearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: styles.page.margin,
       padding: const EdgeInsets.only(left: 16),
       decoration: BoxDecoration(
         color: styles.input.backgroundColor,
@@ -20,7 +19,7 @@ class SearchBar extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: TextFormField(
-              style: styles.frame.text,
+              style: styles.frame.bigText,
               onChanged: onChanged,
               decoration: InputDecoration(
                 hintText: 'Rechercher...',

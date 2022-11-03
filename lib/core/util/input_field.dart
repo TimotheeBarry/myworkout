@@ -31,16 +31,16 @@ class InputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 16),
+      padding: EdgeInsets.symmetric(horizontal: 16),
       height: height,
       width: width,
       decoration: BoxDecoration(
         color: styles.input.backgroundColor,
         borderRadius: BorderRadius.circular(
-            radius ?? ((height == null) ? 30 : height! / 2)),
+            radius ?? ((height == null) ? 24 : height! / 2)),
       ),
       child: TextFormField(
-        style: styles.frame.text,
+        style: styles.frame.bigText,
         keyboardType: keyboardType,
         onChanged: onChanged,
         onFieldSubmitted: onSubmitted,
