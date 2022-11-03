@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:myworkout/core/util/custom_app_bar.dart';
 import 'package:myworkout/core/util/custom_button.dart';
 import 'package:myworkout/core/util/input_field.dart';
@@ -151,6 +152,37 @@ class _CreateExerciseViewState extends State<CreateExerciseView> {
     );
   }
 
+  Widget buildExerciceImage() {
+    if (widget.exercise?.imageId == null) {
+      return const Placeholder(
+        fallbackHeight: 180,
+      );
+    }
+    final formatter = NumberFormat("0000");
+    var id = formatter.format(widget.exercise!.imageId);
+
+    return ClipRRect(
+      borderRadius: styles.frame.borderRadius,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(
+            'assets/images/png/$id-relaxation.png',
+            height: 180,
+            width: 180,
+            fit: BoxFit.cover,
+          ),
+          Image.asset(
+            'assets/images/png/$id-tension.png',
+            height: 180,
+            width: 180,
+            fit: BoxFit.cover,
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget buildDescriptionArea({required BuildContext context}) {
     return InputField(
       maxLines: 7,
@@ -211,9 +243,7 @@ class _CreateExerciseViewState extends State<CreateExerciseView> {
               children: [
                 buildNameInput(context: context),
                 styles.form.mediumVoidSpace,
-                const Placeholder(
-                  fallbackHeight: 200,
-                ),
+                buildExerciceImage(),
                 styles.form.mediumVoidSpace,
                 buildImageIcons(),
                 styles.form.mediumVoidSpace,

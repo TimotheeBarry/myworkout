@@ -9,7 +9,7 @@ class Lists {
   TextStyle get title => const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold);
   TextStyle get subtitle => const TextStyle(color: Colors.white, fontSize: 18);
   TextStyle get description =>
-      const TextStyle(color: Colors.grey, fontSize: 14);
+      const TextStyle(color: Colors.white54, fontSize: 14);
   BoxDecoration get separator => const BoxDecoration(
           border: Border(
         top: BorderSide(

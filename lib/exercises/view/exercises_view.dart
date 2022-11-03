@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
+import 'package:myworkout/core/util/custom_list_tile.dart';
 import 'package:myworkout/exercises/model/dao/exercises_dao.dart';
 import 'package:myworkout/exercises/model/entity/exercise.dart';
 import 'package:myworkout/exercises/model/entity/exercise_group.dart';
@@ -19,6 +22,7 @@ class ExercisesViewState extends State<ExercisesView> {
   List<ExerciseGroup> exerciseGroups = [];
   List<int> exercisesSelected = [];
   String searchInput = "";
+  final formatter = NumberFormat("0000");
 
   @override
   void initState() {
@@ -109,53 +113,77 @@ class ExercisesViewState extends State<ExercisesView> {
       },
       child: Container(
         decoration: styles.list.separator,
-        child: ListTile(
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(
-                  width: 80,
-                  child: Placeholder(),
-                ),
-                buildAction(context: context, exercise: exercise),
-              ],
-            ),
-            title: Text(
-              exercise.name ?? "",
-              style: styles.list.subtitle,
-            ),
-            subtitle: Text(
-              exercise.description ?? "blabla bla bla blabla blablabla",
-              style: styles.list.description,
-            ),
-            isThreeLine: true,
-            onLongPress: () {
-              setState(() {
-                exercisesSelected.add(exercise.id!);
-              });
-            },
-            onTap: () {
-              /*check ou uncheck workout si en est en édition, sinon on va sur la page edition*/
-              if (exercisesSelected.isNotEmpty) {
-                if (exercisesSelected.contains(exercise.id)) {
-                  setState(() {
-                    exercisesSelected.remove(exercise.id);
-                  });
-                } else {
-                  setState(() {
-                    exercisesSelected.add(exercise.id!);
-                  });
-                }
+        child: CustomListTile(
+          title: Text(
+            exercise.name ?? "",
+            style: styles.list.subtitle,
+          ),
+          subtitle: Text(
+            exercise.description ??
+                "${"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat".substring(0, 50)}...",
+            style: styles.list.description,
+            overflow: TextOverflow.clip,
+          ),
+          image: buildExerciceImage(exercise.imageId),
+          action: buildAction(context: context, exercise: exercise),
+          onLongPress: () {
+            setState(() {
+              exercisesSelected.add(exercise.id!);
+            });
+          },
+          onTap: () {
+            /*check ou uncheck workout si en est en édition, sinon on va sur la page edition*/
+            if (exercisesSelected.isNotEmpty) {
+              if (exercisesSelected.contains(exercise.id)) {
+                setState(() {
+                  exercisesSelected.remove(exercise.id);
+                });
               } else {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        CreateExerciseView(exercise: exercise),
-                  ),
-                ).then((_) => synchronize());
+                setState(() {
+                  exercisesSelected.add(exercise.id!);
+                });
               }
-            }),
+            } else {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CreateExerciseView(exercise: exercise),
+                ),
+              ).then((_) => synchronize());
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget buildExerciceImage(int? imageId) {
+    if (imageId == null) {
+      return const SizedBox(
+        width: 100,
+        child: Placeholder(),
+      );
+    }
+    var id = formatter.format(imageId);
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(4),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(
+            'assets/images/png/$id-relaxation.png',
+            height: 60,
+            width: 60,
+            fit: BoxFit.cover,
+          ),
+          Image.asset(
+            'assets/images/png/$id-tension.png',
+            height: 60,
+            width: 60,
+            fit: BoxFit.cover,
+          ),
+        ],
       ),
     );
   }
@@ -197,23 +225,56 @@ class ExercisesViewState extends State<ExercisesView> {
     }
   }
 
+  Widget buildFilterButton() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(30),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {},
+          child: Ink(
+            padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+            child: Row(children: [
+              Icon(Icons.filter_list_rounded,
+                  color: styles.frame.primaryTextColor),
+              SizedBox(width: 4),
+              Text('Filtrer', style: styles.frame.subtitle)
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          SearchBar(onChanged: search),
-          const SizedBox(height: 12),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: exerciseGroups.length,
-            itemBuilder: (context, i) {
-              return buildGroup(context, exerciseGroups[i]);
-            },
-          )
-        ],
-      ),
+    return Stack(
+      children: [
+        Container(
+          margin: EdgeInsets.only(top: 54),
+          child: SingleChildScrollView(
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: exerciseGroups.length,
+              itemBuilder: (context, i) {
+                return buildGroup(context, exerciseGroups[i]);
+              },
+            ),
+          ),
+        ),
+        Container(
+          margin: styles.page.margin,
+          child: Row(
+            children: [
+              Expanded(
+                child: SearchBar(onChanged: search),
+              ),
+              buildFilterButton()
+            ],
+          ),
+        )
+      ],
     );
   }
 }
