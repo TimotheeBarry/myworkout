@@ -19,7 +19,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Text(
         title,
         style: GoogleFonts.lexend(
-          fontSize: 20,
+          fontSize: 18,
           fontWeight: FontWeight.w700,
         ),
       ),

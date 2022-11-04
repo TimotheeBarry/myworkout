@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 
 class CustomListTile extends StatelessWidget {
-  const CustomListTile(
-      {Key? key,
-      this.title,
-      this.subtitle,
-      this.action,
-      this.image,
-      this.onTap,
-      this.onLongPress})
-      : super(key: key);
+  const CustomListTile({
+    Key? key,
+    this.title,
+    this.subtitle,
+    this.action,
+    this.middle,
+    this.onTap,
+    this.onLongPress,
+    this.padding,
+  }) : super(key: key);
   final Widget? title;
   final Widget? action;
-  final Widget? image;
+  final Widget? middle;
   final Widget? subtitle;
+  final EdgeInsets? padding;
   final void Function()? onTap;
   final void Function()? onLongPress;
 
@@ -25,7 +27,7 @@ class CustomListTile extends StatelessWidget {
         onLongPress: onLongPress,
         onTap: onTap,
         child: Ink(
-          padding: EdgeInsets.only(left: 8,),
+          padding: padding,
           child: Row(
             children: [
               Expanded(
@@ -40,7 +42,7 @@ class CustomListTile extends StatelessWidget {
                       ],
                     )),
               ),
-              Container(child: image ?? const SizedBox.shrink()),
+              Container(child: middle ?? const SizedBox.shrink()),
               Container(child: action ?? const SizedBox.shrink()),
             ],
           ),

@@ -1,30 +1,15 @@
 import 'package:myworkout/core/services/database_provider.dart';
 import 'package:myworkout/workouts/model/entity/workout.dart';
+import 'package:myworkout/workouts/model/entity/workout_exercise.dart';
 import 'package:myworkout/workouts/model/entity/workout_group.dart';
 
 class WorkoutsDao {
   final dbProvider = DatabaseProvider.dbProvider;
 
-  Future<Workout> getWorkout(id) async {
-    /* récupérer un workout par son id*/
-    var db = await dbProvider.db;
-    final result = await db!.query(
-      'workouts',
-      columns: WorkoutFields.values,
-      where: '${WorkoutFields.id} =  ?',
-      whereArgs: [id],
-    );
-    if (result.isNotEmpty) {
-      return Workout.fromJSON(result.first);
-    } else {
-      throw Exception('Workout: ID $id not found');
-    }
-  }
-
   Future<List<WorkoutGroup>> getWorkoutGroups() async {
     /*récupérer les données de tous les groupes*/
     var db = await dbProvider.db;
-    
+
     var workouts = await getWorkouts();
 
     var result = await db!.query(
@@ -91,6 +76,45 @@ class WorkoutsDao {
       workoutGroup.toJSON(),
       where: '${WorkoutGroupFields.id} =  ?',
       whereArgs: [workoutGroup.id],
+    );
+  }
+
+  Future<List<WorkoutExercise>> getWorkoutSession(Workout workout) async {
+    var db = await dbProvider.db;
+
+    var query = '''
+SELECT 
+  workout_exercise_goals.id,
+  workout_exercise_goals.exercise_id,
+  workout_exercise_goals.list_index,
+  workout_exercise_goals.sets,
+  workout_exercise_goals.reps,
+  workout_exercise_goals.load,
+  workout_exercise_goals.rest_between,
+  workout_exercise_goals.rest_after,
+  exercises.name,
+  exercises.description,
+  exercises.image_id
+FROM workout_exercise_goals 
+JOIN exercises ON workout_exercise_goals.exercise_id = exercises.id
+WHERE workout_id = ${workout.id}
+ORDER BY list_index;
+''';
+    var result = await db!.rawQuery(query);
+
+    List<WorkoutExercise> workoutExercises = result.isNotEmpty
+        ? result.map((item) => WorkoutExercise.fromJSON(item)).toList()
+        : [];
+    return workoutExercises;
+  }
+
+  Future updateWorkoutExerciseGoal(WorkoutExercise workoutExercise) async{
+    var db = await dbProvider.db;
+    return await db!.update(
+      'workout_exercise_goals',
+      workoutExercise.toJSON(),
+      where: '${WorkoutExerciseFields.id} =  ?',
+      whereArgs: [workoutExercise.id],
     );
   }
 }
