@@ -4,7 +4,7 @@ class Frame {
   Frame();
 
   Color get primaryTextColor => Colors.white;
-  Color get secondaryTextColor => Colors.grey[400]!;
+  Color get secondaryTextColor => Colors.white54;
   Color get backgroundColor => Colors.white12;
 
   EdgeInsets get margin =>

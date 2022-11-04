@@ -7,6 +7,7 @@ import 'package:myworkout/exercises/model/dao/exercises_dao.dart';
 import 'package:myworkout/exercises/model/entity/exercise.dart';
 import 'package:myworkout/exercises/model/entity/exercise_group.dart';
 import 'package:myworkout/exercises/view/create_exercise_view.dart';
+import 'package:myworkout/exercises/view/exercise_description_view.dart';
 import '../../core/theme/styles.dart' as styles;
 import '../../core/util/search_bar.dart';
 
@@ -124,7 +125,8 @@ class ExercisesViewState extends State<ExercisesView> {
             style: styles.list.description,
             overflow: TextOverflow.clip,
           ),
-          image: buildExerciceImage(exercise.imageId),
+          padding: const EdgeInsets.only(left: 8),
+          middle: buildExerciceImage(exercise.imageId),
           action: buildAction(context: context, exercise: exercise),
           onLongPress: () {
             setState(() {
@@ -147,7 +149,7 @@ class ExercisesViewState extends State<ExercisesView> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => CreateExerciseView(exercise: exercise),
+                  builder: (context) => ExerciseDescriptionView(exercise: exercise),
                 ),
               ).then((_) => synchronize());
             }
@@ -160,7 +162,7 @@ class ExercisesViewState extends State<ExercisesView> {
   Widget buildExerciceImage(int? imageId) {
     if (imageId == null) {
       return const SizedBox(
-        width: 100,
+        width: 120,
         child: Placeholder(),
       );
     }
@@ -193,23 +195,27 @@ class ExercisesViewState extends State<ExercisesView> {
     if (exercisesSelected.isNotEmpty) {
       return Transform.scale(
         scale: 1.2,
-        child: Checkbox(
-            activeColor: Theme.of(context).primaryColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4),
-            ),
-            value: exercisesSelected.contains(exercise.id),
-            onChanged: (value) {
-              if (value!) {
-                setState(() {
-                  exercisesSelected.add(exercise.id!);
-                });
-              } else {
-                setState(() {
-                  exercisesSelected.remove(exercise.id!);
-                });
-              }
-            }),
+        child: Theme(
+          data: ThemeData(unselectedWidgetColor: styles.frame.primaryTextColor),
+          child: Checkbox(
+              activeColor: styles.button.backgroundColor,
+              checkColor: Colors.black87,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+              ),
+              value: exercisesSelected.contains(exercise.id),
+              onChanged: (value) {
+                if (value!) {
+                  setState(() {
+                    exercisesSelected.add(exercise.id!);
+                  });
+                } else {
+                  setState(() {
+                    exercisesSelected.remove(exercise.id!);
+                  });
+                }
+              }),
+        ),
       );
     } else {
       return IconButton(
@@ -251,15 +257,21 @@ class ExercisesViewState extends State<ExercisesView> {
     return Stack(
       children: [
         Container(
-          margin: EdgeInsets.only(top: 54),
+          margin: const EdgeInsets.only(top: 54),
           child: SingleChildScrollView(
-            child: ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: exerciseGroups.length,
-              itemBuilder: (context, i) {
-                return buildGroup(context, exerciseGroups[i]);
-              },
+            child: Column(
+              children: [
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: exerciseGroups.length,
+                  itemBuilder: (context, i) {
+                    return buildGroup(context, exerciseGroups[i]);
+                  },
+                ),
+                //espace vide pour pouvoir scroller au dessus du floating action button
+                const SizedBox(height: 80),
+              ],
             ),
           ),
         ),
