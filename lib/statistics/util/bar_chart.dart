@@ -4,15 +4,28 @@ import '../../core/theme/styles.dart' as styles;
 
 import '../model/statistics_data.dart';
 
-class BarChart extends StatelessWidget {
-  BarChart({Key? key}) : super(key: key);
+class BarChart extends StatefulWidget {
+  const BarChart({Key? key}) : super(key: key);
 
-  List<WorkoutStatisticData> chartData = generateChartData(number: 30);
+  @override
+  State<BarChart> createState() => _BarChartState();
+}
+
+class _BarChartState extends State<BarChart> {
   final legendName = <String>['Chest', 'Back', 'Triceps', 'Biceps', 'Legs'];
+  List<WorkoutStatisticData> chartData = []; //generateChartData(number: 30);
+  List<StackedColumnSeries> series = [];
 
-  buildSeries() {
+  @override
+  void initState() {
+    super.initState();
+    setState(() => {chartData = generateChartData(number: 30)});
+    buildSeries();
+  
+  }
+
+  buildSeries() async {
     final stackedColumnSeries = <StackedColumnSeries>[];
-
     for (var i = 0; i < 5; i++) {
       stackedColumnSeries.add(
         StackedColumnSeries<WorkoutStatisticData, String>(
@@ -27,13 +40,15 @@ class BarChart extends StatelessWidget {
             legendIconType: LegendIconType.diamond),
       );
     }
-    return stackedColumnSeries;
+    setState(() {
+      series = stackedColumnSeries;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: styles.frame.boxDecoration,
+      //decoration: styles.frame.boxDecoration,
       child: SfCartesianChart(
         title: ChartTitle(
             text: 'Statistiques de séance',
@@ -44,7 +59,7 @@ class BarChart extends StatelessWidget {
             position: LegendPosition.bottom,
             textStyle: styles.frame.legend,
             overflowMode: LegendItemOverflowMode.wrap),
-        series: buildSeries(),
+        series: series,
         primaryXAxis: CategoryAxis(),
       ),
     );
