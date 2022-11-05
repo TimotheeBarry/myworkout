@@ -2,12 +2,14 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart' hide ReorderableList;
 import 'package:flutter_reorderable_list/flutter_reorderable_list.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:myworkout/core/util/custom_app_bar.dart';
+import 'package:myworkout/core/util/custom_floating_button.dart';
+import 'package:myworkout/exercises/util/exercise_image.dart';
 import 'package:myworkout/workouts/model/dao/workouts_dao.dart';
 import 'package:myworkout/workouts/model/entity/workout.dart';
 import 'package:myworkout/workouts/model/entity/workout_exercise.dart';
 import 'package:myworkout/workouts/view/create_workout_view.dart';
+import 'package:myworkout/workouts/view/select_exercises_view.dart';
 import '../../core/theme/styles.dart' as styles;
 
 class EditWorkoutView extends StatefulWidget {
@@ -70,37 +72,6 @@ class _EditWorkoutViewState extends State<EditWorkoutView> {
     }
 
     //final draggedItem = workoutExercises[_indexOfKey(item)];
-  }
-
-  Widget buildItemImage(int? imageId) {
-    if (imageId == null) {
-      return const SizedBox(
-        width: 120,
-        child: Placeholder(),
-      );
-    }
-    var id = NumberFormat("0000").format(imageId);
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(4),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.asset(
-            'assets/images/png/$id-relaxation.png',
-            height: 60,
-            width: 60,
-            fit: BoxFit.cover,
-          ),
-          Image.asset(
-            'assets/images/png/$id-tension.png',
-            height: 60,
-            width: 60,
-            fit: BoxFit.cover,
-          ),
-        ],
-      ),
-    );
   }
 
   Widget buildItemAction(WorkoutExercise workoutExercise) {
@@ -199,72 +170,85 @@ class _EditWorkoutViewState extends State<EditWorkoutView> {
                 ? null
                 : styles.frame.boxDecoration;
           }
-
-          return Container(
-            margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 10),
-            child: ClipRRect(
-              borderRadius: styles.frame.borderRadius,
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () {
-                    /*check ou uncheck item si en est en édition, sinon on va sur la page d'edition des objectifs*/
-                    if (selectedExercises.isNotEmpty) {
-                      if (selectedExercises.contains(workoutExercise.id)) {
-                        setState(() {
-                          selectedExercises.remove(workoutExercise.id);
-                        });
+          return WillPopScope(
+            onWillPop: () async {
+              /*si on est en train de selectionner les exercices, on les deselectionne, sinon navigator.pop classique*/
+              if (selectedExercises.isEmpty) {
+                return true;
+              }
+              setState(() {
+                selectedExercises = [];
+              });
+              return false;
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+              child: ClipRRect(
+                borderRadius: styles.frame.borderRadius,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {
+                      /*check ou uncheck item si en est en édition, sinon on va sur la page d'edition des objectifs*/
+                      if (selectedExercises.isNotEmpty) {
+                        if (selectedExercises.contains(workoutExercise.id)) {
+                          setState(() {
+                            selectedExercises.remove(workoutExercise.id);
+                          });
+                        } else {
+                          setState(() {
+                            selectedExercises.add(workoutExercise.id!);
+                          });
+                        }
                       } else {
-                        setState(() {
-                          selectedExercises.add(workoutExercise.id!);
-                        });
-                      }
-                    } else {
-                      /*Navigator.push(
+                        /*Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => ,
                         ),
                       ).then((_) => synchronize());*/
-                    }
-                  },
-                  onLongPress: () {
-                    setState(() {
-                      selectedExercises.add(workoutExercise.id!);
-                    });
-                  },
-                  child: Ink(
-                    decoration: decoration,
-                    padding:
-                        const EdgeInsets.only(top: 12, bottom: 12, left: 16),
-                    child: Opacity(
-                      // hide content for placeholder
-                      opacity:
-                          state == ReorderableItemState.placeholder ? 0.0 : 1.0,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Text(workoutExercise.exercise?.name ?? "",
-                                    style: styles.frame.subtitle),
-                                styles.form.littleVoidSpace,
-                                Row(
-                                  children: [
-                                    buildItemPerformance(workoutExercise),
-                                    buildItemImage(
-                                        workoutExercise.exercise!.imageId),
-                                  ],
-                                )
-                              ],
+                      }
+                    },
+                    onLongPress: () {
+                      setState(() {
+                        selectedExercises.add(workoutExercise.id!);
+                      });
+                    },
+                    child: Ink(
+                      decoration: decoration,
+                      padding:
+                          const EdgeInsets.only(top: 12, bottom: 12, left: 16),
+                      child: Opacity(
+                        // hide content for placeholder
+                        opacity: state == ReorderableItemState.placeholder
+                            ? 0.0
+                            : 1.0,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Text(workoutExercise.exercise?.name ?? "",
+                                      style: styles.frame.subtitle),
+                                  styles.form.littleVoidSpace,
+                                  Row(
+                                    children: [
+                                      buildItemPerformance(workoutExercise),
+                                      ExerciseImage(
+                                          imageId: workoutExercise
+                                              .exercise!.imageId),
+                                    ],
+                                  )
+                                ],
+                              ),
                             ),
-                          ),
-                          buildItemAction(workoutExercise),
-                        ],
+                            buildItemAction(workoutExercise),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -297,23 +281,41 @@ class _EditWorkoutViewState extends State<EditWorkoutView> {
           ],
         ),
         backgroundColor: Colors.transparent,
+        floatingActionButton: CustomFloatingButton(
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SelectExercisesView(
+                workoutId: widget.workout.id!,
+                workoutExerciseListLength: workoutExercises.length,
+              ),
+            ),
+          ).then((_) => getData()),
+        ),
         body: ReorderableList(
           onReorder: _reorderCallback,
           onReorderDone: _reorderDone,
           child: SingleChildScrollView(
-              child: ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: workoutExercises.length,
-            itemBuilder: (context, index) {
-              return buildItem(
-                workoutExercise: workoutExercises[index],
-                // first and last attributes affect border drawn during dragging
-                isFirst: index == 0,
-                isLast: index == workoutExercises.length - 1,
-              );
-            },
-          )),
+            child: Column(
+              children: [
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: workoutExercises.length,
+                  itemBuilder: (context, index) {
+                    return buildItem(
+                      workoutExercise: workoutExercises[index],
+                      // first and last attributes affect border drawn during dragging
+                      isFirst: index == 0,
+                      isLast: index == workoutExercises.length - 1,
+                    );
+                  },
+                ),
+                //espace vide pour pouvoir scroller au dessus du floating action button
+                const SizedBox(height: 80),
+              ],
+            ),
+          ),
         ),
       ),
     );

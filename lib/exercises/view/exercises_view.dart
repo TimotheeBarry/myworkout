@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:myworkout/core/util/custom_list_tile.dart';
 import 'package:myworkout/exercises/model/dao/exercises_dao.dart';
 import 'package:myworkout/exercises/model/entity/exercise.dart';
 import 'package:myworkout/exercises/model/entity/exercise_group.dart';
-import 'package:myworkout/exercises/view/create_exercise_view.dart';
+import 'package:myworkout/exercises/util/exercise_image.dart';
 import 'package:myworkout/exercises/view/exercise_description_view.dart';
 import '../../core/theme/styles.dart' as styles;
 import '../../core/util/search_bar.dart';
@@ -22,7 +21,6 @@ class ExercisesViewState extends State<ExercisesView> {
   List<ExerciseGroup> exerciseGroups = [];
   List<int> exercisesSelected = [];
   String searchInput = "";
-  final formatter = NumberFormat("0000");
 
   @override
   void initState() {
@@ -62,7 +60,7 @@ class ExercisesViewState extends State<ExercisesView> {
     });
   }
 
-  Widget buildGroup(BuildContext context, ExerciseGroup exerciseGroup) {
+  Widget buildGroup(ExerciseGroup exerciseGroup) {
     List<Exercise> exercisesList =
         exerciseGroup.getFilteredExercises(searchInput);
 
@@ -94,7 +92,7 @@ class ExercisesViewState extends State<ExercisesView> {
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: exercisesList.length,
                     itemBuilder: (context, i) {
-                      return buildExercise(context, exercisesList[i]);
+                      return buildExercise(exercisesList[i]);
                     },
                   )
                 ],
@@ -106,9 +104,12 @@ class ExercisesViewState extends State<ExercisesView> {
     );
   }
 
-  Widget buildExercise(BuildContext context, Exercise exercise) {
+  Widget buildExercise(Exercise exercise) {
     return WillPopScope(
       onWillPop: () async {
+        setState(() {
+          exercisesSelected = [];
+        });
         return false;
       },
       child: Container(
@@ -125,8 +126,8 @@ class ExercisesViewState extends State<ExercisesView> {
             overflow: TextOverflow.clip,
           ),
           padding: const EdgeInsets.only(left: 8),
-          middle: buildExerciceImage(exercise.imageId),
-          action: buildAction(context: context, exercise: exercise),
+          middle: ExerciseImage(imageId: exercise.imageId),
+          action: buildAction(exercise: exercise),
           onLongPress: () {
             setState(() {
               exercisesSelected.add(exercise.id!);
@@ -148,7 +149,8 @@ class ExercisesViewState extends State<ExercisesView> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ExerciseDescriptionView(exercise: exercise),
+                  builder: (context) =>
+                      ExerciseDescriptionView(exercise: exercise),
                 ),
               ).then((_) => synchronize());
             }
@@ -158,39 +160,7 @@ class ExercisesViewState extends State<ExercisesView> {
     );
   }
 
-  Widget buildExerciceImage(int? imageId) {
-    if (imageId == null) {
-      return const SizedBox(
-        width: 120,
-        child: Placeholder(),
-      );
-    }
-    var id = formatter.format(imageId);
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(4),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.asset(
-            'assets/images/png/$id-relaxation.png',
-            height: 60,
-            width: 60,
-            fit: BoxFit.cover,
-          ),
-          Image.asset(
-            'assets/images/png/$id-tension.png',
-            height: 60,
-            width: 60,
-            fit: BoxFit.cover,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildAction(
-      {required BuildContext context, required Exercise exercise}) {
+  Widget buildAction({required Exercise exercise}) {
     if (exercisesSelected.isNotEmpty) {
       return Transform.scale(
         scale: 1.2,
@@ -230,27 +200,6 @@ class ExercisesViewState extends State<ExercisesView> {
     }
   }
 
-  Widget buildFilterButton() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(30),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {},
-          child: Ink(
-            padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-            child: Row(children: [
-              Icon(Icons.filter_list_rounded,
-                  color: styles.frame.primaryTextColor),
-              SizedBox(width: 4),
-              Text('Filtrer', style: styles.frame.subtitle)
-            ]),
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -265,7 +214,7 @@ class ExercisesViewState extends State<ExercisesView> {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: exerciseGroups.length,
                   itemBuilder: (context, i) {
-                    return buildGroup(context, exerciseGroups[i]);
+                    return buildGroup(exerciseGroups[i]);
                   },
                 ),
                 //espace vide pour pouvoir scroller au dessus du floating action button
@@ -276,14 +225,11 @@ class ExercisesViewState extends State<ExercisesView> {
         ),
         Container(
           margin: styles.page.margin,
-          child: Row(
-            children: [
-              Expanded(
-                child: SearchBar(onChanged: search),
-              ),
-              buildFilterButton()
-            ],
-          ),
+          child: Container(
+              margin: styles.page.margin,
+              child: SearchBar(
+                onChanged: search,
+              )),
         )
       ],
     );

@@ -71,6 +71,9 @@ class _WorkoutsViewState extends State<WorkoutsView> {
   Widget buildWorkout(BuildContext context, Workout workout) {
     return WillPopScope(
         onWillPop: () async {
+          setState(() {
+            workoutsSelected = [];
+          });
           return false;
         },
         child: Container(

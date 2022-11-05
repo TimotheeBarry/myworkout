@@ -200,7 +200,6 @@ class _CreateWorkoutViewState extends State<CreateWorkoutView> {
     return Container(
       decoration: styles.page.boxDecoration,
       child: Scaffold(
-        backgroundColor: Colors.transparent,
         appBar:
             CustomAppBar(title: edit ? 'Editer la séance' : 'Créer une séance'),
         body: SingleChildScrollView(
