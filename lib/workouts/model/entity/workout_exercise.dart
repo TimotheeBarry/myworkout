@@ -4,6 +4,7 @@ import 'package:myworkout/workouts/model/entity/exercise_performance.dart';
 
 class WorkoutExercise {
   final int? id;
+  final int? workoutId;
   final Exercise? exercise;
   final ExercisePerformance? exercisePerformance;
   final int? listIndex;
@@ -11,6 +12,7 @@ class WorkoutExercise {
 
   WorkoutExercise({
     this.id,
+    this.workoutId,
     this.exercise,
     this.exercisePerformance,
     this.listIndex,
@@ -19,6 +21,7 @@ class WorkoutExercise {
 
   WorkoutExercise copy({
     int? id,
+    int? workoutId,
     Exercise? exercise,
     ExercisePerformance? exercisePerformance,
     int? listIndex,
@@ -26,6 +29,7 @@ class WorkoutExercise {
   }) =>
       WorkoutExercise(
           id: id ?? this.id,
+          workoutId: workoutId ?? workoutId,
           exercise: exercise ?? this.exercise,
           exercisePerformance: exercisePerformance ?? this.exercisePerformance,
           listIndex: listIndex ?? this.listIndex,
@@ -33,6 +37,7 @@ class WorkoutExercise {
 
   static WorkoutExercise fromJSON(Map<String, Object?> json) => WorkoutExercise(
         id: json[WorkoutExerciseFields.id] as int?,
+        workoutId: json[WorkoutExerciseFields.workoutId] as int?,
         listIndex: json[WorkoutExerciseFields.listIndex] as int?,
         exercise: Exercise(
           id: json[WorkoutExerciseFields.exerciseId] as int?,
@@ -51,6 +56,7 @@ class WorkoutExercise {
 
   Map<String, Object?> toJSON() => {
         WorkoutExerciseFields.listIndex: listIndex,
+        WorkoutExerciseFields.workoutId: workoutId,
         WorkoutExerciseFields.exerciseId: exercise?.id,
         WorkoutExerciseFields.sets: exercisePerformance?.sets,
         WorkoutExerciseFields.reps: exercisePerformance?.reps,
@@ -61,15 +67,9 @@ class WorkoutExercise {
 }
 
 class WorkoutExerciseFields {
-  static final List<String> values = [
-    id,
-    exerciseId,
-    listIndex,
-  ];
   static const String id = 'id';
   static const String exerciseId = 'exercise_id';
   static const String workoutId = 'workout_id';
-
   static const String listIndex = 'list_index';
   static const String sets = 'sets';
   static const String reps = 'reps';

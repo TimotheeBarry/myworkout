@@ -85,6 +85,7 @@ class WorkoutsDao {
     var query = '''
 SELECT 
   workout_exercise_goals.id,
+  workout_exercise_goals.workout_id,
   workout_exercise_goals.exercise_id,
   workout_exercise_goals.list_index,
   workout_exercise_goals.sets,
@@ -108,13 +109,22 @@ ORDER BY list_index;
     return workoutExercises;
   }
 
-  Future updateWorkoutExerciseGoal(WorkoutExercise workoutExercise) async{
+  Future updateWorkoutExerciseGoal(WorkoutExercise workoutExercise) async {
     var db = await dbProvider.db;
     return await db!.update(
       'workout_exercise_goals',
       workoutExercise.toJSON(),
       where: '${WorkoutExerciseFields.id} =  ?',
       whereArgs: [workoutExercise.id],
+    );
+  }
+
+  Future createWorkoutExerciseGoal(WorkoutExercise workoutExercise) async {
+    var db = await dbProvider.db;
+
+    return await db!.insert(
+      'workout_exercise_goals',
+      workoutExercise.toJSON(),
     );
   }
 }
