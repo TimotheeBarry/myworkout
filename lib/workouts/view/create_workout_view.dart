@@ -38,7 +38,7 @@ class _CreateWorkoutViewState extends State<CreateWorkoutView> {
     });
   }
 
-  Widget buildNameInput({required BuildContext context}) {
+  Widget buildNameInput() {
     return InputField(
       hintText: 'Name...',
       initialValue: widget.workout?.name ?? "",
@@ -88,7 +88,7 @@ class _CreateWorkoutViewState extends State<CreateWorkoutView> {
               ]);
   }
 
-  Widget buildGroupsSelector({required BuildContext context}) {
+  Widget buildGroupsSelector() {
     final List<DropdownMenuItem<int>> dropDownItems = workoutGroups.map(
       (group) {
         return DropdownMenuItem<int>(
@@ -150,7 +150,7 @@ class _CreateWorkoutViewState extends State<CreateWorkoutView> {
     );
   }
 
-  Widget buildDescriptionArea({required BuildContext context}) {
+  Widget buildDescriptionArea() {
     return InputField(
       maxLines: 7,
       initialValue: widget.workout?.description ?? "",
@@ -207,7 +207,7 @@ class _CreateWorkoutViewState extends State<CreateWorkoutView> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: [
-                buildNameInput(context: context),
+                buildNameInput(),
                 styles.form.mediumVoidSpace,
                 const Placeholder(
                   fallbackHeight: 200,
@@ -215,9 +215,9 @@ class _CreateWorkoutViewState extends State<CreateWorkoutView> {
                 styles.form.mediumVoidSpace,
                 buildImageIcons(),
                 styles.form.mediumVoidSpace,
-                buildGroupsSelector(context: context),
+                buildGroupsSelector(),
                 styles.form.mediumVoidSpace,
-                buildDescriptionArea(context: context),
+                buildDescriptionArea(),
                 styles.form.mediumVoidSpace,
                 CustomButton(
                   title: Text(

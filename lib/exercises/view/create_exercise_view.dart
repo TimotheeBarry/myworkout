@@ -6,6 +6,7 @@ import 'package:myworkout/core/util/input_field.dart';
 import 'package:myworkout/exercises/model/dao/exercises_dao.dart';
 import 'package:myworkout/exercises/model/entity/exercise.dart';
 import 'package:myworkout/exercises/model/entity/exercise_group.dart';
+import 'package:myworkout/exercises/util/exercise_image_big.dart';
 import '../../core/theme/styles.dart' as styles;
 
 class CreateExerciseView extends StatefulWidget {
@@ -40,7 +41,7 @@ class _CreateExerciseViewState extends State<CreateExerciseView> {
     });
   }
 
-  Widget buildNameInput({required BuildContext context}) {
+  Widget buildNameInput() {
     return InputField(
       hintText: 'Name...',
       initialValue: widget.exercise?.name ?? "",
@@ -90,7 +91,7 @@ class _CreateExerciseViewState extends State<CreateExerciseView> {
               ]);
   }
 
-  Widget buildGroupsSelector({required BuildContext context}) {
+  Widget buildGroupsSelector() {
     final List<DropdownMenuItem<int>> dropDownItems = exerciseGroups.map(
       (group) {
         return DropdownMenuItem<int>(
@@ -152,38 +153,7 @@ class _CreateExerciseViewState extends State<CreateExerciseView> {
     );
   }
 
-  Widget buildExerciceImage() {
-    if (widget.exercise?.imageId == null) {
-      return const Placeholder(
-        fallbackHeight: 180,
-      );
-    }
-    final formatter = NumberFormat("0000");
-    var id = formatter.format(widget.exercise!.imageId);
-
-    return ClipRRect(
-      borderRadius: styles.frame.borderRadius,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.asset(
-            'assets/images/png/$id-relaxation.png',
-            height: 180,
-            width: 180,
-            fit: BoxFit.cover,
-          ),
-          Image.asset(
-            'assets/images/png/$id-tension.png',
-            height: 180,
-            width: 180,
-            fit: BoxFit.cover,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildDescriptionArea({required BuildContext context}) {
+  Widget buildDescriptionArea() {
     return InputField(
       maxLines: 7,
       initialValue: widget.exercise?.description ?? "",
@@ -241,15 +211,18 @@ class _CreateExerciseViewState extends State<CreateExerciseView> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: [
-                buildNameInput(context: context),
+                buildNameInput(),
                 styles.form.mediumVoidSpace,
-                buildExerciceImage(),
+                Hero(
+                  tag: widget.exercise?.imageId ?? 0,
+                  child: ExerciseImageBig(imageId: widget.exercise?.imageId),
+                ),
                 styles.form.mediumVoidSpace,
                 buildImageIcons(),
                 styles.form.mediumVoidSpace,
-                buildGroupsSelector(context: context),
+                buildGroupsSelector(),
                 styles.form.mediumVoidSpace,
-                buildDescriptionArea(context: context),
+                buildDescriptionArea(),
                 styles.form.mediumVoidSpace,
                 CustomButton(
                   title: Text(

@@ -4,6 +4,7 @@ import 'package:myworkout/core/util/custom_app_bar.dart';
 import 'package:myworkout/exercises/model/dao/exercises_dao.dart';
 import 'package:myworkout/exercises/model/entity/exercise.dart';
 import 'package:myworkout/exercises/model/entity/exercise_group.dart';
+import 'package:myworkout/exercises/util/exercise_image_big.dart';
 import 'package:myworkout/exercises/view/create_exercise_view.dart';
 import '../../core/theme/styles.dart' as styles;
 
@@ -34,37 +35,6 @@ class _ExerciseDescriptionViewState extends State<ExerciseDescriptionView> {
     setState(() {
       exerciseGroups = _exerciseGroups;
     });
-  }
-
-  Widget buildExerciceImage() {
-    if (widget.exercise.imageId == null) {
-      return const Placeholder(
-        fallbackHeight: 180,
-      );
-    }
-    final formatter = NumberFormat("0000");
-    var id = formatter.format(widget.exercise.imageId);
-
-    return ClipRRect(
-      borderRadius: styles.frame.borderRadius,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.asset(
-            'assets/images/png/$id-relaxation.png',
-            height: 180,
-            width: 180,
-            fit: BoxFit.cover,
-          ),
-          Image.asset(
-            'assets/images/png/$id-tension.png',
-            height: 180,
-            width: 180,
-            fit: BoxFit.cover,
-          ),
-        ],
-      ),
-    );
   }
 
   Widget buildTitle() {
@@ -104,35 +74,43 @@ class _ExerciseDescriptionViewState extends State<ExerciseDescriptionView> {
     );
   }
 
+  buildAdvancedInfoCell(String title, List<String> items) {
+    List<Widget> _items =
+        items.map((item) => Text(item, style: styles.frame.bigText)).toList();
+    return Container(
+      margin: const EdgeInsets.all(12),
+      child: Column(
+        children: [
+          Text(title, style: styles.frame.subtitle),
+          Column(crossAxisAlignment: CrossAxisAlignment.start, children: _items)
+        ],
+      ),
+    );
+  }
+
   buildAdvancedInfosFrame() {
     return Container(
       margin: styles.frame.margin,
       child: Material(
         color: Colors.transparent,
         child: Ink(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: styles.frame.boxDecoration,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Table(
+            defaultVerticalAlignment: TableCellVerticalAlignment.top,
             children: [
-              Container(),
-              Text('Type:', style: styles.frame.subtitle),
-              styles.form.littleVoidSpace,
-              Text('Poly-articulaire', style: styles.frame.bigText),
-              styles.form.mediumVoidSpace,
-              Text('Groupe musculaire primaire:', style: styles.frame.subtitle),
-              styles.form.littleVoidSpace,
-              Text('Pectoraux', style: styles.frame.bigText),
-              styles.form.mediumVoidSpace,
-              Text('Groupe(s) musculaire(s) secondaire(s):',
-                  style: styles.frame.subtitle),
-              styles.form.littleVoidSpace,
-              Text('Epaules', style: styles.frame.bigText),
-              Text('Triceps', style: styles.frame.bigText),
-              styles.form.mediumVoidSpace,
-              Text('Equipement(s):', style: styles.frame.subtitle),
-              styles.form.littleVoidSpace,
-              Text('Banc', style: styles.frame.bigText),
+              TableRow(
+                children: [
+                  buildAdvancedInfoCell('Principal', ['Pectoraux']),
+                  buildAdvancedInfoCell('Secondaire', ['Epaules', 'Triceps']),
+                ],
+              ),
+              TableRow(
+                children: [
+                  buildAdvancedInfoCell('Type', ['Poly-articulaire']),
+                  buildAdvancedInfoCell('Equipement', ['Banc']),
+                ],
+              )
             ],
           ),
         ),
@@ -145,7 +123,6 @@ class _ExerciseDescriptionViewState extends State<ExerciseDescriptionView> {
     return Container(
       decoration: styles.page.boxDecoration,
       child: Scaffold(
-        backgroundColor: Colors.transparent,
         appBar: CustomAppBar(
           title: 'Informations',
           actions: [
@@ -165,11 +142,15 @@ class _ExerciseDescriptionViewState extends State<ExerciseDescriptionView> {
         body: SingleChildScrollView(
           child: Column(
             children: [
+              Hero(
+                tag: widget.exercise.imageId ?? 0,
+                child: ExerciseImageBig(imageId: widget.exercise.imageId),
+              ),
+              styles.form.mediumVoidSpace,
               buildTitle(),
               styles.form.littleVoidSpace,
-              buildExerciceImage(),
+              buildAdvancedInfosFrame(),
               buildDescriptionFrame(),
-              buildAdvancedInfosFrame()
             ],
           ),
         ),
