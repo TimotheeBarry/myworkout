@@ -5,6 +5,7 @@ import 'package:myworkout/workouts/model/dao/workouts_dao.dart';
 import 'package:myworkout/workouts/model/entity/workout.dart';
 import 'package:myworkout/workouts/model/entity/workout_group.dart';
 import 'package:myworkout/workouts/view/edit_workout_view.dart';
+import 'package:myworkout/workouts/view/workout_session_view.dart';
 import '../../core/theme/styles.dart' as styles;
 
 class WorkoutsView extends StatefulWidget {
@@ -85,7 +86,7 @@ class _WorkoutsViewState extends State<WorkoutsView> {
               ),
               subtitle: Text('Dernière séance: 03/11/2022 (1h06)',
                   style: styles.list.description),
-              action: buildAction(context: context, itemId: workout.id!),
+              action: buildAction(context: context, workout: workout),
               padding: const EdgeInsets.only(left: 12),
               onLongPress: () {
                 /*ajout de la séance dans la liste des séances sélectionnées*/
@@ -109,19 +110,16 @@ class _WorkoutsViewState extends State<WorkoutsView> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => EditWorkoutView(
-                            workout:
-                                workout) /*EditWorkoutView(
-                        workout: workout,
-                      ),*/
-                        ),
+                        builder: (context) =>
+                            EditWorkoutView(workout: workout)),
                   );
                 }
               }),
         ));
   }
 
-  Widget buildAction({required BuildContext context, required int itemId}) {
+  Widget buildAction(
+      {required BuildContext context, required Workout workout}) {
     if (workoutsSelected.isNotEmpty) {
       return Transform.scale(
         scale: 1.2,
@@ -133,15 +131,15 @@ class _WorkoutsViewState extends State<WorkoutsView> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(4),
               ),
-              value: workoutsSelected.contains(itemId),
+              value: workoutsSelected.contains(workout.id),
               onChanged: (value) {
                 if (value!) {
                   setState(() {
-                    workoutsSelected.add(itemId);
+                    workoutsSelected.add(workout.id!);
                   });
                 } else {
                   setState(() {
-                    workoutsSelected.remove(itemId);
+                    workoutsSelected.remove(workout.id);
                   });
                 }
               }),
@@ -151,9 +149,15 @@ class _WorkoutsViewState extends State<WorkoutsView> {
       return Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => WorkoutSessionView(workout: workout)),
+            );
+          },
           child: Ink(
-            padding: EdgeInsets.all(13),
+            padding: const EdgeInsets.all(13),
             decoration: BoxDecoration(
               border: Border(
                 left: BorderSide(
