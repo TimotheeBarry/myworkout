@@ -3,11 +3,11 @@ import 'dart:math';
 import 'package:myworkout/core/util/functions.dart';
 
 class ExercisePerformance {
-  final int? sets;
-  final String? reps;
-  final String? load;
-  final String? restBetween;
-  final int? restAfter;
+  int? sets;
+  String? reps;
+  String? load;
+  String? restBetween;
+  int? restAfter;
   ExercisePerformance({
     this.sets = 0,
     this.reps = "0",
@@ -37,10 +37,9 @@ class ExercisePerformance {
   }
 
   String secondsToString(int sec) {
-    var hours = getHours(sec);
     var minutes = getMinutes(sec);
     var seconds = getSeconds(sec);
-    return "${hours != "00" ? "$hours'" : ""}${minutes != "00" ? "$minutes" : ""}\"$seconds";
+    return "${minutes != "00" ? "'$minutes" : ""}\"$seconds";
   }
 
   String restToString() {

@@ -9,6 +9,7 @@ import 'package:myworkout/workouts/model/dao/workouts_dao.dart';
 import 'package:myworkout/workouts/model/entity/workout.dart';
 import 'package:myworkout/workouts/model/entity/workout_exercise.dart';
 import 'package:myworkout/workouts/view/create_workout_view.dart';
+import 'package:myworkout/workouts/view/edit_exercise_performance_view.dart';
 import 'package:myworkout/workouts/view/select_exercises_view.dart';
 import '../../core/theme/styles.dart' as styles;
 
@@ -201,12 +202,13 @@ class _EditWorkoutViewState extends State<EditWorkoutView> {
                           });
                         }
                       } else {
-                        /*Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ,
-                        ),
-                      ).then((_) => synchronize());*/
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditExercisePerformanceView(
+                                workoutExercise: workoutExercise),
+                          ),
+                        ).then((_) => getData());
                       }
                     },
                     onLongPress: () {
@@ -280,7 +282,6 @@ class _EditWorkoutViewState extends State<EditWorkoutView> {
             )
           ],
         ),
-        backgroundColor: Colors.transparent,
         floatingActionButton: CustomFloatingButton(
           onPressed: () => Navigator.push(
             context,

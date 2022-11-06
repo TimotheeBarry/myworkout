@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myworkout/exercises/model/entity/exercise.dart';
 import 'package:myworkout/workouts/model/entity/exercise_performance.dart';
+import 'package:myworkout/workouts/model/entity/exercise_set.dart';
 
 class WorkoutExercise {
   final int? id;
@@ -29,7 +30,7 @@ class WorkoutExercise {
   }) =>
       WorkoutExercise(
           id: id ?? this.id,
-          workoutId: workoutId ?? workoutId,
+          workoutId: workoutId ?? this.workoutId,
           exercise: exercise ?? this.exercise,
           exercisePerformance: exercisePerformance ?? this.exercisePerformance,
           listIndex: listIndex ?? this.listIndex,
@@ -64,6 +65,24 @@ class WorkoutExercise {
         WorkoutExerciseFields.restBetween: exercisePerformance?.restBetween,
         WorkoutExerciseFields.restAfter: exercisePerformance?.restAfter,
       };
+
+  List<ExerciseSet> getExerciseSets() {
+    var repsList =
+        exercisePerformance!.reps!.split('-').map((e) => int.parse(e)).toList();
+    var loadList =
+        exercisePerformance!.load!.split('-').map((e) => int.parse(e)).toList();
+    var restList = exercisePerformance!.restBetween!
+        .split('-')
+        .map((e) => int.parse(e))
+        .toList();
+    restList.add(exercisePerformance!.restAfter!);
+    List<ExerciseSet> exerciseSets = [];
+    for (var i = 0; i < exercisePerformance!.sets!; i++) {
+      exerciseSets.add(
+          ExerciseSet(reps: repsList[i], load: loadList[i], rest: restList[i]));
+    }
+    return exerciseSets;
+  }
 }
 
 class WorkoutExerciseFields {
