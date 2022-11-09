@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:myworkout/core/util/custom_app_bar.dart';
 import 'package:myworkout/core/util/custom_button.dart';
@@ -274,7 +275,6 @@ class _EditMeasurementsViewState extends State<EditMeasurementsView> {
 
   @override
   Widget build(BuildContext context) {
-    print(userMeasurements.toJSON().toString());
     return Container(
       decoration: styles.page.boxDecoration,
       child: Scaffold(

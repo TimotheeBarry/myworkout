@@ -134,13 +134,6 @@ class _EditUserInfoViewState extends State<EditUserInfoView> {
                   buildUsernameField(),
                   styles.form.mediumVoidSpace,
                   buildDateField(),
-                  styles.form.bigVoidSpace,
-                  SaveButton(onTap: () async {
-                    final dao = UserDao();
-                    await dao
-                        .updateUser(editedUser)
-                        .then((value) => Navigator.pop(context));
-                  })
                 ],
               ),
             ),
@@ -226,18 +219,26 @@ class _EditUserInfoViewState extends State<EditUserInfoView> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: styles.page.boxDecoration,
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: const CustomAppBar(title: 'Editer les informations'),
-        body: SingleChildScrollView(
-          child: Column(children: [
-            buildUserInfoFrame(),
-            buildMeasurementsFrame(),
-          ]),
-        ),
-      ),
-    );
+    return WillPopScope(
+        onWillPop: () async {
+          final dao = UserDao();
+          await dao
+              .updateUser(editedUser)
+              .then((value) => Navigator.pop(context));
+          return true;
+        },
+        child: Container(
+          decoration: styles.page.boxDecoration,
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: const CustomAppBar(title: 'Editer les informations'),
+            body: SingleChildScrollView(
+              child: Column(children: [
+                buildUserInfoFrame(),
+                buildMeasurementsFrame(),
+              ]),
+            ),
+          ),
+        ));
   }
 }

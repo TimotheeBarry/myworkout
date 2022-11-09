@@ -4,6 +4,7 @@ import 'package:myworkout/profile/model/dao/user_dao.dart';
 import 'package:myworkout/profile/model/entity/user_measurements.dart';
 import 'package:myworkout/profile/view/edit_measurements_view.dart';
 import 'package:myworkout/profile/view/edit_user_info_view.dart';
+import 'package:myworkout/profile/view/profile_statistics_view.dart';
 import '../../core/theme/styles.dart' as styles;
 import '../model/entity/user.dart';
 
@@ -156,7 +157,12 @@ class _ProfileViewState extends State<ProfileView> {
         const SizedBox(width: 20),
         /*bouton pour les statistiques*/
         IconButton(
-            onPressed: () {},
+            onPressed: () {Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProfileStatisticsView(user: user),
+              ),
+            ).then((_) => synchronize());},
             icon: FaIcon(FontAwesomeIcons.chartLine,
                 color: styles.frame.primaryTextColor)),
         const SizedBox(width: 20),
