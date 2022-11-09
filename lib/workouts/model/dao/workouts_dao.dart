@@ -90,9 +90,8 @@ SELECT
   workout_exercise_goals.list_index,
   workout_exercise_goals.sets,
   workout_exercise_goals.reps,
-  workout_exercise_goals.load,
-  workout_exercise_goals.rest_between,
-  workout_exercise_goals.rest_after,
+  workout_exercise_goals.loads,
+  workout_exercise_goals.rests,
   exercises.name,
   exercises.description,
   exercises.image_id

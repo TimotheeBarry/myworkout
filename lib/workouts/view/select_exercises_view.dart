@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:myworkout/core/util/custom_app_bar.dart';
 import 'package:myworkout/core/util/custom_button.dart';
+import 'package:myworkout/core/util/custom_check_box.dart';
 import 'package:myworkout/core/util/custom_floating_button.dart';
 import 'package:myworkout/core/util/custom_list_tile.dart';
 import 'package:myworkout/core/util/search_bar.dart';
@@ -168,30 +169,19 @@ class _SelectExercisesViewState extends State<SelectExercisesView> {
 
   Widget buildAction({required Exercise exercise}) {
     if (exercisesSelected.isNotEmpty) {
-      return Transform.scale(
-        scale: 1.2,
-        child: Theme(
-          data: ThemeData(unselectedWidgetColor: styles.frame.primaryTextColor),
-          child: Checkbox(
-              activeColor: styles.button.backgroundColor,
-              checkColor: Colors.black87,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4),
-              ),
-              value: exercisesSelected.contains(exercise.id),
-              onChanged: (value) {
-                if (value!) {
-                  setState(() {
-                    exercisesSelected.add(exercise.id!);
-                  });
-                } else {
-                  setState(() {
-                    exercisesSelected.remove(exercise.id!);
-                  });
-                }
-              }),
-        ),
-      );
+      return CustomCheckBox(
+          value: exercisesSelected.contains(exercise.id),
+          onChanged: (value) {
+            if (value!) {
+              setState(() {
+                exercisesSelected.add(exercise.id!);
+              });
+            } else {
+              setState(() {
+                exercisesSelected.remove(exercise.id!);
+              });
+            }
+          });
     } else {
       return IconButton(
         icon: FaIcon(

@@ -49,9 +49,8 @@ class WorkoutExercise {
         exercisePerformance: ExercisePerformance(
           sets: json[WorkoutExerciseFields.sets] as int?,
           reps: json[WorkoutExerciseFields.reps] as String?,
-          load: json[WorkoutExerciseFields.load] as String?,
-          restBetween: json[WorkoutExerciseFields.restBetween] as String?,
-          restAfter: json[WorkoutExerciseFields.restAfter] as int?,
+          loads: json[WorkoutExerciseFields.loads] as String?,
+          rests: json[WorkoutExerciseFields.rests] as String?,
         ),
       );
 
@@ -61,21 +60,19 @@ class WorkoutExercise {
         WorkoutExerciseFields.exerciseId: exercise?.id,
         WorkoutExerciseFields.sets: exercisePerformance?.sets,
         WorkoutExerciseFields.reps: exercisePerformance?.reps,
-        WorkoutExerciseFields.load: exercisePerformance?.load,
-        WorkoutExerciseFields.restBetween: exercisePerformance?.restBetween,
-        WorkoutExerciseFields.restAfter: exercisePerformance?.restAfter,
+        WorkoutExerciseFields.loads: exercisePerformance?.loads,
+        WorkoutExerciseFields.rests: exercisePerformance?.rests,
       };
 
   List<ExerciseSet> getExerciseSets() {
     var repsList =
         exercisePerformance!.reps!.split('-').map((e) => int.parse(e)).toList();
     var loadList =
-        exercisePerformance!.load!.split('-').map((e) => int.parse(e)).toList();
-    var restList = exercisePerformance!.restBetween!
+        exercisePerformance!.loads!.split('-').map((e) => int.parse(e)).toList();
+    var restList = exercisePerformance!.rests!
         .split('-')
         .map((e) => int.parse(e))
         .toList();
-    restList.add(exercisePerformance!.restAfter!);
     List<ExerciseSet> exerciseSets = [];
     for (var i = 0; i < exercisePerformance!.sets!; i++) {
       exerciseSets.add(
@@ -92,7 +89,6 @@ class WorkoutExerciseFields {
   static const String listIndex = 'list_index';
   static const String sets = 'sets';
   static const String reps = 'reps';
-  static const String load = 'load';
-  static const String restBetween = 'rest_between';
-  static const String restAfter = 'rest_after';
+  static const String loads = 'loads';
+  static const String rests = 'rests';
 }
