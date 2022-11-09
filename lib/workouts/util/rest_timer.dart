@@ -5,16 +5,18 @@ import 'package:myworkout/core/util/functions.dart';
 import '../../core/theme/styles.dart' as styles;
 
 class RestTimer extends StatefulWidget {
-  const RestTimer({Key? key, required this.nextSet}) : super(key: key);
+  const RestTimer({Key? key, required this.nextSet, required this.initialTime})
+      : super(key: key);
   final void Function() nextSet;
+  final num initialTime;
 
   @override
   State<RestTimer> createState() => _RestTimerState();
 }
 
 class _RestTimerState extends State<RestTimer> {
-  static int maxSeconds = 90;
-  late int seconds;
+  late num maxSeconds;
+  late num seconds;
   Timer? timer;
 
   void startTimer() {
@@ -36,8 +38,8 @@ class _RestTimerState extends State<RestTimer> {
   @override
   void initState() {
     super.initState();
-    maxSeconds = 90;
-    seconds = maxSeconds;
+    maxSeconds = widget.initialTime;
+    seconds = widget.initialTime;
     startTimer();
   }
 
@@ -45,20 +47,6 @@ class _RestTimerState extends State<RestTimer> {
   void dispose() {
     timer!.cancel();
     super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (seconds == 0) {
-      /*passer à la série suivante*/
-    }
-    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      removeTime(10),
-      const SizedBox(width: 16),
-      buildTimer(),
-      const SizedBox(width: 16),
-      addTime(10)
-    ]);
   }
 
   Widget buildTime() {
@@ -93,7 +81,7 @@ class _RestTimerState extends State<RestTimer> {
           fit: StackFit.expand,
           children: [
             CircularProgressIndicator(
-              value: seconds / maxSeconds,
+              value: maxSeconds > 0 ? seconds / maxSeconds : 1,
               valueColor: AlwaysStoppedAnimation(Colors.white),
               backgroundColor: Colors.white24,
               strokeWidth: 4,
@@ -154,5 +142,16 @@ class _RestTimerState extends State<RestTimer> {
       icon: Icon(Icons.remove_circle_outline_rounded,
           size: 32, color: styles.frame.primaryTextColor),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      removeTime(10),
+      const SizedBox(width: 16),
+      buildTimer(),
+      const SizedBox(width: 16),
+      addTime(10)
+    ]);
   }
 }

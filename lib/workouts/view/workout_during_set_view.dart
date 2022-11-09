@@ -15,17 +15,36 @@ class WorkoutDuringSetView extends StatefulWidget {
 }
 
 class _WorkoutDuringSetViewState extends State<WorkoutDuringSetView> {
+  Widget buildPerformanceGoalFrame() {
+    return Container(
+      margin: styles.frame.margin,
+      decoration: styles.frame.boxDecoration,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        child: Column(children: [
+          Center(child: Text('Objectifs', style: styles.frame.title)),
+          styles.form.littleVoidSpace,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('${widget.exerciseSet.reps} reps',
+                  style: styles.frame.bigText),
+              Text('${widget.exerciseSet.load} kg',
+                  style: styles.frame.bigText),
+            ],
+          )
+        ]),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Column(
         children: [
           ExerciseImageBig(imageId: widget.exercise.imageId),
-          Container(
-            margin: styles.frame.margin,
-            decoration: styles.frame.boxDecoration,
-            child: Column(children: []),
-          ),
+          buildPerformanceGoalFrame(),
         ],
       ),
     );
