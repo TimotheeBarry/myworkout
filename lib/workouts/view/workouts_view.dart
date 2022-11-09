@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:myworkout/core/util/custom_check_box.dart';
 import 'package:myworkout/core/util/custom_list_tile.dart';
 import 'package:myworkout/workouts/model/dao/workouts_dao.dart';
 import 'package:myworkout/workouts/model/entity/workout.dart';
@@ -121,40 +122,34 @@ class _WorkoutsViewState extends State<WorkoutsView> {
   Widget buildAction(
       {required BuildContext context, required Workout workout}) {
     if (workoutsSelected.isNotEmpty) {
-      return Transform.scale(
-        scale: 1.2,
-        child: Theme(
-          data: ThemeData(unselectedWidgetColor: styles.frame.primaryTextColor),
-          child: Checkbox(
-              activeColor: styles.button.backgroundColor,
-              checkColor: Colors.black87,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4),
-              ),
-              value: workoutsSelected.contains(workout.id),
-              onChanged: (value) {
-                if (value!) {
-                  setState(() {
-                    workoutsSelected.add(workout.id!);
-                  });
-                } else {
-                  setState(() {
-                    workoutsSelected.remove(workout.id);
-                  });
-                }
-              }),
-        ),
-      );
+      return CustomCheckBox(
+          value: workoutsSelected.contains(workout.id),
+          onChanged: (value) {
+            if (value!) {
+              setState(() {
+                workoutsSelected.add(workout.id!);
+              });
+            } else {
+              setState(() {
+                workoutsSelected.remove(workout.id);
+              });
+            }
+          });
     } else {
       return Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => WorkoutSessionView(workout: workout)),
-            );
+          onTap: () async {
+            final dao = WorkoutsDao();
+            var workoutExercises = await dao.getWorkoutSession(workout);
+            if (workoutExercises.isNotEmpty) {
+              //si la séance est vide on ne peut pas aller dessus
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => WorkoutSessionView(workout: workout)),
+              );
+            }
           },
           child: Ink(
             padding: const EdgeInsets.all(13),

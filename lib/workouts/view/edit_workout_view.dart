@@ -3,6 +3,7 @@ import 'package:flutter/material.dart' hide ReorderableList;
 import 'package:flutter_reorderable_list/flutter_reorderable_list.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:myworkout/core/util/custom_app_bar.dart';
+import 'package:myworkout/core/util/custom_check_box.dart';
 import 'package:myworkout/core/util/custom_floating_button.dart';
 import 'package:myworkout/exercises/util/exercise_image.dart';
 import 'package:myworkout/workouts/model/dao/workouts_dao.dart';
@@ -89,31 +90,19 @@ class _EditWorkoutViewState extends State<EditWorkoutView> {
     } else {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Transform.scale(
-          scale: 1.2,
-          child: Theme(
-            data:
-                ThemeData(unselectedWidgetColor: styles.frame.primaryTextColor),
-            child: Checkbox(
-                activeColor: styles.button.backgroundColor,
-                checkColor: Colors.black87,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                value: selectedExercises.contains(workoutExercise.id),
-                onChanged: (value) {
-                  if (value!) {
-                    setState(() {
-                      selectedExercises.add(workoutExercise.id!);
-                    });
-                  } else {
-                    setState(() {
-                      selectedExercises.remove(workoutExercise.id);
-                    });
-                  }
-                }),
-          ),
-        ),
+        child: CustomCheckBox(
+            value: selectedExercises.contains(workoutExercise.id),
+            onChanged: (value) {
+              if (value!) {
+                setState(() {
+                  selectedExercises.add(workoutExercise.id!);
+                });
+              } else {
+                setState(() {
+                  selectedExercises.remove(workoutExercise.id);
+                });
+              }
+            }),
       );
     }
   }
