@@ -38,6 +38,8 @@ class _EditUserInfoViewState extends State<EditUserInfoView> {
         ),
         styles.form.littleVoidSpace,
         CustomButton(
+          icon:
+              Icon(Icons.calendar_month, color: styles.button.foregroundColor),
           title: Text(
               DateFormat('d MMM yyyy').format(editedUser.birthdate ?? date),
               style: styles.button.mediumText),
@@ -132,7 +134,9 @@ class _EditUserInfoViewState extends State<EditUserInfoView> {
               child: Column(
                 children: [
                   buildUsernameField(),
-                  styles.form.mediumVoidSpace,
+                  styles.form.littleVoidSpace,
+                  styles.frame.divider,
+                  styles.form.littleVoidSpace,
                   buildDateField(),
                 ],
               ),
@@ -161,6 +165,8 @@ class _EditUserInfoViewState extends State<EditUserInfoView> {
                           style: styles.frame.subtitle)),
                   styles.form.littleVoidSpace,
                   CustomButton(
+                      icon: Icon(Icons.calendar_month,
+                          color: styles.button.foregroundColor),
                       title: Text(DateFormat('d MMM yyyy').format(date),
                           style: styles.button.mediumText),
                       onTap: () async {
@@ -176,7 +182,8 @@ class _EditUserInfoViewState extends State<EditUserInfoView> {
                           });
                         }
                       }),
-                  styles.form.bigVoidSpace,
+                  styles.form.littleVoidSpace,
+                  styles.frame.divider,
                   //height
                   inputRow(
                       name: 'Taille',
@@ -201,7 +208,9 @@ class _EditUserInfoViewState extends State<EditUserInfoView> {
                         userMeasurements.bodyfat =
                             bodyfat != null ? double.parse(bodyfat) : null;
                       }),
-                  styles.form.bigVoidSpace,
+
+                  styles.frame.divider,
+                  styles.form.littleVoidSpace,
                   SaveButton(onTap: () async {
                     final dao = UserDao();
                     await dao

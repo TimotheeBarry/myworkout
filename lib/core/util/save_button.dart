@@ -8,6 +8,7 @@ class SaveButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomButton(
+      icon:Icon(Icons.save_alt_rounded, color:styles.button.foregroundColor),
       title: Text('Enregistrer', style: styles.button.bigText),
       onTap: onTap,
     );

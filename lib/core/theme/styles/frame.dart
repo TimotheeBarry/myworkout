@@ -10,7 +10,7 @@ class Frame {
   EdgeInsets get margin =>
       const EdgeInsets.symmetric(horizontal: 10, vertical: 4);
   BorderRadius get borderRadius => BorderRadius.circular(16);
-  
+
   BoxDecoration get boxDecoration => BoxDecoration(
         borderRadius: borderRadius,
         color: backgroundColor,
@@ -42,4 +42,6 @@ class Frame {
         color: secondaryTextColor,
         fontSize: 10,
       );
+
+  Divider get divider => Divider(color: Colors.white54, thickness: 1);
 }

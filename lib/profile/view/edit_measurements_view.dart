@@ -251,6 +251,8 @@ class _EditMeasurementsViewState extends State<EditMeasurementsView> {
                       Text('Date de la mesure:', style: styles.frame.subtitle)),
               styles.form.littleVoidSpace,
               CustomButton(
+                  icon: Icon(Icons.calendar_month,
+                      color: styles.button.foregroundColor),
                   title: Text(DateFormat('d MMM yyyy').format(date),
                       style: styles.button.mediumText),
                   onTap: () async {
