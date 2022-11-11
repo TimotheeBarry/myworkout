@@ -9,9 +9,9 @@ import 'package:myworkout/exercises/view/create_exercise_view.dart';
 import '../../core/theme/styles.dart' as styles;
 
 class ExerciseDescriptionView extends StatefulWidget {
-  const ExerciseDescriptionView({Key? key, required this.exercise})
+  const ExerciseDescriptionView({Key? key, required this.exerciseId})
       : super(key: key);
-  final Exercise exercise;
+  final int exerciseId;
 
   @override
   State<ExerciseDescriptionView> createState() =>
@@ -20,11 +20,11 @@ class ExerciseDescriptionView extends StatefulWidget {
 
 class _ExerciseDescriptionViewState extends State<ExerciseDescriptionView> {
   List<ExerciseGroup> exerciseGroups = [];
+  late Exercise exercise = Exercise();
 
   @override
   void initState() {
     super.initState();
-    setState(() {});
     getData();
   }
 
@@ -32,14 +32,16 @@ class _ExerciseDescriptionViewState extends State<ExerciseDescriptionView> {
     final exercisesDao = ExercisesDao();
     List<ExerciseGroup> _exerciseGroups =
         await exercisesDao.getExerciseGroups();
+    Exercise _exercise = await exercisesDao.getExercise(widget.exerciseId);
     setState(() {
       exerciseGroups = _exerciseGroups;
+      exercise = _exercise;
     });
   }
 
   Widget buildTitle() {
     return Center(
-      child: Text(widget.exercise.name ?? "", style: styles.frame.title),
+      child: Text(exercise.name ?? "", style: styles.frame.title),
     );
   }
 
@@ -58,7 +60,7 @@ class _ExerciseDescriptionViewState extends State<ExerciseDescriptionView> {
               Text('Description:', style: styles.frame.subtitle),
               styles.form.littleVoidSpace,
               Text(
-                widget.exercise.description ??
+                exercise.description ??
                     '''Lie on a flat bench with your feet flat on the floor, keep your back flat on the bench.,
       Grasp the bar a little wider than shoulder width apart.,
       Raise the barbell above your body and move it over the middle of your chest, this is your starting position.,
@@ -132,8 +134,12 @@ class _ExerciseDescriptionViewState extends State<ExerciseDescriptionView> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => CreateExerciseView(
-                              exercise: widget.exercise,
-                            )));
+                              exercise: exercise,
+                            ))).then(
+                  (_) {
+                    getData();
+                  },
+                );
               },
               icon: const Icon(Icons.edit_note_rounded),
             )
@@ -143,8 +149,8 @@ class _ExerciseDescriptionViewState extends State<ExerciseDescriptionView> {
           child: Column(
             children: [
               Hero(
-                tag: widget.exercise.imageId ?? 0,
-                child: ExerciseImageBig(imageId: widget.exercise.imageId),
+                tag: exercise.imageId ?? 0,
+                child: ExerciseImageBig(imageId: exercise.imageId),
               ),
               styles.form.mediumVoidSpace,
               buildTitle(),
