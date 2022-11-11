@@ -1,6 +1,7 @@
 import 'package:myworkout/core/services/database_provider.dart';
 import 'package:myworkout/profile/model/entity/user.dart';
 import 'package:myworkout/profile/model/entity/user_measurements.dart';
+import 'package:myworkout/profile/model/entity/user_statistic.dart';
 
 class UserDao {
   final dbProvider = DatabaseProvider.dbProvider;
@@ -54,5 +55,16 @@ class UserDao {
             'INSERT into user_statistics (type,value,date) VALUES (\'$key\',$value,\'$dateString\');');
       }
     });
+  }
+
+  Future<List<UserStatistic>> getUserStatistics(int userId, String type) async {
+    var db = await dbProvider.db;
+    final result = await db!.rawQuery(
+        'SELECT date, value FROM user_statistics WHERE user_id = ? and type = ? ORDER BY date;',
+        [userId, type]);
+    List<UserStatistic> userStatistics = result.isNotEmpty
+        ? result.map((item) => UserStatistic.fromJSON(item)).toList()
+        : [];
+    return userStatistics;
   }
 }

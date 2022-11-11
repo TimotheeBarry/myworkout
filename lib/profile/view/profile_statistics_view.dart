@@ -12,6 +12,8 @@ class ProfileStatisticsView extends StatefulWidget {
 }
 
 class _ProfileStatisticsViewState extends State<ProfileStatisticsView> {
+  String type = 'weight';
+
   @override
   void initState() {
     super.initState();
@@ -25,7 +27,14 @@ class _ProfileStatisticsViewState extends State<ProfileStatisticsView> {
         backgroundColor: Colors.transparent,
         appBar: const CustomAppBar(title: 'Statistiques'),
         body: SingleChildScrollView(
-          child: Column(children: [SizedBox(height: 350, child: LineChart())]),
+          child: Column(children: [
+            SizedBox(
+                height: 350,
+                child: LineChart(
+                  user: widget.user,
+                  type: type,
+                ))
+          ]),
         ),
       ),
     );

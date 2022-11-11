@@ -1,15 +1,16 @@
 import 'dart:math';
-
 import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:charts_flutter/src/text_style.dart' as style;
-import 'package:charts_flutter/src/text_element.dart' as charts_text;
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:myworkout/profile/util/profile_chart_data.dart';
+import 'package:myworkout/profile/model/dao/user_dao.dart';
+import 'package:myworkout/profile/model/entity/user.dart';
+import 'package:myworkout/profile/model/entity/user_statistic.dart';
 
 class LineChart extends StatefulWidget {
-  //size of the widget
-  LineChart();
+  LineChart({Key? key, required this.user, required this.type, this.title})
+      : super(key: key);
+  final String type; //weight, ...
+  final String? title;
+  final User user;
   @override
   State<LineChart> createState() => LineChartState();
 }
@@ -17,29 +18,39 @@ class LineChart extends StatefulWidget {
 class LineChartState extends State<LineChart> with TickerProviderStateMixin {
   //final List<Series>? seriesList;
   final GlobalKey _chartKey = GlobalKey();
-  DateTime? minDate;
-  DateTime? maxDate;
-  int? minDate0;
-  int? maxDate0;
+
+  DateTime maxDate = DateTime.now();
+  late DateTime minDate;
+
+  int? dateLeft;
+  int? dateRight;
+  int? dateLeft0;
+  int? dateRight0;
+
+  double? minY0;
+  double? maxY0;
   double? minY;
   double? maxY;
+
   Size? size;
   String? interaction; //none, drag ou zoom
   AnimationController? _controller;
   Animation<double>? dxAnimation;
   Animation<double>? dyAnimation;
   var displayDots = true;
-  final chartData = generateWeightData();
+  List<UserStatistic> userStatistics = [];
+  //final chartData = generateWeightData();
+
   @override
   void initState() {
     super.initState();
-    reset();
     _controller = AnimationController(
-      duration: Duration(milliseconds: 0),
+      duration: const Duration(milliseconds: 0),
       vsync: this,
     );
     dxAnimation = Tween<double>(begin: 0, end: 0).animate(_controller!);
     dyAnimation = Tween<double>(begin: 0, end: 0).animate(_controller!);
+    getData();
   }
 
   @override
@@ -48,49 +59,72 @@ class LineChartState extends State<LineChart> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void reset() {
-    minDate = DateTime(DateTime.now().year, DateTime.now().month - 6);
-    maxDate = DateTime.now();
-    minDate0 = minDate!.millisecondsSinceEpoch;
-    maxDate0 = maxDate!.millisecondsSinceEpoch;
-    minY = 68;
-    maxY = 82;
-    size = Size(400, 300);
+  void getData() async {
+    final dao = UserDao();
+    var _userStatistics =
+        await dao.getUserStatistics(widget.user.id!, widget.type);
+    setState(() {
+      userStatistics = _userStatistics;
+      resetGraph();
+    });
+  }
+
+  void resetGraph() {
+    dateRight = maxDate.millisecondsSinceEpoch;
+    if (userStatistics.isEmpty) {
+      minDate = maxDate.subtract(const Duration(days: 1));
+      dateLeft = minDate.millisecondsSinceEpoch;
+      minY = 0;
+      maxY = 1;
+    } else if (userStatistics.length == 1) {
+      minDate = userStatistics[0].date!.subtract(const Duration(days: 1));
+      dateLeft = minDate.millisecondsSinceEpoch;
+      minY = userStatistics[0].value! - 1;
+      maxY = userStatistics[0].value! + 1;
+    } else {
+      minDate = userStatistics[0].date!.subtract(const Duration(days: 1));
+
+      dateLeft = maxDate.difference(minDate).inDays > 180
+          ? maxDate.subtract(const Duration(days: 180)).millisecondsSinceEpoch
+          : minDate.millisecondsSinceEpoch;
+
+      final values = userStatistics.map((e) => e.value!).toList();
+      minY = values.reduce(min).toDouble() - 1;
+      maxY = values.reduce(max).toDouble() + 1;
+    }
+    minY0 = minY;
+    maxY0 = maxY;
+    dateLeft0 = dateLeft!;
+    dateRight0 = dateRight!;
+    size = const Size(400, 300);
     interaction = 'none';
   }
 
-  bool checkDrag(
-      dx, DateTime minDate, DateTime maxDate, ProfileChartsData chartdata) {
-    //var margin = 0.005 *(maxDate.millisecondsSinceEpoch - minDate.millisecondsSinceEpoch);
-
-    if (dx > 0 &&
-        minDate.millisecondsSinceEpoch /*+ margin*/ >=
-            chartdata.minDateData().date.millisecondsSinceEpoch) {
-      return true;
-    } else if (dx < 0 &&
-        maxDate.millisecondsSinceEpoch /*- margin */ <=
-            chartdata.maxDateData().date.millisecondsSinceEpoch) {
-      return true;
+  bool checkDrag(dx, int newDateLeft, int newDateRight) {
+    if (dx > 0) {
+      return newDateLeft >= minDate.millisecondsSinceEpoch;
+    } else if (dx < 0) {
+      return newDateRight <= maxDate.millisecondsSinceEpoch;
     }
     return false;
   }
 
   void drag(double dx, double dy) {
+    if (userStatistics.length < 2) {
+      return;
+    }
     var YExtent = maxY! - minY!;
     var deltaY = (dy * YExtent / (size!.height - 40));
-    var timeExtent =
-        maxDate!.millisecondsSinceEpoch - minDate!.millisecondsSinceEpoch;
+    var timeExtent = dateRight! - dateLeft!;
     var deltaTime = (dx * timeExtent ~/ (size!.width - 20));
-    var newMinDate = DateTime.fromMillisecondsSinceEpoch(
-        minDate!.millisecondsSinceEpoch - deltaTime);
-    var newMaxDate = DateTime.fromMillisecondsSinceEpoch(
-        maxDate!.millisecondsSinceEpoch - deltaTime);
+    var newdateLeft = dateLeft! - deltaTime;
+    var newdateRight = dateRight! - deltaTime;
 
     //condition pour pouvoir drag horizontalement (rester dans le domaine)
     setState(() {
-      if (checkDrag(dx, newMinDate, newMaxDate, chartData)) {
-        minDate = newMinDate;
-        maxDate = newMaxDate;
+      if (checkDrag(dx, newdateLeft, newdateRight)) {
+        dateLeft = newdateLeft;
+        dateRight = newdateRight;
       }
       if (dy != 0) {
         minY = minY! + deltaY;
@@ -100,25 +134,46 @@ class LineChartState extends State<LineChart> with TickerProviderStateMixin {
   }
 
   void zoom(ScaleUpdateDetails details) {
+    if (userStatistics.length < 2) {
+      return;
+    }
     //zoom
-    var rho = 1 / (details.horizontalScale);
-    var newtmax =
-        ((1 + rho) / 2 * maxDate0! + (1 - rho) / 2 * minDate0!).toInt();
-    var newtmin =
-        ((1 + rho) / 2 * minDate0! + (1 - rho) / 2 * maxDate0!).toInt();
-    newtmax = min(newtmax, chartData.maxDateData().date.millisecondsSinceEpoch);
-    newtmin = max(newtmin, chartData.minDateData().date.millisecondsSinceEpoch);
+    if (details.verticalHorizontalRatio > 1) {
+      /*zoom vertical*/
+      var rho = 1 / (details.verticalScale);
+      var newYmax = ((1 + rho) / 2 * maxY0! + (1 - rho) / 2 * minY0!);
+      var newYmin = ((1 + rho) / 2 * minY0! + (1 - rho) / 2 * maxY0!);
 
-    if (newtmax != maxDate!.millisecondsSinceEpoch ||
-        newtmin != minDate!.millisecondsSinceEpoch) {
-      setState(() {
-        minDate = DateTime.fromMillisecondsSinceEpoch(newtmin);
-        maxDate = DateTime.fromMillisecondsSinceEpoch(newtmax);
-      });
+      if (newYmax != maxY || newYmin != minY) {
+        setState(() {
+          maxY = newYmax;
+          minY = newYmin;
+        });
+      }
+    } else {
+      /* zoom horizontal*/
+      var rho = 1 / (details.horizontalScale);
+      var newtmax =
+          ((1 + rho) / 2 * dateRight0! + (1 - rho) / 2 * dateLeft0!).toInt();
+      var newtmin =
+          ((1 + rho) / 2 * dateLeft0! + (1 - rho) / 2 * dateRight0!).toInt();
+      newtmax = min(
+          newtmax,
+          userStatistics[userStatistics.length - 1]
+              .date!
+              .millisecondsSinceEpoch);
+      newtmin = max(newtmin, userStatistics[0].date!.millisecondsSinceEpoch);
+
+      if (newtmax != dateRight || newtmin != dateLeft) {
+        setState(() {
+          dateLeft = newtmin;
+          dateRight = newtmax;
+        });
+      }
     }
   }
 
-  void dragAnimation(ScaleEndDetails details) {
+  Future<void> dragAnimation(ScaleEndDetails details) async {
     var delta = details.velocity.pixelsPerSecond.distance;
 
     var duration = 15 * sqrt(delta);
@@ -145,43 +200,40 @@ class LineChartState extends State<LineChart> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final series = [
-      charts.Series<ProfileChartsSingleData, DateTime>(
+      charts.Series<UserStatistic, DateTime>(
         id: 'weight',
         colorFn: (_, __) => charts.MaterialPalette.white,
-        domainFn: (ProfileChartsSingleData data, _) => data.date,
-        measureFn: (ProfileChartsSingleData data, _) => data.value,
-        data: chartData.dataList,
+        domainFn: (UserStatistic data, _) => data.date!,
+        measureFn: (UserStatistic data, _) => data.value,
+        data: userStatistics,
       )
     ];
-    final axisColors = charts.Color(a: 191, r: 255, g: 255, b: 255);
-    final gridColors = charts.Color(a: 63, r: 255, g: 255, b: 255);
+    const axisColors = charts.Color(a: 191, r: 255, g: 255, b: 255);
+    const gridColors = charts.Color(a: 63, r: 255, g: 255, b: 255);
 
     return GestureDetector(
       onDoubleTap: () {
         //reset
         setState(() {
-          reset();
+          resetGraph();
         });
       },
+      
       onScaleStart: (details) {
         if (_controller!.isAnimating) {
           _controller!.reset();
         }
-        setState(() {
-          size = _chartKey.currentContext!.size;
-        });
+        size = _chartKey.currentContext!.size;
 
         //si on commence à zoomer, on garde en mémoire le domaine au start
         if (details.pointerCount == 1) {
-          setState(() {
-            interaction = 'drag';
-          });
+          interaction = 'drag';
         } else if (details.pointerCount == 2) {
-          setState(() {
-            interaction = 'zoom';
-            minDate0 = minDate!.millisecondsSinceEpoch;
-            maxDate0 = maxDate!.millisecondsSinceEpoch;
-          });
+          interaction = 'zoom';
+          dateLeft0 = dateLeft!;
+          dateRight0 = dateRight!;
+          minY0 = minY;
+          maxY0 = maxY;
         }
       },
       onScaleUpdate: (details) {
@@ -191,13 +243,12 @@ class LineChartState extends State<LineChart> with TickerProviderStateMixin {
           zoom(details);
         }
       },
-      onScaleEnd: (details) {
+      onScaleEnd: (details) async {
         if (interaction == 'drag') {
-          dragAnimation(details);
-        }
-        setState(() {
+          await dragAnimation(details).then((_) => interaction = 'none');
+        } else {
           interaction = 'none';
-        });
+        }
       },
       child: AnimatedBuilder(
           key: _chartKey,
@@ -225,7 +276,7 @@ class LineChartState extends State<LineChart> with TickerProviderStateMixin {
               //axe vertical
               primaryMeasureAxis: charts.NumericAxisSpec(
                   showAxisLine: true,
-                  renderSpec: charts.GridlineRendererSpec(
+                  renderSpec: const charts.GridlineRendererSpec(
                     lineStyle: charts.LineStyleSpec(
                       color: gridColors,
                     ),
@@ -239,7 +290,7 @@ class LineChartState extends State<LineChart> with TickerProviderStateMixin {
               //axe horizontal
               domainAxis: charts.DateTimeAxisSpec(
                   showAxisLine: true,
-                  renderSpec: charts.GridlineRendererSpec(
+                  renderSpec: const charts.GridlineRendererSpec(
                     lineStyle: charts.LineStyleSpec(
                       color: gridColors,
                     ),
@@ -258,8 +309,9 @@ class LineChartState extends State<LineChart> with TickerProviderStateMixin {
                     year: charts.TimeFormatterSpec(
                         format: 'yMMM', transitionFormat: 'yMMM'),
                   ),
-                  viewport:
-                      charts.DateTimeExtents(start: minDate!, end: maxDate!)),
+                  viewport: charts.DateTimeExtents(
+                      start: DateTime.fromMillisecondsSinceEpoch(dateLeft!),
+                      end: DateTime.fromMillisecondsSinceEpoch(dateRight!))),
 
               dateTimeFactory: const charts.LocalDateTimeFactory(),
               animate: false,
