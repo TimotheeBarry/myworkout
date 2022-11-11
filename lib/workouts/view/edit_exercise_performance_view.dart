@@ -45,6 +45,7 @@ class _EditExercisePerformanceViewState
       /*init les controlleurs*/
       setsController.text = exercisePerformance.sets.toString();
       setsController.addListener(() {
+        //validateur du controlleur des sets (entre 1 et 99)
         if (setsController.text != '' && int.parse(setsController.text) < 1) {
           setState(() => setsController.text = '1');
         } else if (int.parse(setsController.text) > 99) {
@@ -66,7 +67,7 @@ class _EditExercisePerformanceViewState
   @override
   void dispose() {
     /*on dispose tous les controlleurs*/
-    var sets = int.parse(setsController.text);
+    var sets = setsController.text != '' ? int.parse(setsController.text) : 1;
     setsController.dispose();
     for (var i = 0; i < sets; i++) {
       repsController[i].dispose();
@@ -79,6 +80,12 @@ class _EditExercisePerformanceViewState
   void addControllers(List<TextEditingController> controllerList, number) {
     for (var i = 0; i < number; i++) {
       controllerList.add(TextEditingController(text: controllerList[0].text));
+      controllerList[i].addListener(() {
+        if (controllerList[i].text != '' &&
+            int.parse(controllerList[i].text) < 0) {
+          setState(() => controllerList[i].text = '0');
+        }
+      });
     }
   }
 
@@ -135,7 +142,7 @@ class _EditExercisePerformanceViewState
     }
     if (identicalLoads) {
       setState(() {
-        for (var i = 0; i < repsController.length; i++) {
+        for (var i = 0; i < loadsController.length; i++) {
           loadsController[i].text = value.toString();
         }
       });
@@ -187,12 +194,12 @@ class _EditExercisePerformanceViewState
           inputFormatters: inputFormatters,
           decoration: InputDecoration(
             hintText: hintText,
-            contentPadding: EdgeInsets.all(0),
+            contentPadding: const EdgeInsets.all(0),
             hintStyle: styles.input.hintStyle,
             enabledBorder: InputBorder.none,
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30),
-              borderSide: BorderSide(color: Colors.white, width: 1),
+              borderSide: const BorderSide(color: Colors.white, width: 1),
             ),
           ),
         ),
@@ -254,7 +261,10 @@ class _EditExercisePerformanceViewState
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: identicalReps ? 1 : int.parse(setsController.text),
+            //si le nombre de sets est vide, on met 1 par défaut
+            itemCount: (identicalReps || setsController.text == '')
+                ? 1
+                : int.parse(setsController.text),
             itemBuilder: (context, index) => Row(
               children: [
                 IconButton(
@@ -308,7 +318,10 @@ class _EditExercisePerformanceViewState
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: identicalLoads ? 1 : int.parse(setsController.text),
+            //si le nombre de sets est vide, on met 1 par défaut
+            itemCount: (identicalLoads || setsController.text == '')
+                ? 1
+                : int.parse(setsController.text),
             itemBuilder: (context, index) => Row(
               children: [
                 IconButton(
@@ -322,6 +335,10 @@ class _EditExercisePerformanceViewState
                 buildInput(
                   hintText: '0.0',
                   controller: loadsController[index],
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                        RegExp(r'^[0-9]+\.?[0-9]*'))
+                  ],
                 ),
                 Text('kg', style: styles.frame.text),
                 IconButton(
