@@ -6,6 +6,8 @@ import 'package:myworkout/exercises/model/dao/exercises_dao.dart';
 import 'package:myworkout/exercises/model/entity/exercise.dart';
 import 'package:myworkout/exercises/model/entity/exercise_group.dart';
 import 'package:myworkout/exercises/util/exercise_image.dart';
+import 'package:myworkout/exercises/util/filter_pop_up.dart';
+import 'package:myworkout/core/util/hero_dialog_route.dart';
 import 'package:myworkout/exercises/view/exercise_description_view.dart';
 import '../../core/theme/styles.dart' as styles;
 import '../../core/util/search_bar.dart';
@@ -151,7 +153,7 @@ class ExercisesViewState extends State<ExercisesView> {
                 context,
                 MaterialPageRoute(
                   builder: (context) =>
-                      ExerciseDescriptionView(exercise: exercise),
+                      ExerciseDescriptionView(exerciseId: exercise.id!),
                 ),
               ).then((_) => synchronize());
             }
@@ -219,6 +221,16 @@ class ExercisesViewState extends State<ExercisesView> {
               margin: styles.page.margin,
               child: SearchBar(
                 onChanged: search,
+                onTapFilter: () {
+                  //unfocus la barre de recherche si jamais on était dessus pour pas rouvrir le clavier
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  //ouvre le popup des filtres avec une animation
+                  Navigator.of(context).push(
+                    HeroDialogRoute(builder: (context) {
+                      return const FilterPopUp();
+                    }),
+                  );
+                },
               )),
         )
       ],

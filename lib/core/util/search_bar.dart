@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myworkout/core/util/custom_rect_tween.dart';
 import '../theme/styles.dart' as styles;
 
 class SearchBar extends StatelessWidget {
@@ -9,18 +10,24 @@ class SearchBar extends StatelessWidget {
   Widget buildFilterButton() {
     return ClipRRect(
       borderRadius: BorderRadius.circular(30),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {},
-          child: Ink(
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-            child: Row(children: [
-              Icon(Icons.filter_list_rounded,
-                  color: styles.frame.primaryTextColor),
-              const SizedBox(width: 4),
-              Text('Filtrer', style: styles.frame.subtitle)
-            ]),
+      child: Hero(
+        tag: 'filter',
+        createRectTween: (begin, end) {
+          return CustomRectTween(begin: begin!, end: end!);
+        },
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTapFilter,
+            child: Ink(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+              child: Row(children: [
+                Icon(Icons.filter_list_rounded,
+                    color: styles.frame.primaryTextColor),
+                const SizedBox(width: 4),
+                Text('Filtrer', style: styles.frame.subtitle)
+              ]),
+            ),
           ),
         ),
       ),
