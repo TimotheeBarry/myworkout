@@ -37,7 +37,7 @@ class _EditExercisePerformanceViewState
     var exercisePerformance = widget.workoutExercise.exercisePerformance!;
     var exerciseSets = exercisePerformance.getPerformances();
 
-    setState(() {
+ 
       /* init les booléens identical*/
       identicalReps = exercisePerformance.identicalReps();
       identicalLoads = exercisePerformance.identicalLoads();
@@ -47,9 +47,9 @@ class _EditExercisePerformanceViewState
       setsController.addListener(() {
         //validateur du controlleur des sets (entre 1 et 99)
         if (setsController.text != '' && int.parse(setsController.text) < 1) {
-          setState(() => setsController.text = '1');
+          setsController.text = '1';
         } else if (int.parse(setsController.text) > 99) {
-          setState(() => setsController.text = '99');
+          setsController.text = '99';
         }
       });
       for (var i = 0; i < exercisePerformance.sets!; i++) {
@@ -60,7 +60,7 @@ class _EditExercisePerformanceViewState
         restsController
             .add(TextEditingController(text: exerciseSets[i].rest.toString()));
       }
-    });
+
     super.initState();
   }
 
@@ -83,7 +83,7 @@ class _EditExercisePerformanceViewState
       controllerList[i].addListener(() {
         if (controllerList[i].text != '' &&
             int.parse(controllerList[i].text) < 0) {
-          setState(() => controllerList[i].text = '0');
+          controllerList[i].text = '0';
         }
       });
     }
@@ -91,7 +91,7 @@ class _EditExercisePerformanceViewState
 
   void updateSets(int value) {
     if (value > 0 && value < 100) {
-      setState(() {
+   
         setsController.text = value.toString();
 
         /*add or remove reps controllers*/
@@ -112,7 +112,7 @@ class _EditExercisePerformanceViewState
         } else if (restsController.length < value) {
           addControllers(restsController, value - restsController.length);
         }
-      });
+    
     }
   }
 
@@ -121,15 +121,15 @@ class _EditExercisePerformanceViewState
       return;
     }
     if (identicalReps) {
-      setState(() {
+    
         for (var i = 0; i < repsController.length; i++) {
           repsController[i].text = value.toString();
         }
-      });
+   
     } else {
-      setState(() {
+     
         repsController[index].text = value.toString();
-      });
+   
     }
   }
 
@@ -141,15 +141,15 @@ class _EditExercisePerformanceViewState
       value = value.toInt();
     }
     if (identicalLoads) {
-      setState(() {
+    
         for (var i = 0; i < loadsController.length; i++) {
           loadsController[i].text = value.toString();
         }
-      });
+    
     } else {
-      setState(() {
+     
         loadsController[index].text = value.toString();
-      });
+      
     }
   }
 

@@ -13,7 +13,9 @@ import '../../core/theme/styles.dart' as styles;
 import '../../core/util/search_bar.dart';
 
 class ExercisesView extends StatefulWidget {
-  const ExercisesView({Key? key}) : super(key: key);
+  const ExercisesView({Key? key, required this.updateParent}) : super(key: key);
+  //met a jour le widget parent mainPages pour les changements liés à la barre d'édition
+  final void Function() updateParent;
 
   @override
   State<ExercisesView> createState() => ExercisesViewState();
@@ -110,9 +112,8 @@ class ExercisesViewState extends State<ExercisesView> {
   Widget buildExercise(Exercise exercise) {
     return WillPopScope(
       onWillPop: () async {
-        setState(() {
-          exercisesSelected = [];
-        });
+        exercisesSelected = [];
+        widget.updateParent();
         return false;
       },
       child: Container(
@@ -132,22 +133,18 @@ class ExercisesViewState extends State<ExercisesView> {
           middle: ExerciseImage(imageId: exercise.imageId),
           action: buildAction(exercise: exercise),
           onLongPress: () {
-            setState(() {
-              exercisesSelected.add(exercise.id!);
-            });
+            exercisesSelected.add(exercise.id!);
+            widget.updateParent();
           },
           onTap: () {
             /*check ou uncheck workout si en est en édition, sinon on va sur la page edition*/
             if (exercisesSelected.isNotEmpty) {
               if (exercisesSelected.contains(exercise.id)) {
-                setState(() {
-                  exercisesSelected.remove(exercise.id);
-                });
+                exercisesSelected.remove(exercise.id);
               } else {
-                setState(() {
-                  exercisesSelected.add(exercise.id!);
-                });
+                exercisesSelected.add(exercise.id!);
               }
+              widget.updateParent();
             } else {
               Navigator.push(
                 context,
@@ -169,14 +166,11 @@ class ExercisesViewState extends State<ExercisesView> {
           value: exercisesSelected.contains(exercise.id),
           onChanged: (value) {
             if (value!) {
-              setState(() {
-                exercisesSelected.add(exercise.id!);
-              });
+              exercisesSelected.add(exercise.id!);
             } else {
-              setState(() {
-                exercisesSelected.remove(exercise.id!);
-              });
+              exercisesSelected.remove(exercise.id!);
             }
+            widget.updateParent();
           });
     } else {
       return IconButton(

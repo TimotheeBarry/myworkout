@@ -110,6 +110,7 @@ ORDER BY list_index;
 
   Future updateWorkoutExerciseGoal(WorkoutExercise workoutExercise) async {
     var db = await dbProvider.db;
+    
     return await db!.update(
       'workout_exercise_goals',
       workoutExercise.toJSON(),
@@ -125,5 +126,19 @@ ORDER BY list_index;
       'workout_exercise_goals',
       workoutExercise.toJSON(),
     );
+  }
+
+  Future updateWorkoutSessionGoals(
+      Workout workout, List<WorkoutExercise> workoutExercises) async {
+    var db = await dbProvider.db;
+    //on supprime la session existante et on ajoute la nouvelle, mise a jour.
+    await db!.delete(
+      'workout_exercise_goals',
+      where: 'workout_id = ?',
+      whereArgs: [workout.id],
+    );
+    for (var workoutExercise in workoutExercises) {
+      await createWorkoutExerciseGoal(workoutExercise);
+    }
   }
 }

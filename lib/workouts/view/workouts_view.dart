@@ -10,13 +10,13 @@ import 'package:myworkout/workouts/view/workout_session_view.dart';
 import '../../core/theme/styles.dart' as styles;
 
 class WorkoutsView extends StatefulWidget {
-  const WorkoutsView({Key? key}) : super(key: key);
-
+  const WorkoutsView({Key? key, required this.updateParent}) : super(key: key);
+  final void Function() updateParent;
   @override
-  State<WorkoutsView> createState() => _WorkoutsViewState();
+  State<WorkoutsView> createState() => WorkoutsViewState();
 }
 
-class _WorkoutsViewState extends State<WorkoutsView> {
+class WorkoutsViewState extends State<WorkoutsView> {
   List<WorkoutGroup> workoutGroups = []; //liste des groupes de workout
   List<int> workoutsSelected =
       []; // =liste des id workout sélectionné (long press)
@@ -73,9 +73,8 @@ class _WorkoutsViewState extends State<WorkoutsView> {
   Widget buildWorkout(BuildContext context, Workout workout) {
     return WillPopScope(
         onWillPop: () async {
-          setState(() {
-            workoutsSelected = [];
-          });
+          workoutsSelected = [];
+          widget.updateParent();
           return false;
         },
         child: Container(
@@ -91,22 +90,19 @@ class _WorkoutsViewState extends State<WorkoutsView> {
               padding: const EdgeInsets.only(left: 12),
               onLongPress: () {
                 /*ajout de la séance dans la liste des séances sélectionnées*/
-                setState(() {
-                  workoutsSelected.add(workout.id!);
-                });
+
+                workoutsSelected.add(workout.id!);
+                widget.updateParent();
               },
               onTap: () {
                 /*check ou uncheck workout si en est en édition, sinon on va sur la page edition*/
                 if (workoutsSelected.isNotEmpty) {
                   if (workoutsSelected.contains(workout.id)) {
-                    setState(() {
-                      workoutsSelected.remove(workout.id);
-                    });
+                    workoutsSelected.remove(workout.id);
                   } else {
-                    setState(() {
-                      workoutsSelected.add(workout.id!);
-                    });
+                    workoutsSelected.add(workout.id!);
                   }
+                  widget.updateParent();
                 } else {
                   Navigator.push(
                     context,
@@ -126,14 +122,11 @@ class _WorkoutsViewState extends State<WorkoutsView> {
           value: workoutsSelected.contains(workout.id),
           onChanged: (value) {
             if (value!) {
-              setState(() {
-                workoutsSelected.add(workout.id!);
-              });
+              workoutsSelected.add(workout.id!);
             } else {
-              setState(() {
-                workoutsSelected.remove(workout.id);
-              });
+              workoutsSelected.remove(workout.id);
             }
+            widget.updateParent();
           });
     } else {
       return Material(

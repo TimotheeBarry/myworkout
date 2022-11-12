@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myworkout/core/util/custom_floating_button.dart';
+import 'package:myworkout/core/util/edition_bar.dart';
 import 'package:myworkout/exercises/view/create_exercise_view.dart';
 import 'package:myworkout/workouts/view/create_workout_view.dart';
 import '../../exercises/view/exercises_view.dart';
@@ -21,10 +22,43 @@ class _MainPagesState extends State<MainPages> {
   int? currentIndex;
   final PageController _pageController = PageController(initialPage: 0);
   final GlobalKey<ExercisesViewState> _exercisesKey = GlobalKey();
-  final GlobalKey<ExercisesViewState> _workoutsKey = GlobalKey();
+  final GlobalKey<WorkoutsViewState> _workoutsKey = GlobalKey();
+
+  @override
+  initState() {
+    currentIndex = 0;
+    super.initState();
+  }
 
   void setPage(index) {
     setState(() => {currentIndex = index});
+  }
+
+  Widget? buildNavigationBar() {
+    if (currentIndex == 2 &&
+        _exercisesKey.currentState != null &&
+        _exercisesKey.currentState!.exercisesSelected.isNotEmpty) {
+      return EditionBar(
+        numberSelected: _exercisesKey.currentState!.exercisesSelected.length,
+        onDelete: () {},
+        onCopy: () {},
+        onMove: () {},
+      );
+    } else if (currentIndex == 3 &&
+        _workoutsKey.currentState != null &&
+        _workoutsKey.currentState!.workoutsSelected.isNotEmpty) {
+      return EditionBar(
+        numberSelected: _workoutsKey.currentState!.workoutsSelected.length,
+        onDelete: () {},
+        onCopy: () {},
+        onMove: () {},
+      );
+    } else {
+      return CustomNavigationBar(
+        currentIndex: currentIndex!,
+        pageController: _pageController,
+      );
+    }
   }
 
   Widget? buildFloatingActionButton() {
@@ -53,11 +87,6 @@ class _MainPagesState extends State<MainPages> {
   }
 
   @override
-  initState() {
-    currentIndex = 0;
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Container(
       decoration: styles.page.boxDecoration,
@@ -71,10 +100,7 @@ class _MainPagesState extends State<MainPages> {
           )
         ]),
         backgroundColor: Colors.transparent,
-        bottomNavigationBar: CustomNavigationBar(
-          currentIndex: currentIndex!,
-          pageController: _pageController,
-        ),
+        bottomNavigationBar: buildNavigationBar(),
         floatingActionButton: buildFloatingActionButton(),
         body: PageView(
           onPageChanged: (index) {
@@ -84,8 +110,10 @@ class _MainPagesState extends State<MainPages> {
           children: [
             ProfileView(),
             StatisticsView(),
-            ExercisesView(key: _exercisesKey),
-            WorkoutsView(),
+            ExercisesView(
+                key: _exercisesKey, updateParent: () => setState(() => {})),
+            WorkoutsView(
+                key: _workoutsKey, updateParent: () => setState(() => {})),
           ],
         ),
       ),

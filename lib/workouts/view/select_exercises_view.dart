@@ -5,11 +5,14 @@ import 'package:myworkout/core/util/custom_button.dart';
 import 'package:myworkout/core/util/custom_check_box.dart';
 import 'package:myworkout/core/util/custom_floating_button.dart';
 import 'package:myworkout/core/util/custom_list_tile.dart';
+import 'package:myworkout/core/util/edition_bar.dart';
+import 'package:myworkout/core/util/hero_dialog_route.dart';
 import 'package:myworkout/core/util/search_bar.dart';
 import 'package:myworkout/exercises/model/dao/exercises_dao.dart';
 import 'package:myworkout/exercises/model/entity/exercise.dart';
 import 'package:myworkout/exercises/model/entity/exercise_group.dart';
 import 'package:myworkout/exercises/util/exercise_image.dart';
+import 'package:myworkout/exercises/util/filter_pop_up.dart';
 import 'package:myworkout/exercises/view/create_exercise_view.dart';
 import 'package:myworkout/workouts/model/dao/workouts_dao.dart';
 import 'package:myworkout/workouts/model/entity/exercise_performance.dart';
@@ -196,20 +199,6 @@ class _SelectExercisesViewState extends State<SelectExercisesView> {
     }
   }
 
-  Widget? buildSelectButton() {
-    if (exercisesSelected.isNotEmpty) {
-      return SizedBox(
-        height: 60,
-        child: CustomButton(
-            title: Text('Sélectionner', style: styles.button.bigText),
-            onTap: () async {
-              await addSelectedExercises().then((_) => Navigator.pop(context));
-            }),
-      );
-    }
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -218,7 +207,14 @@ class _SelectExercisesViewState extends State<SelectExercisesView> {
         appBar: const CustomAppBar(
           title: 'Sélectionner des exercices',
         ),
-        bottomNavigationBar: buildSelectButton(),
+        bottomNavigationBar: exercisesSelected.isNotEmpty
+            ? EditionBar(
+                numberSelected: exercisesSelected.length,
+                onAdd: () async {
+                  await addSelectedExercises()
+                      .then((_) => Navigator.pop(context));
+                })
+            : const SizedBox.shrink(),
         floatingActionButton: CustomFloatingButton(
           onPressed: () => Navigator.push(
             context,
@@ -251,7 +247,19 @@ class _SelectExercisesViewState extends State<SelectExercisesView> {
             ),
             Container(
               margin: styles.page.margin,
-              child: SearchBar(onChanged: search),
+              child: SearchBar(
+                onChanged: search,
+                onTapFilter: () {
+                  //unfocus la barre de recherche si jamais on était dessus pour pas rouvrir le clavier
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  //ouvre le popup des filtres avec une animation
+                  Navigator.of(context).push(
+                    HeroDialogRoute(builder: (context) {
+                      return const FilterPopUp();
+                    }),
+                  );
+                },
+              ),
             ),
           ],
         ),
