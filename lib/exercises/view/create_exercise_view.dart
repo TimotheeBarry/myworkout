@@ -25,10 +25,8 @@ class _CreateExerciseViewState extends State<CreateExerciseView> {
   @override
   void initState() {
     super.initState();
-    setState(() {
-      edit = widget.exercise != null;
-      editedExercise = widget.exercise ?? Exercise();
-    });
+    edit = widget.exercise != null;
+    editedExercise = widget.exercise ?? Exercise();
     getData();
   }
 
@@ -39,6 +37,36 @@ class _CreateExerciseViewState extends State<CreateExerciseView> {
     setState(() {
       exerciseGroups = _exerciseGroups;
     });
+  }
+
+  void saveExercise() async {
+    var exercisesDao = ExercisesDao();
+    if (editedExercise.name == "") {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Veuillez renseigner le nom de l'exercice."),
+            actions: [
+              TextButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else if (edit) {
+      await exercisesDao
+          .updateExercise(editedExercise)
+          .then((_) => Navigator.pop(context, true));
+    } else {
+      await exercisesDao
+          .createExercise(editedExercise)
+          .then((_) => Navigator.pop(context, true));
+    }
   }
 
   Widget buildNameInput() {
@@ -125,9 +153,7 @@ class _CreateExerciseViewState extends State<CreateExerciseView> {
                     value: editedExercise.groupId,
                     style: styles.button.smallText,
                     onChanged: (int? value) {
-                      setState(() {
-                        editedExercise = editedExercise.copy(groupId: value);
-                      });
+                      editedExercise = editedExercise.copy(groupId: value);
                     },
                   ),
                 ),
@@ -159,43 +185,9 @@ class _CreateExerciseViewState extends State<CreateExerciseView> {
       initialValue: widget.exercise?.description ?? "",
       hintText: "Description...",
       onChanged: (String description) {
-        setState(() {
-          editedExercise = editedExercise.copy(description: description);
-        });
+        editedExercise = editedExercise.copy(description: description);
       },
     );
-  }
-
-  void saveExercise() async {
-    var exercisesDao = ExercisesDao();
-    if (editedExercise.name == "") {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Veuillez renseigner le nom de l'exercice."),
-            actions: [
-              TextButton(
-                child: Text("OK"),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          );
-        },
-      );
-    } else if (edit) {
-      await exercisesDao
-          .updateExercise(editedExercise)
-          .then((_) => Navigator.pop(context, true));
-      ;
-    } else {
-      await exercisesDao
-          .createExercise(editedExercise)
-          .then((_) => Navigator.pop(context, true));
-      ;
-    }
   }
 
   @override

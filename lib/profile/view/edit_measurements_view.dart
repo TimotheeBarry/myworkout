@@ -84,152 +84,120 @@ class _EditMeasurementsViewState extends State<EditMeasurementsView> {
           decoration: styles.frame.boxDecoration,
           child: ClipRRect(
             borderRadius: styles.frame.borderRadius,
-            child: Column(children: [
-              customRow(
-                  name: 'Cou',
-                  onChanged: (value) {
-                    setState(() {
+            child: Column(
+              children: [
+                customRow(
+                    name: 'Cou',
+                    onChanged: (value) {
                       userMeasurements.neck =
                           value.isNotEmpty ? double.parse(value) : null;
-                    });
-                  }),
-              customRow(
-                  name: 'Epaules',
-                  onChanged: (value) {
-                    setState(() {
+                    }),
+                customRow(
+                    name: 'Epaules',
+                    onChanged: (value) {
                       userMeasurements.shoulders =
                           value.isNotEmpty ? double.parse(value) : null;
-                    });
-                  },
-                  color: Colors.white10),
-              customRow(
-                  name: 'Pecs',
-                  onChanged: (value) {
-                    setState(() {
+                    },
+                    color: Colors.white10),
+                customRow(
+                    name: 'Pecs',
+                    onChanged: (value) {
                       userMeasurements.chest =
                           value.isNotEmpty ? double.parse(value) : null;
-                    });
-                  }),
-              customRow(
-                  name: 'Biceps (G)',
-                  onChanged: (value) {
-                    setState(() {
+                    }),
+                customRow(
+                    name: 'Biceps (G)',
+                    onChanged: (value) {
                       userMeasurements.bicepsL =
                           value.isNotEmpty ? double.parse(value) : null;
-                    });
-                  },
-                  color: Colors.white10),
-              customRow(
-                  name: 'Biceps (D)',
-                  onChanged: (value) {
-                    setState(() {
+                    },
+                    color: Colors.white10),
+                customRow(
+                    name: 'Biceps (D)',
+                    onChanged: (value) {
                       userMeasurements.bicepsR =
                           value.isNotEmpty ? double.parse(value) : null;
-                    });
-                  }),
-              customRow(
-                  name: 'Avant-Bras (G)',
-                  onChanged: (value) {
-                    setState(() {
+                    }),
+                customRow(
+                    name: 'Avant-Bras (G)',
+                    onChanged: (value) {
                       userMeasurements.forearmL =
                           value.isNotEmpty ? double.parse(value) : null;
-                    });
-                  },
-                  color: Colors.white10),
-              customRow(
-                  name: 'Avant-Bras (D)',
-                  onChanged: (value) {
-                    setState(() {
+                    },
+                    color: Colors.white10),
+                customRow(
+                    name: 'Avant-Bras (D)',
+                    onChanged: (value) {
                       userMeasurements.forearmR =
                           value.isNotEmpty ? double.parse(value) : null;
-                    });
-                  }),
-              customRow(
-                  name: 'Poignet (G)',
-                  onChanged: (value) {
-                    setState(() {
+                    }),
+                customRow(
+                    name: 'Poignet (G)',
+                    onChanged: (value) {
                       userMeasurements.wristL =
                           value.isNotEmpty ? double.parse(value) : null;
-                    });
-                  },
-                  color: Colors.white10),
-              customRow(
-                  name: 'Poignet (D)',
-                  onChanged: (value) {
-                    setState(() {
+                    },
+                    color: Colors.white10),
+                customRow(
+                    name: 'Poignet (D)',
+                    onChanged: (value) {
                       userMeasurements.wristR =
                           value.isNotEmpty ? double.parse(value) : null;
-                    });
-                  }),
-              customRow(
-                  name: 'Taille',
-                  onChanged: (value) {
-                    setState(() {
+                    }),
+                customRow(
+                    name: 'Taille',
+                    onChanged: (value) {
                       userMeasurements.waist =
                           value.isNotEmpty ? double.parse(value) : null;
-                    });
-                  },
-                  color: Colors.white10),
-              customRow(
-                  name: 'Hanches',
-                  onChanged: (value) {
-                    setState(() {
+                    },
+                    color: Colors.white10),
+                customRow(
+                    name: 'Hanches',
+                    onChanged: (value) {
                       userMeasurements.hips =
                           value.isNotEmpty ? double.parse(value) : null;
-                    });
-                  }),
-              customRow(
-                  name: 'Cuisse (G)',
-                  onChanged: (value) {
-                    setState(() {
+                    }),
+                customRow(
+                    name: 'Cuisse (G)',
+                    onChanged: (value) {
                       userMeasurements.thighL =
                           value.isNotEmpty ? double.parse(value) : null;
-                    });
-                  },
-                  color: Colors.white10),
-              customRow(
-                  name: 'Cuisse (D)',
-                  onChanged: (value) {
-                    setState(() {
+                    },
+                    color: Colors.white10),
+                customRow(
+                    name: 'Cuisse (D)',
+                    onChanged: (value) {
                       userMeasurements.thighR =
                           value.isNotEmpty ? double.parse(value) : null;
-                    });
-                  }),
-              customRow(
-                  name: 'Mollet (G)',
-                  onChanged: (value) {
-                    setState(() {
+                    }),
+                customRow(
+                    name: 'Mollet (G)',
+                    onChanged: (value) {
                       userMeasurements.calveL =
                           value.isNotEmpty ? double.parse(value) : null;
-                    });
-                  },
-                  color: Colors.white10),
-              customRow(
-                  name: 'Mollet (D)',
-                  onChanged: (value) {
-                    setState(() {
+                    },
+                    color: Colors.white10),
+                customRow(
+                    name: 'Mollet (D)',
+                    onChanged: (value) {
                       userMeasurements.calveR =
                           value.isNotEmpty ? double.parse(value) : null;
-                    });
-                  }),
-              customRow(
-                  name: 'Cheville (G)',
-                  onChanged: (value) {
-                    setState(() {
+                    }),
+                customRow(
+                    name: 'Cheville (G)',
+                    onChanged: (value) {
                       userMeasurements.ankleL =
                           value.isNotEmpty ? double.parse(value) : null;
-                    });
-                  },
-                  color: Colors.white10),
-              customRow(
-                  name: 'Cheville (D)',
-                  onChanged: (value) {
-                    setState(() {
+                    },
+                    color: Colors.white10),
+                customRow(
+                    name: 'Cheville (D)',
+                    onChanged: (value) {
                       userMeasurements.ankleR =
                           value.isNotEmpty ? double.parse(value) : null;
-                    });
-                  }),
-            ]),
+                    }),
+              ],
+            ),
           ),
         ),
       ),

@@ -88,8 +88,8 @@ class EditionBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        color: Colors.black26,
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        color: Colors.white30,
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         child: Row(
           children: [
             Expanded(
@@ -105,13 +105,13 @@ class EditionBar extends StatelessWidget {
                 : const SizedBox.shrink(),
             onMove != null
                 ? buildButton(
-                    icon: Icons.import_export,
+                    icon: Icons.import_export_rounded,
                     label: 'Déplacer',
                     onPressed: onMove)
                 : const SizedBox.shrink(),
             onDelete != null
                 ? buildButton(
-                    icon: Icons.delete_rounded,
+                    icon: Icons.delete,
                     label: 'Supprimer',
                     onPressed: onDelete)
                 : const SizedBox.shrink(),
