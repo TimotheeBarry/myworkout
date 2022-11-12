@@ -28,12 +28,10 @@ class _ProfileViewState extends State<ProfileView> {
   void synchronize() async {
     final userDao = UserDao();
     User _user = await userDao.getUser();
-    setState(() {
-      user = _user;
-    });
     UserMeasurements _userMeasurement =
         await userDao.getLatestUserMeasurements();
     setState(() {
+      user = _user;
       userMeasurement = _userMeasurement;
     });
   }
@@ -77,17 +75,22 @@ class _ProfileViewState extends State<ProfileView> {
         children: [
           Text(user.username ?? '?', style: styles.frame.subtitle),
           Text(
-            '${user.age() ?? '?'} y.o',
+            '${user.age() ?? '?'} ans',
             style: styles.frame.subtitle,
           ),
           const SizedBox(height: 4),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              FaIcon(FontAwesomeIcons.mars,
-                  color: styles.frame.primaryTextColor),
-            ],
-          ),
+          () {
+            switch (user.gender) {
+              case 'male':
+                return Icon(Icons.male_rounded,
+                    color: styles.frame.primaryTextColor, size: 30);
+              case 'female':
+                return Icon(Icons.female_rounded,
+                    color: styles.frame.primaryTextColor, size: 30);
+              default:
+                return const SizedBox.shrink();
+            }
+          }(),
         ],
       ),
     );
@@ -157,12 +160,14 @@ class _ProfileViewState extends State<ProfileView> {
         const SizedBox(width: 20),
         /*bouton pour les statistiques*/
         IconButton(
-            onPressed: () {Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ProfileStatisticsView(user: user),
-              ),
-            ).then((_) => synchronize());},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProfileStatisticsView(user: user),
+                ),
+              ).then((_) => synchronize());
+            },
             icon: FaIcon(FontAwesomeIcons.chartLine,
                 color: styles.frame.primaryTextColor)),
         const SizedBox(width: 20),

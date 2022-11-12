@@ -29,7 +29,7 @@ class _EditUserInfoViewState extends State<EditUserInfoView> {
     super.initState();
   }
 
-  Widget buildDateField() {
+  Widget buildBirthdateField() {
     return Column(
       children: [
         Text(
@@ -72,6 +72,64 @@ class _EditUserInfoViewState extends State<EditUserInfoView> {
             onChanged: (username) {
               editedUser.username = username;
             })
+      ],
+    );
+  }
+
+  Widget buildGenderButton(
+      {required IconData icon, required String label, required String gender}) {
+    return Expanded(
+        child: ClipRRect(
+      borderRadius: styles.frame.borderRadius,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            setState(() {
+              editedUser.gender = gender;
+            });
+          },
+          child: Ink(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            color:gender == editedUser.gender?Colors.white24:Colors.transparent,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, color: styles.frame.primaryTextColor, size: 30),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: styles.frame.primaryTextColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ));
+  }
+
+  Widget buildGenderField() {
+    return Row(
+      children: [
+        buildGenderButton(
+          icon: Icons.male_rounded,
+          label: 'Homme',
+          gender: 'male',
+        ),
+        buildGenderButton(
+          icon: Icons.female_rounded,
+          label: 'Femme',
+          gender: 'female',
+        ),
+        buildGenderButton(
+          icon: Icons.question_mark_rounded,
+          label: 'Non renseigné',
+          gender: 'undefined',
+        ),
       ],
     );
   }
@@ -137,7 +195,11 @@ class _EditUserInfoViewState extends State<EditUserInfoView> {
                   styles.form.littleVoidSpace,
                   styles.frame.divider,
                   styles.form.littleVoidSpace,
-                  buildDateField(),
+                  buildBirthdateField(),
+                  styles.form.littleVoidSpace,
+                  styles.frame.divider,
+                  styles.form.littleVoidSpace,
+                  buildGenderField(),
                 ],
               ),
             ),
