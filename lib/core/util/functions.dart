@@ -32,3 +32,15 @@ String getHours(num seconds) {
   }
   return hours;
 }
+
+String getWeekDay(int weekDay) {
+  return [
+    'Lundi',
+    'Mardi',
+    'Mercredi',
+    'Jeudi',
+    'Vendredi',
+    'Samedi',
+    'Dimanche',
+  ][weekDay - 1];
+}
