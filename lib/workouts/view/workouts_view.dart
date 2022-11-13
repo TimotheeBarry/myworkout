@@ -134,7 +134,7 @@ class WorkoutsViewState extends State<WorkoutsView> {
         child: InkWell(
           onTap: () async {
             final dao = WorkoutsDao();
-            var workoutExercises = await dao.getWorkoutSession(workout);
+            var workoutExercises = await dao.getWorkoutSessionGoals(workout);
             if (workoutExercises.isNotEmpty) {
               //si la séance est vide on ne peut pas aller dessus
               Navigator.push(

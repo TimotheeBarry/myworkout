@@ -35,7 +35,7 @@ class _EditWorkoutViewState extends State<EditWorkoutView> {
 
   void getData() async {
     final dao = WorkoutsDao();
-    var _workoutExercises = await dao.getWorkoutSession(widget.workout);
+    var _workoutExercises = await dao.getWorkoutSessionGoals(widget.workout);
     setState(() {
       workoutExercises = _workoutExercises
           .map((workoutExercise) =>
