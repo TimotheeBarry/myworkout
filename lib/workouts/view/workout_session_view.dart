@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:myworkout/workouts/model/dao/workouts_dao.dart';
+import 'package:myworkout/workouts/model/entity/exercise_performance.dart';
+import 'package:myworkout/workouts/model/entity/exercise_set.dart';
 import 'package:myworkout/workouts/model/entity/workout.dart';
 import 'package:myworkout/workouts/model/entity/workout_exercise.dart';
+import 'package:myworkout/workouts/model/entity/workout_exercise_session.dart';
+import 'package:myworkout/workouts/model/entity/workout_session.dart';
 import 'package:myworkout/workouts/util/workout_app_bar.dart';
 import 'package:myworkout/workouts/view/workout_during_rest_view.dart';
 import 'package:myworkout/workouts/view/workout_during_set_view.dart';
@@ -16,42 +20,48 @@ class WorkoutSessionView extends StatefulWidget {
 }
 
 class _WorkoutSessionViewState extends State<WorkoutSessionView> {
-  List<WorkoutExercise> workoutExercises = [];
-  int currentExercise = 0; //index de l'exercice en cours dans la séance
-  int currentSet = 0; //index de la série en cours de l'exercice en cours
-  bool setOngoing = true; //si la série est en cours ou finie
-
-  void nextSet() {
-    if (setOngoing) {
-      /*on passe à la page du timer*/
-      setState(() {
-        setOngoing = false;
-      });
-    } else if (currentSet + 1 <
-        workoutExercises[currentExercise].exercisePerformance!.sets!) {
-      /*on passe à la série suivante du meme exercice*/
-      setState(() {
-        currentSet++;
-        setOngoing = true;
-      });
-    } else if (currentExercise + 1 < workoutExercises.length) {
-      /*on passe à l'exercice suivant*/
-      setState(() {
-        currentSet = 0;
-        currentExercise++;
-        setOngoing = true;
-      });
-    } else {
-      /*séance terminée*/
-    }
-  }
+  WorkoutSessionController sessionController = WorkoutSessionController(
+    workoutExercises: [],
+    workoutExercisesSession: [],
+    currentExerciseSets: [],
+  );
 
   void getData() async {
     final dao = WorkoutsDao();
-    var _workoutExercises = await dao.getWorkoutSession(widget.workout);
+    var _workoutExercises = await dao.getWorkoutSessionGoals(widget.workout);
     setState(() {
-      workoutExercises = _workoutExercises;
+      sessionController.workoutExercises = _workoutExercises;
+
+      sessionController.initSession(widget.workout.id);
     });
+  }
+
+  void nextSet() async {
+    setState(() => sessionController.goToNextSet());
+  }
+
+  Widget buildPage() {
+    if (sessionController.workoutExercises.isEmpty) {
+      return const CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+      );
+    }
+    return sessionController.setOngoing
+        ? WorkoutDuringSetView(
+            exercise: sessionController
+                .workoutExercises[sessionController.currentExercise].exercise!,
+            exerciseSet: sessionController
+                .workoutExercises[sessionController.currentExercise]
+                .getExerciseSets()[sessionController.currentSet])
+        : WorkoutDuringRestView(
+            nextSet: nextSet,
+            exercise: sessionController
+                .workoutExercises[sessionController.currentExercise].exercise!,
+            exerciseSet: sessionController
+                .workoutExercises[sessionController.currentExercise]
+                .getExerciseSets()[sessionController.currentSet],
+            savePerformance: sessionController.savePerformance,
+          );
   }
 
   @override
@@ -66,19 +76,98 @@ class _WorkoutSessionViewState extends State<WorkoutSessionView> {
       decoration: styles.page.boxDecoration,
       child: Scaffold(
         appBar: WorkoutAppBar(currentSet: 0, nextSet: nextSet),
-        body: SingleChildScrollView(
-          child: setOngoing
-              ? WorkoutDuringSetView(
-                  exercise: workoutExercises[currentExercise].exercise!,
-                  exerciseSet: workoutExercises[currentExercise]
-                      .getExerciseSets()[currentSet])
-              : WorkoutDuringRestView(
-                  nextSet: nextSet,
-                  exercise: workoutExercises[currentExercise].exercise!,
-                  exerciseSet: workoutExercises[currentExercise]
-                      .getExerciseSets()[currentSet]),
-        ),
+        body: SingleChildScrollView(child: buildPage()),
       ),
     );
   }
+}
+
+class WorkoutSessionController {
+  /*variables pour stocker les données de la séance*/
+  WorkoutSession? workoutSession; //infos générale de la session
+  List<WorkoutExercise> workoutExercises; //objectifs prédéfinis
+  List<WorkoutExerciseSession> workoutExercisesSession =
+      []; //performances à entrer au fur et à mesure
+
+  /*variables pour décrire l'avancement de la séance*/
+  int currentExercise; //index de l'exercice en cours dans la séance
+  List<ExerciseSet> currentExerciseSets;
+  int currentSet; //index de la série en cours de l'exercice en cours
+  bool setOngoing;
+
+  WorkoutSessionController(
+      {this.workoutSession,
+      required this.workoutExercises,
+      required this.workoutExercisesSession,
+      this.currentExercise = 0,
+      required this.currentExerciseSets,
+      this.currentSet = 0,
+      this.setOngoing = true});
+
+  void initSession(workoutId) async {
+    /* initialisation de la séance: à appeler au tout début de la séance*/
+    var _workoutSession =
+        WorkoutSession(workoutId: workoutId, date: DateTime.now());
+    var dao = WorkoutsDao();
+    var workoutSessionId = await dao.initWorkoutSession(_workoutSession);
+    if (workoutSessionId != 0) {
+      //si il n'y a aps eu d'erreur lors de la création de la session
+      workoutSession = _workoutSession.copy(id: workoutSessionId);
+    }
+  }
+
+  goToNextSet() {
+    if (setOngoing) {
+      /*on passe à la page du timer*/
+      setOngoing = false;
+    } else if (currentSet + 1 <
+        workoutExercises[currentExercise].exercisePerformance!.sets!) {
+      /*on passe à la série suivante du meme exercice*/
+      currentSet++;
+      setOngoing = true;
+    } else if (currentExercise + 1 < workoutExercises.length) {
+      /*on passe à l'exercice suivant*/
+      goToNextExercise();
+    } else {
+      /*séance terminée*/
+      endWorkout();
+    }
+  }
+
+  goToNextExercise() {
+    /* ajout des performances + infos de l'exercice dans la liste*/
+    var _workoutExerciseSession = WorkoutExerciseSession(
+      listIndex: currentExercise,
+      workoutSessionId: workoutSession!.id,
+      exercise: workoutExercises[currentExercise].exercise,
+      exercisePerformanceGoal:
+          workoutExercises[currentExercise].exercisePerformance,
+      exercisePerformanceDone:
+          ExercisePerformance().getFromSets(currentExerciseSets),
+    );
+    /*ajout dans la liste de la séance*/
+    workoutExercisesSession.add(
+      _workoutExerciseSession,
+    );
+
+    /*passage a l'exo suivant*/
+    currentSet = 0;
+    currentExercise++;
+    setOngoing = true;
+    currentExerciseSets = [];
+
+    /*ajout en bdd*/
+    saveExercise(_workoutExerciseSession);
+  }
+
+  void saveExercise(exercise) async {
+    var dao = WorkoutsDao();
+    dao.createWorkoutExerciseSession(exercise);
+  }
+
+  void savePerformance(num reps, num load, num rest) {
+    currentExerciseSets.add(ExerciseSet(reps: reps, load: load, rest: rest));
+  }
+
+  void endWorkout() {}
 }

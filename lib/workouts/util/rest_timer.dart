@@ -5,9 +5,9 @@ import 'package:myworkout/core/util/functions.dart';
 import '../../core/theme/styles.dart' as styles;
 
 class RestTimer extends StatefulWidget {
-  const RestTimer({Key? key, required this.nextSet, required this.initialTime})
+  const RestTimer({Key? key, required this.onFinish, required this.initialTime})
       : super(key: key);
-  final void Function() nextSet;
+  final void Function() onFinish;
   final num initialTime;
 
   @override
@@ -25,7 +25,7 @@ class _RestTimerState extends State<RestTimer> {
         setState(() => seconds--);
       } else {
         stopTimer();
-        widget.nextSet();
+        widget.onFinish();
       }
     });
   }
@@ -75,8 +75,8 @@ class _RestTimerState extends State<RestTimer> {
 
   Widget buildTimer() {
     return SizedBox(
-        height: 180,
-        width: 180,
+        height: 150,
+        width: 150,
         child: Stack(
           fit: StackFit.expand,
           children: [
@@ -146,12 +146,25 @@ class _RestTimerState extends State<RestTimer> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-      removeTime(10),
-      const SizedBox(width: 16),
-      buildTimer(),
-      const SizedBox(width: 16),
-      addTime(10)
-    ]);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        IconButton(
+          onPressed: () {},
+          icon: Icon(Icons.arrow_back_ios_rounded,
+              color: styles.frame.primaryTextColor),
+        ),
+        removeTime(10),
+        const SizedBox(width: 8),
+        buildTimer(),
+        const SizedBox(width: 8),
+        addTime(10),
+        IconButton(
+          onPressed: widget.onFinish,
+          icon: Icon(Icons.arrow_forward_ios_rounded,
+              color: styles.frame.primaryTextColor),
+        ),
+      ],
+    );
   }
 }

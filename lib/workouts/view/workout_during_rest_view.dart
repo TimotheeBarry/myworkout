@@ -10,9 +10,11 @@ class WorkoutDuringRestView extends StatefulWidget {
       {Key? key,
       required this.exercise,
       required this.exerciseSet,
-      required this.nextSet})
+      required this.nextSet,
+      required this.savePerformance})
       : super(key: key);
   final void Function() nextSet;
+  final void Function(num, num, num) savePerformance;
   final Exercise exercise;
   final ExerciseSet exerciseSet;
   @override
@@ -130,7 +132,13 @@ class _WorkoutDuringRestViewState extends State<WorkoutDuringRestView> {
                   updateLoads(num.parse(loadController.text) - .5);
                 },
               ),
-              buildInput(hintText: '0.0', controller: loadController),
+              buildInput(
+                hintText: '0.0',
+                controller: loadController,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^[0-9]+\.?[0-9]*'))
+                ],
+              ),
               Text('kg', style: styles.frame.text),
               IconButton(
                 icon: Icon(Icons.add_rounded,
@@ -152,7 +160,14 @@ class _WorkoutDuringRestViewState extends State<WorkoutDuringRestView> {
       children: [
         styles.form.mediumVoidSpace,
         RestTimer(
-          nextSet: widget.nextSet,
+          onFinish: () async {
+            widget.savePerformance(
+              num.parse(repsController.text),
+              num.parse(loadController.text),
+              widget.exerciseSet.rest,
+            );
+            widget.nextSet();
+          },
           initialTime: widget.exerciseSet.rest,
         ),
         styles.form.bigVoidSpace,

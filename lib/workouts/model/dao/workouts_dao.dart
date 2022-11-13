@@ -1,7 +1,9 @@
 import 'package:myworkout/core/services/database_provider.dart';
 import 'package:myworkout/workouts/model/entity/workout.dart';
 import 'package:myworkout/workouts/model/entity/workout_exercise.dart';
+import 'package:myworkout/workouts/model/entity/workout_exercise_session.dart';
 import 'package:myworkout/workouts/model/entity/workout_group.dart';
+import 'package:myworkout/workouts/model/entity/workout_session.dart';
 
 class WorkoutsDao {
   final dbProvider = DatabaseProvider.dbProvider;
@@ -79,7 +81,7 @@ class WorkoutsDao {
     );
   }
 
-  Future<List<WorkoutExercise>> getWorkoutSession(Workout workout) async {
+  Future<List<WorkoutExercise>> getWorkoutSessionGoals(Workout workout) async {
     var db = await dbProvider.db;
 
     var query = '''
@@ -110,7 +112,7 @@ ORDER BY list_index;
 
   Future updateWorkoutExerciseGoal(WorkoutExercise workoutExercise) async {
     var db = await dbProvider.db;
-    
+
     return await db!.update(
       'workout_exercise_goals',
       workoutExercise.toJSON(),
@@ -141,4 +143,56 @@ ORDER BY list_index;
       await createWorkoutExerciseGoal(workoutExercise);
     }
   }
+
+  Future<List<WorkoutExerciseSession>> getWorkoutSession(
+      int workoutSessionId) async {
+    var db = await dbProvider.db;
+
+    var query = '''
+SELECT 
+  workout_exercise_session.id,
+  workout_exercise_session.workout_session_id,
+  workout_exercise_session.exercise_id,
+  workout_exercise_session.list_index,
+  workout_exercise_session.sets_goal,
+  workout_exercise_session.reps_goal,
+  workout_exercise_session.loads_goal,
+  workout_exercise_session.rests_goal,
+  workout_exercise_session.sets_done,
+  workout_exercise_session.reps_done,
+  workout_exercise_session.loads_done,
+  workout_exercise_session.rests_done,
+  workout_exercise_session.note,
+  exercises.name,
+  exercises.description,
+  exercises.image_id
+FROM workout_exercise_session 
+JOIN exercises ON workout_exercise_session.exercise_id = exercises.id
+WHERE workout_session_id = $workoutSessionId
+ORDER BY list_index;
+''';
+    var result = await db!.rawQuery(query);
+
+    List<WorkoutExerciseSession> workoutExerciseSession = result.isNotEmpty
+        ? result.map((item) => WorkoutExerciseSession.fromJSON(item)).toList()
+        : [];
+    return workoutExerciseSession;
+  }
+
+  Future initWorkoutSession(WorkoutSession workoutSession) async {
+    var db = await dbProvider.db;
+    return await db!.insert('workout_session', workoutSession.toJSON());
+  }
+
+  Future<void> createWorkoutExerciseSession(
+    WorkoutExerciseSession workoutExerciseSession,
+  ) async {
+    var db = await dbProvider.db;
+
+    await db!.insert(
+      'workout_exercise_session',
+      workoutExerciseSession.toJSON(),
+    );
+  }
+
 }
