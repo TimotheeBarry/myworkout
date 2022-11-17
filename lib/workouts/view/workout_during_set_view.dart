@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myworkout/exercises/model/entity/exercise.dart';
-import 'package:myworkout/exercises/util/exercise_image_big.dart';
+import 'package:myworkout/exercises/util/exercise_image.dart';
 import 'package:myworkout/workouts/model/entity/exercise_set.dart';
 import '../../core/theme/styles.dart' as styles;
 
@@ -43,7 +43,10 @@ class _WorkoutDuringSetViewState extends State<WorkoutDuringSetView> {
     return Center(
       child: Column(
         children: [
-          ExerciseImageBig(imageId: widget.exercise.imageId),
+          ExerciseImage(
+            imageId: widget.exercise.imageId,
+            size: 180,
+          ),
           buildPerformanceGoalFrame(),
         ],
       ),

@@ -4,7 +4,7 @@ import 'package:myworkout/core/util/custom_app_bar.dart';
 import 'package:myworkout/exercises/model/dao/exercises_dao.dart';
 import 'package:myworkout/exercises/model/entity/exercise.dart';
 import 'package:myworkout/exercises/model/entity/exercise_group.dart';
-import 'package:myworkout/exercises/util/exercise_image_big.dart';
+import 'package:myworkout/exercises/util/exercise_image.dart';
 import 'package:myworkout/exercises/view/create_exercise_view.dart';
 import '../../core/theme/styles.dart' as styles;
 
@@ -150,7 +150,7 @@ class _ExerciseDescriptionViewState extends State<ExerciseDescriptionView> {
             children: [
               Hero(
                 tag: exercise.imageId ?? 0,
-                child: ExerciseImageBig(imageId: exercise.imageId),
+                child: ExerciseImage(imageId: exercise.imageId, size: 180),
               ),
               styles.form.mediumVoidSpace,
               buildTitle(),
