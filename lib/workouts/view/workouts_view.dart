@@ -6,6 +6,7 @@ import 'package:myworkout/workouts/model/dao/workouts_dao.dart';
 import 'package:myworkout/workouts/model/entity/workout.dart';
 import 'package:myworkout/workouts/model/entity/workout_group.dart';
 import 'package:myworkout/workouts/view/edit_workout_view.dart';
+import 'package:myworkout/workouts/view/launch_workout_view.dart';
 import 'package:myworkout/workouts/view/workout_session_view.dart';
 import '../../core/theme/styles.dart' as styles;
 
@@ -137,10 +138,10 @@ class WorkoutsViewState extends State<WorkoutsView> {
             var workoutExercises = await dao.getWorkoutSessionGoals(workout);
             if (workoutExercises.isNotEmpty) {
               //si la séance est vide on ne peut pas aller dessus
-              Navigator.push(
+               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => WorkoutSessionView(workout: workout)),
+                    builder: (context) => LaunchWorkoutView(workout: workout)),
               );
             }
           },

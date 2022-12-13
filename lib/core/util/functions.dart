@@ -44,3 +44,9 @@ String getWeekDay(int weekDay) {
     'Dimanche',
   ][weekDay - 1];
 }
+
+String secondsToString(num sec) {
+    var minutes = getMinutes(sec);
+    var seconds = getSeconds(sec);
+    return "${minutes != "00" ? "$minutes" : ""}\"$seconds";
+  }

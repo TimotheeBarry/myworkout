@@ -6,6 +6,7 @@ class Frame {
   Color get primaryTextColor => Colors.white;
   Color get secondaryTextColor => Colors.white54;
   Color get backgroundColor => Colors.white12;
+  Color get darkBackgroundColor => Colors.black26;
 
   EdgeInsets get margin =>
       const EdgeInsets.symmetric(horizontal: 10, vertical: 4);
@@ -14,6 +15,11 @@ class Frame {
   BoxDecoration get boxDecoration => BoxDecoration(
         borderRadius: borderRadius,
         color: backgroundColor,
+      );
+
+  BoxDecoration get darkBoxDecoration => BoxDecoration(
+        borderRadius: borderRadius,
+        color: darkBackgroundColor,
       );
 
   TextStyle get title => TextStyle(

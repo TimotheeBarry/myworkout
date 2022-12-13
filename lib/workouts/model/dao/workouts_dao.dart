@@ -195,4 +195,16 @@ ORDER BY list_index;
     );
   }
 
+  Future<WorkoutSession> getLastWorkoutSession(int workoutId) async {
+    var db = await dbProvider.db;
+
+    var query =
+        'SELECT id, date, notes, workout_id FROM workout_session WHERE workout_id = $workoutId ORDER BY date DESC LIMIT 1;';
+    var result = await db!.rawQuery(query);
+    WorkoutSession workoutSession = result.isNotEmpty
+        ? WorkoutSession.fromJSON(result[0])
+        : WorkoutSession(id: 0); 
+   
+    return workoutSession;
+  }
 }

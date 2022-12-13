@@ -92,7 +92,7 @@ class WorkoutExerciseSession {
     var repsList =
         exercisePerformance.reps!.split('-').map((e) => int.parse(e)).toList();
     var loadList =
-        exercisePerformance.loads!.split('-').map((e) => int.parse(e)).toList();
+        exercisePerformance.loads!.split('-').map((e) => num.parse(e)).toList();
     var restList =
         exercisePerformance.rests!.split('-').map((e) => int.parse(e)).toList();
     List<ExerciseSet> exerciseSets = [];

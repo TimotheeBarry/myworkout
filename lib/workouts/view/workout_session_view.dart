@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:myworkout/core/util/custom_button.dart';
+import 'package:myworkout/exercises/model/entity/exercise.dart';
 import 'package:myworkout/workouts/model/dao/workouts_dao.dart';
 import 'package:myworkout/workouts/model/entity/exercise_performance.dart';
 import 'package:myworkout/workouts/model/entity/exercise_set.dart';
@@ -12,8 +14,15 @@ import 'package:myworkout/workouts/view/workout_during_set_view.dart';
 import '../../core/theme/styles.dart' as styles;
 
 class WorkoutSessionView extends StatefulWidget {
-  const WorkoutSessionView({Key? key, required this.workout}) : super(key: key);
+  const WorkoutSessionView(
+      {Key? key,
+      required this.workout,
+      required this.lastWorkoutSession,
+      required this.workoutLastSessionList})
+      : super(key: key);
   final Workout workout;
+  final WorkoutSession lastWorkoutSession;
+  final List<WorkoutExerciseSession> workoutLastSessionList;
 
   @override
   State<WorkoutSessionView> createState() => _WorkoutSessionViewState();
@@ -24,6 +33,7 @@ class _WorkoutSessionViewState extends State<WorkoutSessionView> {
     workoutExercises: [],
     workoutExercisesSession: [],
     currentExerciseSets: [],
+    workoutLastSessionList: [],
   );
 
   void getData() async {
@@ -31,7 +41,7 @@ class _WorkoutSessionViewState extends State<WorkoutSessionView> {
     var _workoutExercises = await dao.getWorkoutSessionGoals(widget.workout);
     setState(() {
       sessionController.workoutExercises = _workoutExercises;
-
+      sessionController.workoutLastSessionList = widget.workoutLastSessionList;
       sessionController.initSession(widget.workout.id);
     });
   }
@@ -46,20 +56,18 @@ class _WorkoutSessionViewState extends State<WorkoutSessionView> {
         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
       );
     }
+
     return sessionController.setOngoing
         ? WorkoutDuringSetView(
-            exercise: sessionController
-                .workoutExercises[sessionController.currentExercise].exercise!,
-            exerciseSet: sessionController
-                .workoutExercises[sessionController.currentExercise]
-                .getExerciseSets()[sessionController.currentSet])
+            exercise: sessionController.getCurrentExercise(),
+            exerciseSet: sessionController.getCurrentExerciseSet(),
+            lastExerciseSet: sessionController.getLastExerciseSet(),
+            lastSessionDate: widget.lastWorkoutSession.date,
+          )
         : WorkoutDuringRestView(
             nextSet: nextSet,
-            exercise: sessionController
-                .workoutExercises[sessionController.currentExercise].exercise!,
-            exerciseSet: sessionController
-                .workoutExercises[sessionController.currentExercise]
-                .getExerciseSets()[sessionController.currentSet],
+            exercise: sessionController.getCurrentExercise(),
+            exerciseSet: sessionController.getCurrentExerciseSet(),
             savePerformance: sessionController.savePerformance,
           );
   }
@@ -76,7 +84,17 @@ class _WorkoutSessionViewState extends State<WorkoutSessionView> {
       decoration: styles.page.boxDecoration,
       child: Scaffold(
         appBar: WorkoutAppBar(currentSet: 0, nextSet: nextSet),
-        body: SingleChildScrollView(child: buildPage()),
+        bottomNavigationBar: sessionController.setOngoing
+            ? SizedBox(
+                height: 64,
+                child: CustomButton(
+                  onTap: nextSet,
+                  title: Text('Série terminée',
+                      style: styles.button.mediumText),
+                ))
+            : const SizedBox.shrink(),
+        body: SingleChildScrollView(
+            padding: styles.page.margin, child: buildPage()),
       ),
     );
   }
@@ -94,11 +112,13 @@ class WorkoutSessionController {
   List<ExerciseSet> currentExerciseSets;
   int currentSet; //index de la série en cours de l'exercice en cours
   bool setOngoing;
+  List<WorkoutExerciseSession> workoutLastSessionList;
 
   WorkoutSessionController(
       {this.workoutSession,
       required this.workoutExercises,
       required this.workoutExercisesSession,
+      required this.workoutLastSessionList,
       this.currentExercise = 0,
       required this.currentExerciseSets,
       this.currentSet = 0,
@@ -167,6 +187,28 @@ class WorkoutSessionController {
 
   void savePerformance(num reps, num load, num rest) {
     currentExerciseSets.add(ExerciseSet(reps: reps, load: load, rest: rest));
+  }
+
+  ExerciseSet getCurrentExerciseSet() {
+    return workoutExercises[currentExercise].getExerciseSets()[currentSet];
+  }
+
+  ExerciseSet? getLastExerciseSet() {
+    var list = workoutLastSessionList.where((exerciseSession) =>
+        exerciseSession.exercise!.id == getCurrentExercise().id);
+    var exercise = list.isNotEmpty ? list.first : null;
+    if (exercise == null) {
+      return null;
+    }
+    var exerciseSetsList =
+        exercise.getExerciseSets(exercise.exercisePerformanceDone!);
+    return exerciseSetsList.length > currentSet
+        ? exerciseSetsList[currentSet]
+        : null;
+  }
+
+  Exercise getCurrentExercise() {
+    return workoutExercises[currentExercise].exercise!;
   }
 
   void endWorkout() {}
