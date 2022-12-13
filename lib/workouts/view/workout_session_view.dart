@@ -17,9 +17,11 @@ class WorkoutSessionView extends StatefulWidget {
   const WorkoutSessionView(
       {Key? key,
       required this.workout,
+      required this.workoutExercises,
       required this.lastWorkoutSession,
       required this.workoutLastSessionList})
       : super(key: key);
+  final List<WorkoutExercise> workoutExercises;
   final Workout workout;
   final WorkoutSession lastWorkoutSession;
   final List<WorkoutExerciseSession> workoutLastSessionList;
@@ -36,11 +38,9 @@ class _WorkoutSessionViewState extends State<WorkoutSessionView> {
     workoutLastSessionList: [],
   );
 
-  void getData() async {
-    final dao = WorkoutsDao();
-    var _workoutExercises = await dao.getWorkoutSessionGoals(widget.workout);
+  void initData() async {
     setState(() {
-      sessionController.workoutExercises = _workoutExercises;
+      sessionController.workoutExercises = widget.workoutExercises;
       sessionController.workoutLastSessionList = widget.workoutLastSessionList;
       sessionController.initSession(widget.workout.id);
     });
@@ -59,22 +59,30 @@ class _WorkoutSessionViewState extends State<WorkoutSessionView> {
 
     return sessionController.setOngoing
         ? WorkoutDuringSetView(
-            exercise: sessionController.getCurrentExercise(),
-            exerciseSet: sessionController.getCurrentExerciseSet(),
-            lastExerciseSet: sessionController.getLastExerciseSet(),
+            exercise: sessionController.currentExerciseData,
+            exerciseSet: sessionController.currentExerciseSet,
+            lastExerciseSet: sessionController.lastExerciseSet,
             lastSessionDate: widget.lastWorkoutSession.date,
+            currentSet: sessionController.currentSet + 1,
+            totalSets: sessionController.exerciseSetsCount,
           )
         : WorkoutDuringRestView(
             nextSet: nextSet,
-            exercise: sessionController.getCurrentExercise(),
-            exerciseSet: sessionController.getCurrentExerciseSet(),
+            exercise: sessionController.currentExerciseData,
+            exerciseSet: sessionController.currentExerciseSet,
+            nextExerciseSet: sessionController.nextExerciseSet,
+            lastNextExerciseSet: sessionController.lastNextExerciseSet,
+            lastSessionDate: widget.lastWorkoutSession.date,
+            nextExercise: sessionController.nextSetExerciseData,
             savePerformance: sessionController.savePerformance,
+            currentSet: sessionController.currentSet + 1,
+            totalSets: sessionController.exerciseSetsCount,
           );
   }
 
   @override
   void initState() {
-    getData();
+    initData();
     super.initState();
   }
 
@@ -89,8 +97,7 @@ class _WorkoutSessionViewState extends State<WorkoutSessionView> {
                 height: 64,
                 child: CustomButton(
                   onTap: nextSet,
-                  title: Text('Série terminée',
-                      style: styles.button.mediumText),
+                  title: Text('Série terminée', style: styles.button.bigText),
                 ))
             : const SizedBox.shrink(),
         body: SingleChildScrollView(
@@ -189,17 +196,21 @@ class WorkoutSessionController {
     currentExerciseSets.add(ExerciseSet(reps: reps, load: load, rest: rest));
   }
 
-  ExerciseSet getCurrentExerciseSet() {
+  ExerciseSet get currentExerciseSet {
+    //obtenir les objectifs série en cours (reps, load, rest)
     return workoutExercises[currentExercise].getExerciseSets()[currentSet];
   }
 
-  ExerciseSet? getLastExerciseSet() {
-    var list = workoutLastSessionList.where((exerciseSession) =>
-        exerciseSession.exercise!.id == getCurrentExercise().id);
-    var exercise = list.isNotEmpty ? list.first : null;
-    if (exercise == null) {
+  ExerciseSet? get lastExerciseSet {
+    //obtenir les performances de la série en cours de la dernière séance s'il y en a
+    var list = workoutLastSessionList
+        .where((exerciseSession) =>
+            exerciseSession.exercise!.id == currentExerciseData.id)
+        .toList();
+    if (list.isEmpty) {
       return null;
     }
+    var exercise = list.first;
     var exerciseSetsList =
         exercise.getExerciseSets(exercise.exercisePerformanceDone!);
     return exerciseSetsList.length > currentSet
@@ -207,8 +218,80 @@ class WorkoutSessionController {
         : null;
   }
 
-  Exercise getCurrentExercise() {
+  Exercise get currentExerciseData {
+    //obtenir les infos de l'exercice en cours
     return workoutExercises[currentExercise].exercise!;
+  }
+
+  Exercise? get nextSetExerciseData {
+    //obtenir les infos de l'exercice de la prochaine série
+    var nextExercise = nextExerciseIndex;
+    return nextExercise != null
+        ? workoutExercises[nextExercise].exercise!
+        : null;
+  }
+
+  int get exerciseSetsCount {
+    //obtenir le nombre de série d'un exercice
+    return workoutExercises[currentExercise].getExerciseSets().length;
+  }
+
+  int? get nextSetIndex {
+    //obtenir l'indice de la prochaine série (ou null)
+    int nextSet;
+    if (currentSet + 1 <
+        workoutExercises[currentExercise].exercisePerformance!.sets!) {
+      nextSet = currentSet + 1;
+    } else if (currentExercise + 1 < workoutExercises.length) {
+      nextSet = 0;
+    } else {
+      return null;
+    }
+    return nextSet;
+  }
+
+  int? get nextExerciseIndex {
+    //obtneir l'indice du prochain exercice (ou null)
+    int nextExercise;
+    if (currentSet + 1 <
+        workoutExercises[currentExercise].exercisePerformance!.sets!) {
+      nextExercise = currentExercise;
+    } else if (currentExercise + 1 < workoutExercises.length) {
+      nextExercise = currentExercise + 1;
+    } else {
+      return null;
+    }
+    return nextExercise;
+  }
+
+  ExerciseSet? get nextExerciseSet {
+    //obtenir les objectifs de la prochaine série (s'il y a une)
+    var nextSet = nextSetIndex;
+    var nextExercise = nextExerciseIndex;
+    if (nextSet != null && nextExercise != null) {
+      return workoutExercises[nextExercise].getExerciseSets()[nextSet];
+    }
+    return null;
+  }
+
+  ExerciseSet? get lastNextExerciseSet {
+    //obtenir les performances de la prochaine série au cours de la dernière séance
+    var nextExercise = nextSetExerciseData;
+    var nextSet = nextSetIndex;
+    if (nextExercise == null || nextSet == null) {
+      return null;
+    }
+    var list = workoutLastSessionList.where(
+        (exerciseSession) => exerciseSession.exercise!.id == nextExercise.id);
+    if (list.isEmpty) {
+      return null;
+    }
+    var exercise = list.first;
+    var exerciseSetsList =
+        exercise.getExerciseSets(exercise.exercisePerformanceDone!);
+    return exerciseSetsList.length > nextSet
+        ? exerciseSetsList[nextSet]
+        : null;
   }
 
   void endWorkout() {}

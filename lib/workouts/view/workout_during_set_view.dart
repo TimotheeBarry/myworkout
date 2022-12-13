@@ -3,6 +3,7 @@ import 'package:myworkout/exercises/model/entity/exercise.dart';
 import 'package:myworkout/exercises/util/exercise_image.dart';
 import 'package:myworkout/workouts/model/entity/exercise_set.dart';
 import 'package:myworkout/workouts/util/performance_frame.dart';
+import 'package:myworkout/workouts/util/set_count.dart';
 import 'package:myworkout/workouts/util/title_subtitle.dart';
 import '../../core/theme/styles.dart' as styles;
 
@@ -13,7 +14,11 @@ class WorkoutDuringSetView extends StatefulWidget {
     required this.exerciseSet,
     this.lastExerciseSet,
     this.lastSessionDate,
+    required this.currentSet,
+    required this.totalSets,
   }) : super(key: key);
+  final int currentSet;
+  final int totalSets;
   final Exercise exercise;
   final ExerciseSet exerciseSet;
   final ExerciseSet? lastExerciseSet;
@@ -29,14 +34,31 @@ class _WorkoutDuringSetViewState extends State<WorkoutDuringSetView> {
     return Center(
       child: Column(
         children: [
-          TitleSubtitle(
-            title: 'Exercice en cours',
-            subtitle: widget.exercise.name ?? "",
+          styles.form.littleVoidSpace,
+          Row(
+            children: [
+              Expanded(
+                child: TitleSubtitle(
+                  title: 'Exercice en cours',
+                  subtitle: widget.exercise.name ?? "",
+                ),
+              ),
+              SetCount(
+                  currentSet: widget.currentSet, totalSets: widget.totalSets)
+            ],
           ),
           styles.form.littleVoidSpace,
-          ExerciseImage(
-            imageId: widget.exercise.imageId,
-            size: 180,
+          ClipRRect(
+            borderRadius: styles.frame.borderRadius,
+            child: Container(
+              color: Colors.white,
+              child: Center(
+                child: ExerciseImage(
+                  imageId: widget.exercise.imageId,
+                  size: 180,
+                ),
+              ),
+            ),
           ),
           styles.form.mediumVoidSpace,
           PerformanceFrame(

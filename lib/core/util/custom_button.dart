@@ -6,13 +6,11 @@ class CustomButton extends StatelessWidget {
       {Key? key,
       required this.title,
       required this.onTap,
-      this.widthFactor,
       this.icon})
       : super(key: key);
   final Text title;
   final Icon? icon;
   final void Function() onTap;
-  final double? widthFactor;
   @override
   Widget build(BuildContext context) {
     return Material(

@@ -15,7 +15,7 @@ class PerformanceFrame extends StatelessWidget {
   final DateTime? date;
   final ExerciseSet exerciseTarget;
   final ExerciseSet? exerciseLastPerformance;
-  final double iconSize = 40;
+  final double iconSize = 36;
 
   Widget buildFrame(bool isCurrent) {
     final title = isCurrent ? 'Objectifs' : 'Dernière séance';
@@ -31,15 +31,20 @@ class PerformanceFrame extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         child: Column(
           mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Column(
               children: [
-                Text(title,
+                Center(
+                  child: Text(
+                    title,
                     style: TextStyle(
                       color: textColor,
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
-                    )),
+                    ),
+                  ),
+                ),
                 isCurrent
                     ? const SizedBox(height: 12)
                     : Text(DateFormat('dd/MM/yyyy').format(date!),
@@ -48,8 +53,14 @@ class PerformanceFrame extends StatelessWidget {
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                         )),
-                styles.form.littleVoidSpace,
+              ],
+            ),
+            styles.form.littleVoidSpace,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     FaIcon(
                       FontAwesomeIcons.arrowRotateLeft,
@@ -57,7 +68,7 @@ class PerformanceFrame extends StatelessWidget {
                       size: iconSize,
                     ),
                     const SizedBox(width: 8),
-                    Text(exerciseSet.reps.toString(),
+                    Text('${exerciseSet.reps.toString()} reps',
                         style: TextStyle(
                           color: textColor,
                           fontSize: 18,
@@ -67,6 +78,7 @@ class PerformanceFrame extends StatelessWidget {
                 ),
                 styles.form.littleVoidSpace,
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     FaIcon(FontAwesomeIcons.weightHanging,
                         color: textColor, size: iconSize),
@@ -81,6 +93,7 @@ class PerformanceFrame extends StatelessWidget {
                 ),
               ],
             ),
+            styles.form.littleVoidSpace,
           ],
         ),
       ),
@@ -95,8 +108,12 @@ class PerformanceFrame extends StatelessWidget {
           child: Row(
             children: [
               buildFrame(true),
-              exerciseLastPerformance != null ? const SizedBox(width: 8) : const SizedBox.shrink(),
-              exerciseLastPerformance != null ? buildFrame(false) : const SizedBox.shrink()
+              exerciseLastPerformance != null
+                  ? const SizedBox(width: 8)
+                  : const SizedBox.shrink(),
+              exerciseLastPerformance != null
+                  ? buildFrame(false)
+                  : const SizedBox.shrink()
             ],
           ),
         ),

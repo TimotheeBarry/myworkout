@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:myworkout/core/util/button_transparent.dart';
 import 'package:myworkout/core/util/custom_app_bar.dart';
 import 'package:myworkout/core/util/custom_button.dart';
 import 'package:myworkout/exercises/util/exercise_image.dart';
@@ -9,6 +11,7 @@ import 'package:myworkout/workouts/model/entity/workout.dart';
 import 'package:myworkout/workouts/model/entity/workout_exercise.dart';
 import 'package:myworkout/workouts/model/entity/workout_exercise_session.dart';
 import 'package:myworkout/workouts/model/entity/workout_session.dart';
+import 'package:myworkout/workouts/util/next_exercise_buttons.dart';
 import 'package:myworkout/workouts/util/performance_frame.dart';
 import 'package:myworkout/workouts/util/title_subtitle.dart';
 import 'package:myworkout/workouts/view/workout_session_view.dart';
@@ -47,6 +50,14 @@ class LaunchWorkoutViewState extends State<LaunchWorkoutView> {
     });
   }
 
+  void passExercise() {
+    if (workoutExercises.length > 1) {
+      setState(() {
+        workoutExercises.removeAt(0);
+      });
+    }
+  }
+
   ExerciseSet? getLastExerciseFirstSet() {
     var list = workoutLastSessionList.where((exerciseSession) =>
         exerciseSession.exercise!.id == workoutExercises[0].exercise!.id);
@@ -56,9 +67,7 @@ class LaunchWorkoutViewState extends State<LaunchWorkoutView> {
     }
     var exerciseSetsList =
         exercise.getExerciseSets(exercise.exercisePerformanceDone!);
-    return exerciseSetsList.isNotEmpty
-        ? exerciseSetsList.first
-        : null;
+    return exerciseSetsList.isNotEmpty ? exerciseSetsList.first : null;
   }
 
   @override
@@ -66,9 +75,8 @@ class LaunchWorkoutViewState extends State<LaunchWorkoutView> {
     ExerciseSet exerciseTarget = workoutExercises.isNotEmpty
         ? workoutExercises[0].exercisePerformance!.getPerformances()[0]
         : ExerciseSet();
-    ExerciseSet? exerciseLastPerformance = workoutLastSessionList.isNotEmpty
-        ? getLastExerciseFirstSet()
-        : null;
+    ExerciseSet? exerciseLastPerformance =
+        workoutLastSessionList.isNotEmpty ? getLastExerciseFirstSet() : null;
     return Container(
       decoration: styles.page.boxDecoration,
       child: Scaffold(
@@ -93,18 +101,19 @@ class LaunchWorkoutViewState extends State<LaunchWorkoutView> {
                   MaterialPageRoute(
                       builder: (context) => WorkoutSessionView(
                             workout: widget.workout,
+                            workoutExercises: workoutExercises,
                             lastWorkoutSession: lastWorkoutSession,
                             workoutLastSessionList: workoutLastSessionList,
                           )),
                 );
               },
-              title:
-                  Text('Démarrer la séance', style: styles.button.mediumText),
+              title: Text('Démarrer la séance', style: styles.button.bigText),
             )),
         body: SingleChildScrollView(
           padding: styles.page.margin,
           child: Column(
             children: [
+              styles.form.littleVoidSpace,
               TitleSubtitle(
                 title: 'Premier exercice',
                 subtitle: workoutExercises.isNotEmpty
@@ -123,6 +132,12 @@ class LaunchWorkoutViewState extends State<LaunchWorkoutView> {
                 exerciseTarget: exerciseTarget,
                 exerciseLastPerformance: exerciseLastPerformance,
                 date: lastWorkoutSession.date,
+              ),
+              styles.form.littleVoidSpace,
+              NextExerciseButtons(
+                onTapNext: passExercise,
+                onTapChange: () {},
+                onTapReplace: () {},
               )
             ],
           ),

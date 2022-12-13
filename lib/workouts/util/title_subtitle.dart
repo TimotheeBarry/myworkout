@@ -13,7 +13,7 @@ class TitleSubtitle extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(),
-        Text(title, style: styles.frame.title),
+        Text(title, style: styles.frame.subtitle),
         Text(
           subtitle,
           style: const TextStyle(
