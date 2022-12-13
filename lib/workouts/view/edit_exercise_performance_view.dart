@@ -2,11 +2,13 @@ import 'package:flutter/material.dart' hide ReorderableList;
 import 'package:flutter/services.dart';
 import 'package:myworkout/core/util/custom_app_bar.dart';
 import 'package:myworkout/core/util/custom_check_box.dart';
+import 'package:myworkout/core/util/functions.dart';
 import 'package:myworkout/exercises/util/exercise_image.dart';
 import 'package:myworkout/workouts/model/dao/workouts_dao.dart';
 import 'package:myworkout/workouts/model/entity/exercise_performance.dart';
 import 'package:myworkout/workouts/model/entity/exercise_set.dart';
 import 'package:myworkout/workouts/model/entity/workout_exercise.dart';
+import 'package:myworkout/workouts/util/custom_duration_picker.dart';
 import '../../core/theme/styles.dart' as styles;
 
 class EditExercisePerformanceView extends StatefulWidget {
@@ -25,7 +27,7 @@ class _EditExercisePerformanceViewState
   final TextEditingController setsController = TextEditingController();
   List<TextEditingController> repsController = [];
   List<TextEditingController> loadsController = [];
-  List<TextEditingController> restsController = [];
+  List<num> restsController = [];
 
   bool identicalReps = true;
   bool identicalLoads = true;
@@ -37,29 +39,31 @@ class _EditExercisePerformanceViewState
     var exercisePerformance = widget.workoutExercise.exercisePerformance!;
     var exerciseSets = exercisePerformance.getPerformances();
 
- 
-      /* init les booléens identical*/
-      identicalReps = exercisePerformance.identicalReps();
-      identicalLoads = exercisePerformance.identicalLoads();
-      identicalRests = exercisePerformance.identicalRests();
-      /*init les controlleurs*/
-      setsController.text = exercisePerformance.sets.toString();
-      setsController.addListener(() {
-        //validateur du controlleur des sets (entre 1 et 99)
+    /* init les booléens identical*/
+    identicalReps = exercisePerformance.identicalReps();
+    identicalLoads = exercisePerformance.identicalLoads();
+    identicalRests = exercisePerformance.identicalRests();
+    /*init les controlleurs*/
+    setsController.text = exercisePerformance.sets.toString();
+    setsController.addListener(() {
+      //validateur du controlleur des sets (entre 1 et 99)
+      setState(() {
         if (setsController.text != '' && int.parse(setsController.text) < 1) {
           setsController.text = '1';
         } else if (int.parse(setsController.text) > 99) {
           setsController.text = '99';
         }
       });
-      for (var i = 0; i < exercisePerformance.sets!; i++) {
-        repsController
-            .add(TextEditingController(text: exerciseSets[i].reps.toString()));
-        loadsController
-            .add(TextEditingController(text: exerciseSets[i].load.toString()));
-        restsController
-            .add(TextEditingController(text: exerciseSets[i].rest.toString()));
-      }
+    });
+    for (var i = 0; i < exercisePerformance.sets!; i++) {
+      repsController
+          .add(TextEditingController(text: exerciseSets[i].reps.toString()));
+      loadsController
+          .add(TextEditingController(text: exerciseSets[i].load.toString()));
+      restsController.add((i == 0)
+          ? exerciseSets[exercisePerformance.sets! - 1].rest
+          : exerciseSets[i - 1].rest); //1er de la liste = repos apres series
+    }
 
     super.initState();
   }
@@ -67,12 +71,11 @@ class _EditExercisePerformanceViewState
   @override
   void dispose() {
     /*on dispose tous les controlleurs*/
-    var sets = setsController.text != '' ? int.parse(setsController.text) : 1;
+    var sets = int.tryParse(setsController.text) ?? 1;
     setsController.dispose();
     for (var i = 0; i < sets; i++) {
       repsController[i].dispose();
       loadsController[i].dispose();
-      restsController[i].dispose();
     }
     super.dispose();
   }
@@ -90,8 +93,8 @@ class _EditExercisePerformanceViewState
   }
 
   void updateSets(int value) {
-    if (value > 0 && value < 100) {
-   
+    setState(() {
+      if (value > 0 && value < 100) {
         setsController.text = value.toString();
 
         /*add or remove reps controllers*/
@@ -110,10 +113,13 @@ class _EditExercisePerformanceViewState
         if (restsController.length > value) {
           restsController = restsController.sublist(0, value);
         } else if (restsController.length < value) {
-          addControllers(restsController, value - restsController.length);
+          //indice 0 -> apres les series, >=1 -> entre les series
+          restsController.add(restsController.length > 1
+              ? restsController[1]
+              : restsController[0]);
         }
-    
-    }
+      }
+    });
   }
 
   void updateReps(num value, int index) {
@@ -121,15 +127,11 @@ class _EditExercisePerformanceViewState
       return;
     }
     if (identicalReps) {
-    
-        for (var i = 0; i < repsController.length; i++) {
-          repsController[i].text = value.toString();
-        }
-   
+      for (var i = 0; i < repsController.length; i++) {
+        repsController[i].text = value.toString();
+      }
     } else {
-     
-        repsController[index].text = value.toString();
-   
+      repsController[index].text = value.toString();
     }
   }
 
@@ -141,29 +143,34 @@ class _EditExercisePerformanceViewState
       value = value.toInt();
     }
     if (identicalLoads) {
-    
-        for (var i = 0; i < loadsController.length; i++) {
-          loadsController[i].text = value.toString();
-        }
-    
+      for (var i = 0; i < loadsController.length; i++) {
+        loadsController[i].text = value.toString();
+      }
     } else {
-     
-        loadsController[index].text = value.toString();
-      
+      loadsController[index].text = value.toString();
     }
   }
 
   Future<void> saveData() async {
     List<ExerciseSet> exerciseSets = [];
-    for (var i = 0; i < int.parse(setsController.text); i++) {
+    var sets = int.parse(setsController.text);
+    for (var i = 0; i < sets; i++) {
       exerciseSets.add(
         ExerciseSet(
           reps: identicalReps
               ? num.parse(repsController[0].text)
               : num.parse(repsController[i].text),
-          rest: identicalRests
-              ? num.parse(restsController[0].text)
-              : num.parse(restsController[i].text),
+          rest: () {
+            if (i == sets - 1) {
+              //derniere valeur = 1er de la liste (temps apres series)
+              return restsController[0];
+            } else if (identicalRests && sets > 1) {
+              //si identique, temps = 1er de la liste des temps entre les series (ie indice 1)
+              return restsController[1];
+            }
+            //sinon indice i+1
+            return restsController[i + 1];
+          }(),
           load: identicalLoads
               ? num.parse(loadsController[0].text)
               : num.parse(loadsController[i].text),
@@ -209,7 +216,9 @@ class _EditExercisePerformanceViewState
 
   Widget buildSetsInput() {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      decoration: styles.frame.boxDecoration,
+      margin: styles.frame.margin,
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       child: Column(
         children: [
           Text('Nombre de séries', style: styles.frame.subtitle),
@@ -240,7 +249,9 @@ class _EditExercisePerformanceViewState
 
   Widget buildRepsInput() {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      decoration: styles.frame.boxDecoration,
+      margin: styles.frame.margin,
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       child: Column(
         children: [
           Text('Nombre de répétitions', style: styles.frame.subtitle),
@@ -297,7 +308,9 @@ class _EditExercisePerformanceViewState
 
   Widget buildLoadsInput() {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      decoration: styles.frame.boxDecoration,
+      margin: styles.frame.margin,
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       child: Column(
         children: [
           Text('Charge à soulever', style: styles.frame.subtitle),
@@ -351,7 +364,99 @@ class _EditExercisePerformanceViewState
                 ),
               ],
             ),
-          )
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildTime(int index) {
+    var minutes = getMinutes(restsController[index]);
+    var seconds = getSeconds(restsController[index]);
+    return ClipRRect(
+      borderRadius: styles.frame.borderRadius,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            var picker = CustomDurationPicker();
+            picker.showPicker(
+                context: context,
+                initialTime: restsController[index].toInt(),
+                onConfirm: (time) {
+                  setState(() {
+                    restsController[index] = time;
+                  });
+                });
+          },
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Text(
+                '$minutes " $seconds',
+                style: styles.list.subtitle,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildRestsBetweenInput() {
+    if (setsController.text == '1') {
+      return const SizedBox.shrink();
+    }
+    return Container(
+      decoration: styles.frame.boxDecoration,
+      margin: styles.frame.margin,
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      child: Column(
+        children: [
+          Text('Repos entre les séries', style: styles.frame.subtitle),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Repos identiques',
+                  style: styles.frame.bigText),
+              CustomCheckBox(
+                value: identicalRests,
+                onChanged: (_) {
+                  setState(() {
+                    identicalRests = !identicalRests;
+                  });
+                },
+              ),
+            ],
+          ),
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            //si le nombre de sets est vide, on met 1 par défaut
+            itemCount: (setsController.text == '' || setsController.text == '1')
+                ? 0
+                : (identicalRests ? 1 : int.parse(setsController.text) - 1),
+            itemBuilder: (context, index) => buildTime(index + 1),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildRestAfterInput() {
+    return Container(
+      decoration: styles.frame.boxDecoration,
+      margin: styles.frame.margin,
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      child: Column(
+        children: [
+          Text(
+              setsController.text == '1'
+                  ? 'Repos après la série'
+                  : 'Repos après les séries',
+              style: styles.frame.subtitle),
+          buildTime(0)
         ],
       ),
     );
@@ -374,26 +479,19 @@ class _EditExercisePerformanceViewState
             child: Column(
               children: [
                 ExerciseImage(
-                    imageId: widget.workoutExercise.exercise?.imageId),
+                  imageId: widget.workoutExercise.exercise?.imageId,
+                  size: 120,
+                ),
+                styles.form.littleVoidSpace,
                 Text(widget.workoutExercise.exercise?.name ?? "",
                     style: styles.frame.title),
                 Column(
                   children: [
-                    Container(
-                      decoration: styles.frame.boxDecoration,
-                      margin: styles.frame.margin,
-                      child: buildSetsInput(),
-                    ),
-                    Container(
-                      decoration: styles.frame.boxDecoration,
-                      margin: styles.frame.margin,
-                      child: buildRepsInput(),
-                    ),
-                    Container(
-                      decoration: styles.frame.boxDecoration,
-                      margin: styles.frame.margin,
-                      child: buildLoadsInput(),
-                    ),
+                    buildSetsInput(),
+                    buildRepsInput(),
+                    buildLoadsInput(),
+                    buildRestsBetweenInput(),
+                    buildRestAfterInput()
                   ],
                 ),
               ],
