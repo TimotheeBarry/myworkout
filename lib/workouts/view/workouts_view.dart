@@ -72,13 +72,7 @@ class WorkoutsViewState extends State<WorkoutsView> {
   }
 
   Widget buildWorkout(BuildContext context, Workout workout) {
-    return WillPopScope(
-        onWillPop: () async {
-          workoutsSelected = [];
-          widget.updateParent();
-          return false;
-        },
-        child: Container(
+    return Container(
           decoration: styles.list.separator,
           child: CustomListTile(
               title: Text(
@@ -113,7 +107,7 @@ class WorkoutsViewState extends State<WorkoutsView> {
                   );
                 }
               }),
-        ));
+        );
   }
 
   Widget buildAction(
@@ -168,12 +162,18 @@ class WorkoutsViewState extends State<WorkoutsView> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return WillPopScope(
+        onWillPop: () async {
+          workoutsSelected = [];
+          widget.updateParent();
+          return false;
+        },
+        child: ListView.builder(
       shrinkWrap: true,
       itemCount: workoutGroups.length,
       itemBuilder: (context, i) {
         return buildGroup(context, workoutGroups[i]);
       },
-    );
+    ),);
   }
 }

@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:myworkout/core/util/functions.dart';
 import 'package:myworkout/workouts/model/entity/exercise_set.dart';
 
@@ -14,7 +13,7 @@ class ExercisePerformance {
     this.loads = "0",
     this.rests = "0",
   });
-  
+
   bool identicalReps() {
     var list = reps!.split('-').map((e) => num.parse(e)).toList();
     return (list.reduce(min) == list.reduce(max));
@@ -27,6 +26,9 @@ class ExercisePerformance {
 
   bool identicalRests() {
     var list = rests!.split('-').map((e) => num.parse(e)).toList();
+    if (list.length > 1) {
+      list = list.sublist(0, list.length - 1);
+    }
     return (list.reduce(min) == list.reduce(max));
   }
 
@@ -46,18 +48,19 @@ class ExercisePerformance {
     return "$loads kg";
   }
 
-  String secondsToString(int sec) {
-    var minutes = getMinutes(sec);
-    var seconds = getSeconds(sec);
-    return "${minutes != "00" ? "$minutes" : ""}\"$seconds";
-  }
+  
 
   String restToString() {
     var list = rests!.split('-').map((e) => num.parse(e)).toList();
-    if (list.reduce(min) == list.reduce(max)) {
-      return secondsToString(list.first.toInt());
+    var restAfter = list.last;
+    list = list.sublist(0, list.length - 1);
+    if (list.isEmpty) {
+      return secondsToString(restAfter.toInt());
     }
-    return rests!;
+    if (list.reduce(min) == list.reduce(max)) {
+      return '${secondsToString(list.first.toInt())} | ${secondsToString(restAfter.toInt())}';
+    }
+    return '${list.map((e) => secondsToString(e.toInt())).join(' | ')} | ${secondsToString(restAfter.toInt())}';
   }
 
   ExercisePerformance getFromSets(List<ExerciseSet> exerciseSets) {

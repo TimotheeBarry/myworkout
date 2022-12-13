@@ -121,23 +121,23 @@ class _EditWorkoutViewState extends State<EditWorkoutView> {
       child: Column(
         children: [
           Row(children: [
-            FaIcon(FontAwesomeIcons.chartLine,
-                size: 12, color: styles.frame.primaryTextColor),
+            FaIcon(FontAwesomeIcons.arrowRotateLeft,
+                size: 14, color: styles.frame.primaryTextColor),
             const SizedBox(width: 8),
             Text(workoutExercise.exercisePerformance!.repsToString(),
                 style: styles.frame.text)
           ]),
           Row(children: [
             FaIcon(FontAwesomeIcons.weightHanging,
-                size: 12, color: styles.frame.primaryTextColor),
+                size: 14, color: styles.frame.primaryTextColor),
             const SizedBox(width: 8),
             Text(workoutExercise.exercisePerformance!.loadToString(),
                 style: styles.frame.text)
           ]),
           Row(children: [
-            FaIcon(FontAwesomeIcons.hourglass,
-                size: 12, color: styles.frame.primaryTextColor),
-            const SizedBox(width: 11),
+            FaIcon(FontAwesomeIcons.stopwatch,
+                size: 14, color: styles.frame.primaryTextColor),
+            const SizedBox(width: 9),
             Text(workoutExercise.exercisePerformance!.restToString(),
                 style: styles.frame.text)
           ]),

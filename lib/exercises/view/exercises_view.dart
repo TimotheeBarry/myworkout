@@ -110,13 +110,7 @@ class ExercisesViewState extends State<ExercisesView> {
   }
 
   Widget buildExercise(Exercise exercise) {
-    return WillPopScope(
-      onWillPop: () async {
-        exercisesSelected = [];
-        widget.updateParent();
-        return false;
-      },
-      child: Container(
+     return Container(
         decoration: styles.list.separator,
         child: CustomListTile(
           title: Text(
@@ -156,7 +150,7 @@ class ExercisesViewState extends State<ExercisesView> {
             }
           },
         ),
-      ),
+     
     );
   }
 
@@ -188,7 +182,13 @@ class ExercisesViewState extends State<ExercisesView> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return WillPopScope(
+      onWillPop: () async {
+        exercisesSelected = [];
+        widget.updateParent();
+        return false;
+      },
+      child: Stack(
       children: [
         Container(
           margin: const EdgeInsets.only(top: 54),
@@ -228,6 +228,6 @@ class ExercisesViewState extends State<ExercisesView> {
               )),
         )
       ],
-    );
+    ),);
   }
 }

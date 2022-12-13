@@ -6,8 +6,8 @@ class ExerciseSet {
   final num rest;
 
   ExerciseSet({
-    required this.reps,
-    required this.load,
-    required this.rest,
+    this.reps = 0,
+    this.load = 0,
+    this.rest = 0,
   });
 }
