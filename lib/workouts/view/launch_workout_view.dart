@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:myworkout/core/util/button_transparent.dart';
 import 'package:myworkout/core/util/custom_app_bar.dart';
 import 'package:myworkout/core/util/custom_button.dart';
 import 'package:myworkout/exercises/util/exercise_image.dart';
@@ -15,6 +13,7 @@ import 'package:myworkout/workouts/util/next_exercise_buttons.dart';
 import 'package:myworkout/workouts/util/performance_frame.dart';
 import 'package:myworkout/workouts/util/title_subtitle.dart';
 import 'package:myworkout/workouts/view/workout_session_view.dart';
+import 'dart:math';
 import '../../core/theme/styles.dart' as styles;
 
 class LaunchWorkoutView extends StatefulWidget {
@@ -125,7 +124,11 @@ class LaunchWorkoutViewState extends State<LaunchWorkoutView> {
                 imageId: workoutExercises.isNotEmpty
                     ? workoutExercises[0].exercise!.imageId
                     : null,
-                size: 180,
+                size: min(
+                    MediaQuery.of(context).size.width / 2 -
+                        styles.page.marginValue,
+                    MediaQuery.of(context).size.height / 2 -
+                        styles.page.marginValue),
               ),
               styles.form.mediumVoidSpace,
               PerformanceFrame(

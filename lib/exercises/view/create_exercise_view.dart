@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:myworkout/core/util/custom_app_bar.dart';
 import 'package:myworkout/core/util/custom_button.dart';
+import 'package:myworkout/core/util/edit_images_buttons.dart';
 import 'package:myworkout/core/util/input_field.dart';
 import 'package:myworkout/exercises/model/dao/exercises_dao.dart';
 import 'package:myworkout/exercises/model/entity/exercise.dart';
@@ -77,46 +80,6 @@ class _CreateExerciseViewState extends State<CreateExerciseView> {
         editedExercise = editedExercise.copy(name: name);
       },
     );
-  }
-
-  Widget buildImageIcons() {
-    return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: edit
-            ? [
-                IconButton(
-                  icon: Icon(Icons.image,
-                      size: 40, color: styles.frame.primaryTextColor),
-                  onPressed: () {},
-                  padding: EdgeInsets.zero,
-                ),
-                IconButton(
-                  icon: Icon(Icons.photo_camera,
-                      size: 40, color: styles.frame.primaryTextColor),
-                  onPressed: () {},
-                  padding: EdgeInsets.zero,
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete,
-                      size: 40, color: styles.frame.primaryTextColor),
-                  onPressed: () {},
-                  padding: EdgeInsets.zero,
-                ),
-              ]
-            : [
-                IconButton(
-                  icon: Icon(Icons.image,
-                      size: 40, color: styles.frame.primaryTextColor),
-                  onPressed: () {},
-                  padding: EdgeInsets.zero,
-                ),
-                IconButton(
-                  icon: Icon(Icons.photo_camera,
-                      size: 40, color: styles.frame.primaryTextColor),
-                  onPressed: () {},
-                  padding: EdgeInsets.zero,
-                ),
-              ]);
   }
 
   Widget buildGroupsSelector() {
@@ -200,7 +163,7 @@ class _CreateExerciseViewState extends State<CreateExerciseView> {
             title: edit ? 'Editer l\'exercice' : 'Créer un exercice'),
         body: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: styles.page.margin,
             child: Column(
               children: [
                 buildNameInput(),
@@ -209,11 +172,15 @@ class _CreateExerciseViewState extends State<CreateExerciseView> {
                   tag: widget.exercise?.imageId ?? 0,
                   child: ExerciseImage(
                     imageId: widget.exercise?.imageId,
-                    size: 180,
+                    size: min(
+                        MediaQuery.of(context).size.width / 2 -
+                            styles.page.marginValue,
+                        MediaQuery.of(context).size.height / 2 -
+                            styles.page.marginValue),
                   ),
                 ),
                 styles.form.mediumVoidSpace,
-                buildImageIcons(),
+                EditImagesButtons(edit: edit),
                 styles.form.mediumVoidSpace,
                 buildGroupsSelector(),
                 styles.form.mediumVoidSpace,

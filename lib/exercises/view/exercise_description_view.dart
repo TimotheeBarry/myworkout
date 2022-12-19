@@ -1,5 +1,5 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:myworkout/core/util/custom_app_bar.dart';
 import 'package:myworkout/exercises/model/dao/exercises_dao.dart';
 import 'package:myworkout/exercises/model/entity/exercise.dart';
@@ -40,34 +40,35 @@ class _ExerciseDescriptionViewState extends State<ExerciseDescriptionView> {
   }
 
   Widget buildTitle() {
-    return Center(
-      child: Text(exercise.name ?? "", style: styles.frame.title),
+    return Container(
+      child: Text(
+        exercise.name ?? "",
+        style: styles.frame.title,
+      ),
     );
   }
 
   Widget buildDescriptionFrame() {
     return Container(
-      margin: styles.frame.margin,
       child: Material(
         color: Colors.transparent,
         child: Ink(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
           decoration: styles.frame.boxDecoration,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(),
-              Text('Description:', style: styles.frame.subtitle),
+              Center(child: Text('Description', style: styles.frame.subtitle)),
               styles.form.littleVoidSpace,
               Text(
                 exercise.description ??
-                    '''Lie on a flat bench with your feet flat on the floor, keep your back flat on the bench.,
-      Grasp the bar a little wider than shoulder width apart.,
-      Raise the barbell above your body and move it over the middle of your chest, this is your starting position.,
-      Lower the bar down so it just touches your chest.,
-      Raise the bar till your arms are fully extended and your elbows are locked.,
-      Return to starting position.''',
-                style: styles.list.description,
+                    '''\u2022  Lie on a flat bench with your feet flat on the floor, keep your back flat on the bench.
+\u2022  Grasp the bar a little wider than shoulder width apart.
+\u2022  Raise the barbell above your body and move it over the middle of your chest, this is your starting position.
+\u2022  Lower the bar down so it just touches your chest.
+\u2022  Raise the bar till your arms are fully extended and your elbows are locked.
+\u2022  Return to starting position.''',
+                style: styles.frame.text,
               )
             ],
           ),
@@ -79,43 +80,49 @@ class _ExerciseDescriptionViewState extends State<ExerciseDescriptionView> {
   buildAdvancedInfoCell(String title, List<String> items) {
     List<Widget> _items =
         items.map((item) => Text(item, style: styles.frame.bigText)).toList();
-    return Container(
-      margin: const EdgeInsets.all(12),
-      child: Column(
-        children: [
-          Text(title, style: styles.frame.subtitle),
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: _items)
-        ],
+    return Expanded(
+      child: Container(
+        decoration: styles.frame.boxDecoration,
+        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Text(title, style: styles.frame.subtitle),
+            styles.form.littleVoidSpace,
+            Column(
+                crossAxisAlignment: CrossAxisAlignment.start, children: _items)
+          ],
+        ),
       ),
     );
   }
 
-  buildAdvancedInfosFrame() {
+  buildAdvancedInfosFrames() {
     return Container(
-      margin: styles.frame.margin,
-      child: Material(
-        color: Colors.transparent,
-        child: Ink(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          decoration: styles.frame.boxDecoration,
-          child: Table(
-            defaultVerticalAlignment: TableCellVerticalAlignment.top,
-            children: [
-              TableRow(
-                children: [
-                  buildAdvancedInfoCell('Principal', ['Pectoraux']),
-                  buildAdvancedInfoCell('Secondaire', ['Epaules', 'Triceps']),
-                ],
-              ),
-              TableRow(
-                children: [
-                  buildAdvancedInfoCell('Type', ['Poly-articulaire']),
-                  buildAdvancedInfoCell('Equipement', ['Banc']),
-                ],
-              )
-            ],
+      child: Column(
+        children: [
+          IntrinsicHeight(
+            child: Row(
+              children: [
+                buildAdvancedInfoCell('Principal', ['Pectoraux']),
+                const SizedBox(width: 8),
+                buildAdvancedInfoCell(
+                    'Secondaire', ['\u2022  Epaules', '\u2022  Triceps']),
+              ],
+            ),
           ),
-        ),
+          styles.form.littleVoidSpace,
+          IntrinsicHeight(
+            child: Row(
+              children: [
+                buildAdvancedInfoCell('Type', ['Poly-articulaire']),
+                const SizedBox(width: 8),
+                buildAdvancedInfoCell(
+                    'Equipement', ['\u2022  Banc', '\u2022  Barre droite']),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
@@ -146,16 +153,26 @@ class _ExerciseDescriptionViewState extends State<ExerciseDescriptionView> {
           ],
         ),
         body: SingleChildScrollView(
+          padding: styles.page.margin,
           child: Column(
             children: [
-              Hero(
-                tag: exercise.imageId ?? 0,
-                child: ExerciseImage(imageId: exercise.imageId, size: 180),
-              ),
-              styles.form.mediumVoidSpace,
+              styles.form.littleVoidSpace,
               buildTitle(),
               styles.form.littleVoidSpace,
-              buildAdvancedInfosFrame(),
+              Hero(
+                tag: exercise.imageId ?? 0,
+                child: ExerciseImage(
+                  imageId: exercise.imageId,
+                  size: min(
+                      MediaQuery.of(context).size.width / 2 -
+                          styles.page.marginValue,
+                      MediaQuery.of(context).size.height / 2 -
+                          styles.page.marginValue),
+                ),
+              ),
+              styles.form.littleVoidSpace,
+              buildAdvancedInfosFrames(),
+              styles.form.littleVoidSpace,
               buildDescriptionFrame(),
             ],
           ),

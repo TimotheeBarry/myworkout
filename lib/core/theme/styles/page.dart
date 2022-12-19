@@ -11,5 +11,6 @@ class Page {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter),
       );
-  EdgeInsets margin = EdgeInsets.symmetric(horizontal: 10);
+  double get marginValue => 10;
+  EdgeInsets get margin => EdgeInsets.symmetric(horizontal: marginValue);
 }

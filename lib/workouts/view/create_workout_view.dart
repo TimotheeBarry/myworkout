@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myworkout/core/util/custom_app_bar.dart';
 import 'package:myworkout/core/util/custom_button.dart';
+import 'package:myworkout/core/util/edit_images_buttons.dart';
 import 'package:myworkout/core/util/input_field.dart';
 import 'package:myworkout/workouts/model/dao/workouts_dao.dart';
 import 'package:myworkout/workouts/model/entity/workout.dart';
@@ -46,46 +47,6 @@ class _CreateWorkoutViewState extends State<CreateWorkoutView> {
         editedWorkout = editedWorkout.copy(name: name);
       },
     );
-  }
-
-  Widget buildImageIcons() {
-    return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: edit
-            ? [
-                IconButton(
-                  icon: Icon(Icons.image,
-                      size: 40, color: styles.frame.primaryTextColor),
-                  onPressed: () {},
-                  padding: EdgeInsets.zero,
-                ),
-                IconButton(
-                  icon: Icon(Icons.photo_camera,
-                      size: 40, color: styles.frame.primaryTextColor),
-                  onPressed: () {},
-                  padding: EdgeInsets.zero,
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete,
-                      size: 40, color: styles.frame.primaryTextColor),
-                  onPressed: () {},
-                  padding: EdgeInsets.zero,
-                ),
-              ]
-            : [
-                IconButton(
-                  icon: Icon(Icons.image,
-                      size: 40, color: styles.frame.primaryTextColor),
-                  onPressed: () {},
-                  padding: EdgeInsets.zero,
-                ),
-                IconButton(
-                  icon: Icon(Icons.photo_camera,
-                      size: 40, color: styles.frame.primaryTextColor),
-                  onPressed: () {},
-                  padding: EdgeInsets.zero,
-                ),
-              ]);
   }
 
   Widget buildGroupsSelector() {
@@ -204,7 +165,7 @@ class _CreateWorkoutViewState extends State<CreateWorkoutView> {
             CustomAppBar(title: edit ? 'Editer la séance' : 'Créer une séance'),
         body: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: styles.page.margin,
             child: Column(
               children: [
                 buildNameInput(),
@@ -213,7 +174,7 @@ class _CreateWorkoutViewState extends State<CreateWorkoutView> {
                   fallbackHeight: 200,
                 ),
                 styles.form.mediumVoidSpace,
-                buildImageIcons(),
+                EditImagesButtons(edit: edit),
                 styles.form.mediumVoidSpace,
                 buildGroupsSelector(),
                 styles.form.mediumVoidSpace,

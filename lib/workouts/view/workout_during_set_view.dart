@@ -5,6 +5,7 @@ import 'package:myworkout/workouts/model/entity/exercise_set.dart';
 import 'package:myworkout/workouts/util/performance_frame.dart';
 import 'package:myworkout/workouts/util/set_count.dart';
 import 'package:myworkout/workouts/util/title_subtitle.dart';
+import 'dart:math';
 import '../../core/theme/styles.dart' as styles;
 
 class WorkoutDuringSetView extends StatefulWidget {
@@ -48,17 +49,12 @@ class _WorkoutDuringSetViewState extends State<WorkoutDuringSetView> {
             ],
           ),
           styles.form.littleVoidSpace,
-          ClipRRect(
-            borderRadius: styles.frame.borderRadius,
-            child: Container(
-              color: Colors.white,
-              child: Center(
-                child: ExerciseImage(
-                  imageId: widget.exercise.imageId,
-                  size: 180,
-                ),
-              ),
-            ),
+          ExerciseImage(
+            imageId: widget.exercise.imageId,
+            size: min(
+                MediaQuery.of(context).size.width / 2 - styles.page.marginValue,
+                MediaQuery.of(context).size.height / 2 -
+                    styles.page.marginValue),
           ),
           styles.form.mediumVoidSpace,
           PerformanceFrame(

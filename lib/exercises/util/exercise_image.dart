@@ -12,7 +12,7 @@ class ExerciseImage extends StatelessWidget {
     if (imageId == null) {
       return SizedBox(
         width: 2 * size,
-        height:size,
+        height: size,
         child: const Placeholder(),
       );
     }
@@ -20,22 +20,17 @@ class ExerciseImage extends StatelessWidget {
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(4 * size / 60),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.asset(
-            'assets/images/png/$id-relaxation.png',
-            height: size,
-            width: size,
-            fit: BoxFit.cover,
-          ),
-          Image.asset(
-            'assets/images/png/$id-tension.png',
-            height: size,
-            width: size,
-            fit: BoxFit.cover,
-          ),
-        ],
+      child: Container(
+        color: Colors.white,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset('assets/images/png/$id-relaxation.png',
+                height: size, width: size, fit: BoxFit.contain),
+            Image.asset('assets/images/png/$id-tension.png',
+                height: size, width: size, fit: BoxFit.contain),
+          ],
+        ),
       ),
     );
   }

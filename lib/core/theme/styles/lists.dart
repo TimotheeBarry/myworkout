@@ -4,6 +4,7 @@ class Lists {
   Lists();
   EdgeInsets get margin =>
       const EdgeInsets.symmetric(vertical: 2, horizontal: 10);
+  EdgeInsets get marginV => const EdgeInsets.symmetric(vertical: 2);
   BorderRadius get borderRadius => BorderRadius.circular(16);
   Color get backgroundColor => Colors.white12;
   TextStyle get title => const TextStyle(

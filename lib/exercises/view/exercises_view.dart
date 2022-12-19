@@ -70,7 +70,7 @@ class ExercisesViewState extends State<ExercisesView> {
         exerciseGroup.getFilteredExercises(searchInput);
 
     return Container(
-      margin: styles.list.margin,
+      margin: styles.list.marginV,
       child: ClipRRect(
         borderRadius: styles.list.borderRadius,
         child: Material(
@@ -110,47 +110,46 @@ class ExercisesViewState extends State<ExercisesView> {
   }
 
   Widget buildExercise(Exercise exercise) {
-     return Container(
-        decoration: styles.list.separator,
-        child: CustomListTile(
-          title: Text(
-            exercise.name ?? "",
-            style: styles.list.subtitle,
-          ),
-          subtitle: Text(
-            exercise.description ??
-                "${"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat".substring(0, 50)}...",
-            style: styles.list.description,
-            overflow: TextOverflow.clip,
-          ),
-          padding: const EdgeInsets.only(left: 8),
-          middle: ExerciseImage(imageId: exercise.imageId),
-          action: buildAction(exercise: exercise),
-          onLongPress: () {
-            exercisesSelected.add(exercise.id!);
-            widget.updateParent();
-          },
-          onTap: () {
-            /*check ou uncheck workout si en est en édition, sinon on va sur la page edition*/
-            if (exercisesSelected.isNotEmpty) {
-              if (exercisesSelected.contains(exercise.id)) {
-                exercisesSelected.remove(exercise.id);
-              } else {
-                exercisesSelected.add(exercise.id!);
-              }
-              widget.updateParent();
-            } else {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      ExerciseDescriptionView(exerciseId: exercise.id!),
-                ),
-              ).then((_) => synchronize());
-            }
-          },
+    return Container(
+      decoration: styles.list.separator,
+      child: CustomListTile(
+        title: Text(
+          exercise.name ?? "",
+          style: styles.list.subtitle,
         ),
-     
+        subtitle: Text(
+          exercise.description ??
+              "${"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat".substring(0, 50)}...",
+          style: styles.list.description,
+          overflow: TextOverflow.clip,
+        ),
+        padding: const EdgeInsets.only(left: 8),
+        middle: ExerciseImage(imageId: exercise.imageId),
+        action: buildAction(exercise: exercise),
+        onLongPress: () {
+          exercisesSelected.add(exercise.id!);
+          widget.updateParent();
+        },
+        onTap: () {
+          /*check ou uncheck workout si en est en édition, sinon on va sur la page edition*/
+          if (exercisesSelected.isNotEmpty) {
+            if (exercisesSelected.contains(exercise.id)) {
+              exercisesSelected.remove(exercise.id);
+            } else {
+              exercisesSelected.add(exercise.id!);
+            }
+            widget.updateParent();
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    ExerciseDescriptionView(exerciseId: exercise.id!),
+              ),
+            ).then((_) => synchronize());
+          }
+        },
+      ),
     );
   }
 
@@ -189,45 +188,45 @@ class ExercisesViewState extends State<ExercisesView> {
         return false;
       },
       child: Stack(
-      children: [
-        Container(
-          margin: const EdgeInsets.only(top: 54),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: exerciseGroups.length,
-                  itemBuilder: (context, i) {
-                    return buildGroup(exerciseGroups[i]);
-                  },
-                ),
-                //espace vide pour pouvoir scroller au dessus du floating action button
-                const SizedBox(height: 80),
-              ],
+        children: [
+          Container(
+            margin: const EdgeInsets.only(top: 54),
+            child: SingleChildScrollView(
+              padding: styles.page.margin,
+              child: Column(
+                children: [
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: exerciseGroups.length,
+                    itemBuilder: (context, i) {
+                      return buildGroup(exerciseGroups[i]);
+                    },
+                  ),
+                  //espace vide pour pouvoir scroller au dessus du floating action button
+                  const SizedBox(height: 80),
+                ],
+              ),
             ),
           ),
-        ),
-        Container(
-          margin: styles.page.margin,
-          child: Container(
-              margin: styles.page.margin,
-              child: SearchBar(
-                onChanged: search,
-                onTapFilter: () {
-                  //unfocus la barre de recherche si jamais on était dessus pour pas rouvrir le clavier
-                  FocusManager.instance.primaryFocus?.unfocus();
-                  //ouvre le popup des filtres avec une animation
-                  Navigator.of(context).push(
-                    HeroDialogRoute(builder: (context) {
-                      return const FilterPopUp();
-                    }),
-                  );
-                },
-              )),
-        )
-      ],
-    ),);
+          Container(
+            margin: styles.page.margin,
+            child: SearchBar(
+              onChanged: search,
+              onTapFilter: () {
+                //unfocus la barre de recherche si jamais on était dessus pour pas rouvrir le clavier
+                FocusManager.instance.primaryFocus?.unfocus();
+                //ouvre le popup des filtres avec une animation
+                Navigator.of(context).push(
+                  HeroDialogRoute(builder: (context) {
+                    return const FilterPopUp();
+                  }),
+                );
+              },
+            ),
+          )
+        ],
+      ),
+    );
   }
 }

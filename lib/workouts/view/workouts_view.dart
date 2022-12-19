@@ -39,7 +39,7 @@ class WorkoutsViewState extends State<WorkoutsView> {
   Widget buildGroup(BuildContext context, WorkoutGroup workoutGroup) {
     List<Workout> workoutsList = workoutGroup.workouts!;
     return Container(
-      margin: styles.list.margin,
+      margin: styles.list.marginV,
       child: ClipRRect(
         borderRadius: styles.list.borderRadius,
         child: Material(
@@ -169,6 +169,7 @@ class WorkoutsViewState extends State<WorkoutsView> {
           return false;
         },
         child: ListView.builder(
+          padding: styles.page.margin,
       shrinkWrap: true,
       itemCount: workoutGroups.length,
       itemBuilder: (context, i) {
