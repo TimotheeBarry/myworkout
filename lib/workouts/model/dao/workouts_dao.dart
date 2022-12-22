@@ -34,9 +34,22 @@ class WorkoutsDao {
   Future<List<Workout>> getWorkouts() async {
     /*récupérer les données de tous les workouts*/
     var db = await dbProvider.db;
-    List<Map<String, dynamic>> result;
-
-    result = await db!.query('workouts', columns: WorkoutFields.values);
+    var query = '''
+    SELECT
+      workouts.id,
+      workouts.name,
+      workouts.group_id,
+      workouts.description,
+      workouts.still_exists,
+      session.last_date
+    FROM
+      workouts
+    LEFT JOIN
+      (SELECT workout_id, MAX(date) as last_date FROM workout_session GROUP BY workout_id) AS session
+    ON 
+      workouts.id = session.workout_id;
+    ''';
+    var result = await db!.rawQuery(query);
 
     List<Workout> workouts = result.isNotEmpty
         ? result.map((item) => Workout.fromJSON(item)).toList()

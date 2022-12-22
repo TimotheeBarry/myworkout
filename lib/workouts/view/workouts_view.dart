@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:myworkout/core/util/custom_check_box.dart';
 import 'package:myworkout/core/util/custom_list_tile.dart';
 import 'package:myworkout/workouts/model/dao/workouts_dao.dart';
@@ -7,7 +7,6 @@ import 'package:myworkout/workouts/model/entity/workout.dart';
 import 'package:myworkout/workouts/model/entity/workout_group.dart';
 import 'package:myworkout/workouts/view/edit_workout_view.dart';
 import 'package:myworkout/workouts/view/launch_workout_view.dart';
-import 'package:myworkout/workouts/view/workout_session_view.dart';
 import '../../core/theme/styles.dart' as styles;
 
 class WorkoutsView extends StatefulWidget {
@@ -73,41 +72,42 @@ class WorkoutsViewState extends State<WorkoutsView> {
 
   Widget buildWorkout(BuildContext context, Workout workout) {
     return Container(
-          decoration: styles.list.separator,
-          child: CustomListTile(
-              title: Text(
-                workout.name ?? "",
-                style: styles.list.subtitle,
-              ),
-              subtitle: Text('Dernière séance: 03/11/2022 (1h06)',
-                  style: styles.list.description),
-              action: buildAction(context: context, workout: workout),
-              padding: const EdgeInsets.only(left: 12),
-              onLongPress: () {
-                /*ajout de la séance dans la liste des séances sélectionnées*/
+      decoration: styles.list.separator,
+      child: CustomListTile(
+          title: Text(
+            workout.name ?? "",
+            style: styles.list.subtitle,
+          ),
+          subtitle: workout.lastSessionDate != null
+              ? Text('Dernière séance: ${DateFormat('dd/MM/yyyy').format(workout.lastSessionDate!)}',
+                  style: styles.list.description)
+              : const SizedBox.shrink(),
+          action: buildAction(context: context, workout: workout),
+          padding: const EdgeInsets.only(left: 12),
+          onLongPress: () {
+            /*ajout de la séance dans la liste des séances sélectionnées*/
 
+            workoutsSelected.add(workout.id!);
+            widget.updateParent();
+          },
+          onTap: () {
+            /*check ou uncheck workout si en est en édition, sinon on va sur la page edition*/
+            if (workoutsSelected.isNotEmpty) {
+              if (workoutsSelected.contains(workout.id)) {
+                workoutsSelected.remove(workout.id);
+              } else {
                 workoutsSelected.add(workout.id!);
-                widget.updateParent();
-              },
-              onTap: () {
-                /*check ou uncheck workout si en est en édition, sinon on va sur la page edition*/
-                if (workoutsSelected.isNotEmpty) {
-                  if (workoutsSelected.contains(workout.id)) {
-                    workoutsSelected.remove(workout.id);
-                  } else {
-                    workoutsSelected.add(workout.id!);
-                  }
-                  widget.updateParent();
-                } else {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            EditWorkoutView(workout: workout)),
-                  );
-                }
-              }),
-        );
+              }
+              widget.updateParent();
+            } else {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => EditWorkoutView(workout: workout)),
+              );
+            }
+          }),
+    );
   }
 
   Widget buildAction(
@@ -132,7 +132,7 @@ class WorkoutsViewState extends State<WorkoutsView> {
             var workoutExercises = await dao.getWorkoutSessionGoals(workout);
             if (workoutExercises.isNotEmpty) {
               //si la séance est vide on ne peut pas aller dessus
-               Navigator.push(
+              Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => LaunchWorkoutView(workout: workout)),
@@ -163,18 +163,19 @@ class WorkoutsViewState extends State<WorkoutsView> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-        onWillPop: () async {
-          workoutsSelected = [];
-          widget.updateParent();
-          return false;
-        },
-        child: ListView.builder(
-          padding: styles.page.margin,
-      shrinkWrap: true,
-      itemCount: workoutGroups.length,
-      itemBuilder: (context, i) {
-        return buildGroup(context, workoutGroups[i]);
+      onWillPop: () async {
+        workoutsSelected = [];
+        widget.updateParent();
+        return false;
       },
-    ),);
+      child: ListView.builder(
+        padding: styles.page.margin,
+        shrinkWrap: true,
+        itemCount: workoutGroups.length,
+        itemBuilder: (context, i) {
+          return buildGroup(context, workoutGroups[i]);
+        },
+      ),
+    );
   }
 }

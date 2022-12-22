@@ -17,7 +17,7 @@ class TitleSubtitle extends StatelessWidget {
         Text(
           subtitle,
           style: const TextStyle(
-              color: Colors.white70, fontSize: 16, fontWeight: FontWeight.w700),
+              color: Colors.white60, fontSize: 16, fontWeight: FontWeight.w700),
         ),
       ],
     );
