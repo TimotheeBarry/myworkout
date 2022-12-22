@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:myworkout/core/util/custom_app_bar.dart';
-import 'package:myworkout/core/util/custom_button.dart';
 import 'package:myworkout/core/util/custom_check_box.dart';
 import 'package:myworkout/core/util/custom_floating_button.dart';
 import 'package:myworkout/core/util/custom_list_tile.dart';
@@ -109,11 +108,11 @@ class _SelectExercisesViewState extends State<SelectExercisesView> {
                   Theme.of(context).copyWith(dividerColor: Colors.transparent),
               child: ExpansionTile(
                 key: ValueKey('${exerciseGroup.id}${searchInput.isNotEmpty}'),
-                leading: const SizedBox(
-                  height: 40,
-                  width: 40,
-                  child: Placeholder(),
-                ),
+                // leading: const SizedBox(
+                //   height: 40,
+                //   width: 40,
+                //   child: Placeholder(),
+                // ),
                 initiallyExpanded: searchInput.isNotEmpty,
                 title: Text(exerciseGroup.name ?? "", style: styles.list.title),
                 trailing: Text(exercisesList.length.toString(),
@@ -142,14 +141,18 @@ class _SelectExercisesViewState extends State<SelectExercisesView> {
       child: CustomListTile(
         title: Text(
           exercise.name ?? "",
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
           style: styles.list.subtitle,
         ),
-        subtitle: Text(
-          exercise.description ??
-              "${"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat".substring(0, 50)}...",
-          style: styles.list.description,
-          overflow: TextOverflow.clip,
-        ),
+        subtitle: (exercise.primer != null)
+            ? Text(
+                exercise.primer!,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: styles.list.description,
+              )
+            : null,
         padding: const EdgeInsets.only(left: 8),
         middle: ExerciseImage(imageId: exercise.imageId),
         action: buildAction(exercise: exercise),

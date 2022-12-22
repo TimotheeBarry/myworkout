@@ -43,7 +43,6 @@ class WorkoutExercise {
         exercise: Exercise(
           id: json[WorkoutExerciseFields.exerciseId] as int?,
           name: json[ExerciseFields.name] as String?,
-          description: json[ExerciseFields.description] as String?,
           imageId: json[ExerciseFields.imageId] as int?,
         ),
         exercisePerformance: ExercisePerformance(
@@ -67,8 +66,10 @@ class WorkoutExercise {
   List<ExerciseSet> getExerciseSets() {
     var repsList =
         exercisePerformance!.reps!.split('-').map((e) => int.parse(e)).toList();
-    var loadList =
-        exercisePerformance!.loads!.split('-').map((e) => num.parse(e)).toList();
+    var loadList = exercisePerformance!.loads!
+        .split('-')
+        .map((e) => num.parse(e))
+        .toList();
     var restList = exercisePerformance!.rests!
         .split('-')
         .map((e) => int.parse(e))

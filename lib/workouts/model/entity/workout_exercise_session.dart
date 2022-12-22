@@ -52,7 +52,6 @@ class WorkoutExerciseSession {
         exercise: Exercise(
           id: json[WorkoutExerciseSessionFields.exerciseId] as int?,
           name: json[ExerciseFields.name] as String?,
-          description: json[ExerciseFields.description] as String?,
           imageId: json[ExerciseFields.imageId] as int?,
         ),
         exercisePerformanceGoal: ExercisePerformance(

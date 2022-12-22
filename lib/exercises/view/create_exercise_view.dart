@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:myworkout/core/util/custom_app_bar.dart';
 import 'package:myworkout/core/util/custom_button.dart';
 import 'package:myworkout/core/util/edit_images_buttons.dart';
@@ -145,10 +144,10 @@ class _CreateExerciseViewState extends State<CreateExerciseView> {
   Widget buildDescriptionArea() {
     return InputField(
       maxLines: 7,
-      initialValue: widget.exercise?.description ?? "",
+      initialValue: widget.exercise?.steps?.join('/').toString() ,
       hintText: "Description...",
-      onChanged: (String description) {
-        editedExercise = editedExercise.copy(description: description);
+      onChanged: (String steps) {
+        editedExercise = editedExercise.copy(steps: steps.split('/').toList());
       },
     );
   }

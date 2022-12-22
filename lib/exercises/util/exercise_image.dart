@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
 class ExerciseImage extends StatelessWidget {
@@ -7,14 +9,31 @@ class ExerciseImage extends StatelessWidget {
   final int? imageId;
   final double size;
 
+  Widget getAssetImage(String path) {
+    try {
+      rootBundle.load(path);
+      return Image.asset(path, height: size, width: size, fit: BoxFit.contain);
+    } catch (_) {
+      return SizedBox(height: size, width: size); // Return this widget
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (imageId == null) {
-      return SizedBox(
-        width: 2 * size,
-        height: size,
-        child: const Placeholder(),
-      );
+      return ClipRRect(
+          borderRadius: BorderRadius.circular(4 * size / 60),
+          child: Container(
+              color: Colors.white,
+              child: SizedBox(
+                  width: 2 * size,
+                  height: size,
+                  child: Center(
+                    child: FaIcon(FontAwesomeIcons.image,
+                        color: Colors.black38, size: size / 1.5),
+                  )
+                  //child: const Placeholder(),
+                  )));
     }
     var id = NumberFormat("0000").format(imageId);
 
@@ -25,10 +44,8 @@ class ExerciseImage extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset('assets/images/png/$id-relaxation.png',
-                height: size, width: size, fit: BoxFit.contain),
-            Image.asset('assets/images/png/$id-tension.png',
-                height: size, width: size, fit: BoxFit.contain),
+            getAssetImage('assets/images/png/$id-relaxation.png'),
+            getAssetImage('assets/images/png/$id-tension.png'),
           ],
         ),
       ),

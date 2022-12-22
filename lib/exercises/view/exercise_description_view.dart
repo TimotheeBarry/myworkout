@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:myworkout/core/util/custom_app_bar.dart';
 import 'package:myworkout/exercises/model/dao/exercises_dao.dart';
 import 'package:myworkout/exercises/model/entity/exercise.dart';
@@ -60,16 +61,26 @@ class _ExerciseDescriptionViewState extends State<ExerciseDescriptionView> {
             children: [
               Center(child: Text('Description', style: styles.frame.subtitle)),
               styles.form.littleVoidSpace,
-              Text(
-                exercise.description ??
-                    '''\u2022  Lie on a flat bench with your feet flat on the floor, keep your back flat on the bench.
-\u2022  Grasp the bar a little wider than shoulder width apart.
-\u2022  Raise the barbell above your body and move it over the middle of your chest, this is your starting position.
-\u2022  Lower the bar down so it just touches your chest.
-\u2022  Raise the bar till your arms are fully extended and your elbows are locked.
-\u2022  Return to starting position.''',
-                style: styles.frame.text,
-              )
+              exercise.primer != null
+                  ? Text(exercise.primer!, style: styles.frame.text)
+                  : const SizedBox.shrink(),
+              exercise.steps != null
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: exercise.steps
+                              ?.map((step) => Text('\u2022  $step',
+                                  style: styles.frame.text))
+                              .toList() ??
+                          [])
+                  : const SizedBox.shrink(),
+              exercise.tips != null
+                  ? Column(
+                      children: exercise.tips
+                              ?.map(
+                                  (tip) => Text(tip, style: styles.frame.text))
+                              .toList() ??
+                          [])
+                  : const SizedBox.shrink(),
             ],
           ),
         ),
@@ -77,20 +88,28 @@ class _ExerciseDescriptionViewState extends State<ExerciseDescriptionView> {
     );
   }
 
-  buildAdvancedInfoCell(String title, List<String> items) {
-    List<Widget> _items =
-        items.map((item) => Text(item, style: styles.frame.bigText)).toList();
+  Widget buildAdvancedInfoCell(String title, List<String>? items) {
+    List<Widget>? _items = items
+        ?.map((item) => Text(
+            (items.length > 1)
+                ? '\u2022 ${toBeginningOfSentenceCase(item)!}'
+                : toBeginningOfSentenceCase(item)!,
+            style: styles.frame.bigText))
+        .toList();
     return Expanded(
       child: Container(
         decoration: styles.frame.boxDecoration,
-        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
             Text(title, style: styles.frame.subtitle),
             styles.form.littleVoidSpace,
-            Column(
-                crossAxisAlignment: CrossAxisAlignment.start, children: _items)
+            _items != null
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: _items)
+                : const SizedBox.shrink()
           ],
         ),
       ),
@@ -104,10 +123,9 @@ class _ExerciseDescriptionViewState extends State<ExerciseDescriptionView> {
           IntrinsicHeight(
             child: Row(
               children: [
-                buildAdvancedInfoCell('Principal', ['Pectoraux']),
+                buildAdvancedInfoCell('Principal', exercise.primary),
                 const SizedBox(width: 8),
-                buildAdvancedInfoCell(
-                    'Secondaire', ['\u2022  Epaules', '\u2022  Triceps']),
+                buildAdvancedInfoCell('Secondaire', exercise.secondary),
               ],
             ),
           ),
@@ -115,10 +133,10 @@ class _ExerciseDescriptionViewState extends State<ExerciseDescriptionView> {
           IntrinsicHeight(
             child: Row(
               children: [
-                buildAdvancedInfoCell('Type', ['Poly-articulaire']),
-                const SizedBox(width: 8),
                 buildAdvancedInfoCell(
-                    'Equipement', ['\u2022  Banc', '\u2022  Barre droite']),
+                    'Type', exercise.type != null ? [exercise.type!] : null),
+                const SizedBox(width: 8),
+                buildAdvancedInfoCell('Equipement', exercise.equipment),
               ],
             ),
           )
