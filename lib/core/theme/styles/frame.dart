@@ -46,7 +46,7 @@ class Frame {
       );
   TextStyle get legend => TextStyle(
         color: secondaryTextColor,
-        fontSize: 10,
+        fontSize: 12,
       );
 
   Divider get divider => Divider(color: Colors.white54, thickness: 1);

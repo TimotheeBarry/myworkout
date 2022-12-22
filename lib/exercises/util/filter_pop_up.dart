@@ -24,10 +24,10 @@ class _FilterPopUpState extends State<FilterPopUp> {
   @override
   Widget build(BuildContext context) {
     return BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+      filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
       child: Center(
         child: Padding(
-          padding: const EdgeInsets.all(32.0),
+          padding: const EdgeInsets.all(32),
           child: Hero(
             tag: 'filter',
             createRectTween: (begin, end) {
@@ -37,19 +37,21 @@ class _FilterPopUpState extends State<FilterPopUp> {
               color: Colors.white54,
               elevation: 2,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(32)),
+                  borderRadius: BorderRadius.circular(20)),
               child: SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Row(children: [
-                        Icon(Icons.filter_list_rounded,
-                            color: styles.frame.primaryTextColor),
-                        const SizedBox(width: 4),
-                        Text('Filtrer', style: styles.frame.title)
-                      ]),
+                      Row(
+                        children: [
+                          Icon(Icons.filter_list_rounded,
+                              color: styles.frame.primaryTextColor),
+                          const SizedBox(width: 4),
+                          Text('Filtrer', style: styles.frame.title)
+                        ],
+                      ),
                       styles.frame.divider,
                       Row(
                         children: [
