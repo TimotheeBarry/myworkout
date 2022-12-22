@@ -197,14 +197,27 @@ ORDER BY list_index;
     return await db!.insert('workout_session', workoutSession.toJSON());
   }
 
-  Future<void> createWorkoutExerciseSession(
+  Future<int> createWorkoutExerciseSession(
     WorkoutExerciseSession workoutExerciseSession,
   ) async {
     var db = await dbProvider.db;
 
-    await db!.insert(
+    return await db!.insert(
       'workout_exercise_session',
       workoutExerciseSession.toJSON(),
+    );
+  }
+
+  Future<void> updateWorkoutExerciseSession(
+    WorkoutExerciseSession workoutExerciseSession,
+  ) async {
+    var db = await dbProvider.db;
+
+    await db!.update(
+      'workout_exercise_session',
+      workoutExerciseSession.toJSON(),
+      where: 'id = ?',
+      whereArgs: [workoutExerciseSession.id]
     );
   }
 
@@ -216,8 +229,8 @@ ORDER BY list_index;
     var result = await db!.rawQuery(query);
     WorkoutSession workoutSession = result.isNotEmpty
         ? WorkoutSession.fromJSON(result[0])
-        : WorkoutSession(id: 0); 
-   
+        : WorkoutSession(id: 0);
+
     return workoutSession;
   }
 }

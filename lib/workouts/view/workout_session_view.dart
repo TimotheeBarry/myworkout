@@ -37,6 +37,7 @@ class _WorkoutSessionViewState extends State<WorkoutSessionView> {
 
   void initData() async {
     setState(() {
+      sessionController.context = context;
       sessionController.workoutExercises = widget.workoutExercises;
       sessionController.workoutLastSessionList = widget.workoutLastSessionList;
       sessionController.initSession(widget.workout.id);
