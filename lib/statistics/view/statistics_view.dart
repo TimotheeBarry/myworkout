@@ -4,6 +4,7 @@ import 'package:myworkout/core/util/custom_list_tile.dart';
 import 'package:myworkout/core/util/functions.dart';
 import 'package:myworkout/statistics/model/dao/statistics_dao.dart';
 import 'package:myworkout/statistics/model/entity/statistic_item.dart';
+import 'package:myworkout/statistics/model/entity/statistics_chart_item.dart';
 import 'package:myworkout/statistics/util/bar_chart.dart';
 import 'package:myworkout/statistics/util/chart_options.dart';
 import 'package:myworkout/statistics/view/workout_statistics_view.dart';
@@ -18,6 +19,8 @@ class StatisticsView extends StatefulWidget {
 
 class _StatisticsViewState extends State<StatisticsView> {
   var statisticsList = [];
+  List<StatisticsChartItem> chartRawData = [];
+  int rangeIndex = 0;
 
   @override
   void initState() {
@@ -27,13 +30,30 @@ class _StatisticsViewState extends State<StatisticsView> {
 
   void getData() async {
     var dao = StatisticsDao();
+    var _chartRawData = await dao.getSetsForChart(minDate: null);
     var _statisticsList = await dao.getStatisticsList();
     setState(
       () {
         statisticsList = _statisticsList;
+        chartRawData = _chartRawData;
       },
     );
   }
+
+  void setRangeIndex(index) {
+    setState(() {
+      rangeIndex = index;
+    });
+  }
+
+  /*DateTime? getMinDate() {
+    if (widget.rangeIndex > 3) {
+      return null;
+    }
+    var now = DateTime.now();
+    return DateTime(now.year, now.month, now.day)
+        .subtract(Duration(days: rangeValues[widget.rangeIndex]! - 1));
+  }*/
 
   Widget buildListItem(BuildContext context, StatisticItem statisticItem) {
     return Container(
@@ -70,8 +90,11 @@ class _StatisticsViewState extends State<StatisticsView> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          const ChartOptions(),
-          BarChart(),
+          ChartOptions(
+            rangeIndex: rangeIndex,
+            setRangeIndex: setRangeIndex,
+          ),
+          BarChart(rangeIndex: rangeIndex, chartRawData : chartRawData),
           ListView.builder(
               itemCount: statisticsList.length,
               shrinkWrap: true,

@@ -2,18 +2,19 @@ import 'package:flutter/material.dart';
 import '../../core/theme/styles.dart' as styles;
 
 class ChartOptions extends StatefulWidget {
-  const ChartOptions({Key? key}) : super(key: key);
-
+  const ChartOptions(
+      {Key? key, required this.rangeIndex, required this.setRangeIndex})
+      : super(key: key);
+  final int rangeIndex;
+  final void Function(int) setRangeIndex;
   @override
   State<ChartOptions> createState() => _ChartOptionsState();
 }
 
 class _ChartOptionsState extends State<ChartOptions> {
-  int selectedOption = 0;
-
   Widget buildOption(BuildContext context, int index, String title) {
     double screenWidth = MediaQuery.of(context).size.width;
-    bool isSelected = index == selectedOption;
+    bool isSelected = index == widget.rangeIndex;
     return Container(
       width: screenWidth / 5,
       height: 32,
@@ -22,13 +23,8 @@ class _ChartOptionsState extends State<ChartOptions> {
         child: Material(
           color: isSelected ? Color(0x63ffffff) : Colors.transparent,
           child: InkWell(
-            onTap: () {
-              setState(() {
-                selectedOption = index;
-              });
-            },
+            onTap: () => widget.setRangeIndex(index),
             child: Ink(
-              decoration: BoxDecoration(),
               child: Center(
                 child: Text(
                   title,
@@ -52,7 +48,7 @@ class _ChartOptionsState extends State<ChartOptions> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Color(0x63000000),
+        color: Colors.black38,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
