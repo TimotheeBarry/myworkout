@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart' hide ReorderableList;
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:myworkout/core/util/button_transparent.dart';
 import 'package:myworkout/core/util/custom_app_bar.dart';
+import 'package:myworkout/core/util/custom_button.dart';
 import 'package:myworkout/core/util/custom_check_box.dart';
 import 'package:myworkout/core/util/functions.dart';
 import 'package:myworkout/exercises/util/exercise_image.dart';
@@ -53,6 +56,7 @@ class _EditExercisePerformanceViewState
         } else if (int.parse(setsController.text) > 99) {
           setsController.text = '99';
         }
+        updateRepsRestLoadControllers(int.tryParse(setsController.text));
       });
     });
     for (var i = 0; i < exercisePerformance.sets!; i++) {
@@ -92,34 +96,42 @@ class _EditExercisePerformanceViewState
     }
   }
 
-  void updateSets(int value) {
+  void updateSets(int? value) {
+    if (value == null) {
+      return;
+    }
     setState(() {
       if (value > 0 && value < 100) {
         setsController.text = value.toString();
-
-        /*add or remove reps controllers*/
-        if (repsController.length > value) {
-          repsController = repsController.sublist(0, value);
-        } else if (repsController.length < value) {
-          addControllers(repsController, value - repsController.length);
-        }
-        /*add or remove loads controllers*/
-        if (loadsController.length > value) {
-          loadsController = loadsController.sublist(0, value);
-        } else if (loadsController.length < value) {
-          addControllers(loadsController, value - loadsController.length);
-        }
-        /*add or remove sets controllers*/
-        if (restsController.length > value) {
-          restsController = restsController.sublist(0, value);
-        } else if (restsController.length < value) {
-          //indice 0 -> apres les series, >=1 -> entre les series
-          restsController.add(restsController.length > 1
-              ? restsController[1]
-              : restsController[0]);
-        }
+        updateRepsRestLoadControllers(value);
       }
     });
+  }
+
+  void updateRepsRestLoadControllers(int? value) {
+    if (value == null) {
+      return;
+    }
+    /*add or remove reps controllers*/
+    if (repsController.length > value) {
+      repsController = repsController.sublist(0, value);
+    } else if (repsController.length < value) {
+      addControllers(repsController, value - repsController.length);
+    }
+    /*add or remove loads controllers*/
+    if (loadsController.length > value) {
+      loadsController = loadsController.sublist(0, value);
+    } else if (loadsController.length < value) {
+      addControllers(loadsController, value - loadsController.length);
+    }
+    /*add or remove rests controllers*/
+    if (restsController.length > value) {
+      restsController = restsController.sublist(0, value);
+    } else if (restsController.length < value) {
+      //indice 0 -> apres les series, >=1 -> entre les series
+      restsController.add(
+          restsController.length > 1 ? restsController[1] : restsController[0]);
+    }
   }
 
   void updateReps(num value, int index) {
@@ -153,7 +165,8 @@ class _EditExercisePerformanceViewState
 
   Future<void> saveData() async {
     List<ExerciseSet> exerciseSets = [];
-    var sets = int.parse(setsController.text);
+    var sets = int.tryParse(setsController.text) ?? repsController.length;
+
     for (var i = 0; i < sets; i++) {
       exerciseSets.add(
         ExerciseSet(
@@ -195,7 +208,7 @@ class _EditExercisePerformanceViewState
         child: TextFormField(
           controller: controller,
           onChanged: onChanged,
-          style: styles.list.subtitle,
+          style: styles.frame.title,
           textAlign: TextAlign.center,
           keyboardType: TextInputType.number,
           inputFormatters: inputFormatters,
@@ -227,8 +240,11 @@ class _EditExercisePerformanceViewState
               IconButton(
                 icon: Icon(Icons.remove_rounded,
                     color: styles.frame.primaryTextColor),
-                onPressed: () =>
-                    {updateSets(int.parse(setsController.text) - 1)},
+                onPressed: () => {
+                  updateSets(int.tryParse(setsController.text) != null
+                      ? int.parse(setsController.text) - 1
+                      : null)
+                },
               ),
               buildInput(
                 controller: setsController,
@@ -238,8 +254,11 @@ class _EditExercisePerformanceViewState
               IconButton(
                   icon: Icon(Icons.add_rounded,
                       color: styles.frame.primaryTextColor),
-                  onPressed: () =>
-                      {updateSets(int.parse(setsController.text) + 1)}),
+                  onPressed: () => {
+                        updateSets(int.tryParse(setsController.text) != null
+                            ? int.parse(setsController.text) + 1
+                            : null)
+                      }),
             ],
           )
         ],
@@ -291,6 +310,7 @@ class _EditExercisePerformanceViewState
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   hintText: '0',
                 ),
+                Text('reps', style: styles.frame.text),
                 IconButton(
                   icon: Icon(Icons.add_rounded,
                       color: styles.frame.primaryTextColor),
@@ -373,35 +393,27 @@ class _EditExercisePerformanceViewState
   Widget buildTime(int index) {
     var minutes = getMinutes(restsController[index]);
     var seconds = getSeconds(restsController[index]);
-    return ClipRRect(
-      borderRadius: styles.frame.borderRadius,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            var picker = CustomDurationPicker();
-            picker.showPicker(
-                context: context,
-                initialTime: restsController[index].toInt(),
-                onConfirm: (time) {
-                  setState(() {
-                    restsController[index] = time;
-                  });
-                });
-          },
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Text(
-                '$minutes " $seconds',
-                style: styles.list.subtitle,
-                textAlign: TextAlign.center,
-              ),
+    return Center(
+        child: ButtonTransparent(
+            expand: false,
+            title: Text(
+              '$minutes " $seconds',
+              style: styles.frame.title,
+              textAlign: TextAlign.center,
             ),
-          ),
-        ),
-      ),
-    );
+            icon: FaIcon(FontAwesomeIcons.stopwatch,
+                color: styles.frame.primaryTextColor),
+            onTap: () {
+              var picker = CustomDurationPicker();
+              picker.showPicker(
+                  context: context,
+                  initialTime: restsController[index].toInt(),
+                  onConfirm: (time) {
+                    setState(() {
+                      restsController[index] = time;
+                    });
+                  });
+            }));
   }
 
   Widget buildRestsBetweenInput() {
@@ -418,8 +430,7 @@ class _EditExercisePerformanceViewState
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Repos identiques',
-                  style: styles.frame.bigText),
+              Text('Repos identiques', style: styles.frame.bigText),
               CustomCheckBox(
                 value: identicalRests,
                 onChanged: (_) {
@@ -456,6 +467,7 @@ class _EditExercisePerformanceViewState
                   ? 'Repos après la série'
                   : 'Repos après les séries',
               style: styles.frame.subtitle),
+          styles.form.littleVoidSpace,
           buildTime(0)
         ],
       ),
@@ -478,13 +490,15 @@ class _EditExercisePerformanceViewState
           body: SingleChildScrollView(
             child: Column(
               children: [
+                styles.form.littleVoidSpace,
+                Text(widget.workoutExercise.exercise?.name ?? "",
+                    style: styles.frame.title),
+                styles.form.littleVoidSpace,
                 ExerciseImage(
                   imageId: widget.workoutExercise.exercise?.imageId,
                   size: 120,
                 ),
                 styles.form.littleVoidSpace,
-                Text(widget.workoutExercise.exercise?.name ?? "",
-                    style: styles.frame.title),
                 Column(
                   children: [
                     buildSetsInput(),
@@ -494,6 +508,7 @@ class _EditExercisePerformanceViewState
                     buildRestAfterInput()
                   ],
                 ),
+                styles.form.mediumVoidSpace
               ],
             ),
           ),

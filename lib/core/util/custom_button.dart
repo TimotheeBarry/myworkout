@@ -9,7 +9,7 @@ class CustomButton extends StatelessWidget {
       this.icon})
       : super(key: key);
   final Text title;
-  final Icon? icon;
+  final Widget? icon;
   final void Function() onTap;
   @override
   Widget build(BuildContext context) {

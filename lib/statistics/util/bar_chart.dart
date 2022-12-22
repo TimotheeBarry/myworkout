@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -22,7 +24,7 @@ class BarChart extends StatelessWidget {
       chartRawData.isNotEmpty ? chartRawData.last.date! : now;
 
   List<int> get rangeValues =>
-      [7, 30, 90, 365, now.difference(minDate).inDays + 1];
+      [7, 30, 90, 365, max(7,now.difference(minDate).inDays + 1)];
 
   //nombre de jours à afficher
   int get nbDays => rangeValues[rangeIndex];

@@ -3,11 +3,16 @@ import '../theme/styles.dart' as styles;
 
 class ButtonTransparent extends StatelessWidget {
   const ButtonTransparent(
-      {Key? key, required this.title, required this.onTap, this.icon})
+      {Key? key,
+      required this.title,
+      required this.onTap,
+      this.icon,
+      this.expand = true})
       : super(key: key);
   final Text title;
   final Widget? icon;
   final void Function() onTap;
+  final bool expand;
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
@@ -19,10 +24,10 @@ class ButtonTransparent extends StatelessWidget {
           splashColor: Colors.black12,
           child: Ink(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-            decoration: const BoxDecoration(color:Colors.white30),
+            decoration: const BoxDecoration(color: Colors.white30),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
+              mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
               children: [
                 icon != null
                     ? Container(
