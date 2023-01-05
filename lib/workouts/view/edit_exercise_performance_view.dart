@@ -393,27 +393,29 @@ class _EditExercisePerformanceViewState
   Widget buildTime(int index) {
     var minutes = getMinutes(restsController[index]);
     var seconds = getSeconds(restsController[index]);
-    return Center(
-        child: ButtonTransparent(
-            expand: false,
-            title: Text(
-              '$minutes " $seconds',
-              style: styles.frame.title,
-              textAlign: TextAlign.center,
-            ),
-            icon: FaIcon(FontAwesomeIcons.stopwatch,
-                color: styles.frame.primaryTextColor),
-            onTap: () {
-              var picker = CustomDurationPicker();
-              picker.showPicker(
-                  context: context,
-                  initialTime: restsController[index].toInt(),
-                  onConfirm: (time) {
-                    setState(() {
-                      restsController[index] = time;
-                    });
-                  });
-            }));
+    return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Center(
+            child: ButtonTransparent(
+                expand: false,
+                title: Text(
+                  '$minutes " $seconds',
+                  style: styles.frame.title,
+                  textAlign: TextAlign.center,
+                ),
+                icon: FaIcon(FontAwesomeIcons.stopwatch,
+                    color: styles.frame.primaryTextColor),
+                onTap: () {
+                  var picker = CustomDurationPicker();
+                  picker.showPicker(
+                      context: context,
+                      initialTime: restsController[index].toInt(),
+                      onConfirm: (time) {
+                        setState(() {
+                          restsController[index] = time;
+                        });
+                      });
+                })));
   }
 
   Widget buildRestsBetweenInput() {
