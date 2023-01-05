@@ -6,8 +6,12 @@ import 'package:myworkout/profile/model/entity/user.dart';
 import 'package:myworkout/profile/model/entity/user_statistic.dart';
 
 class LineChart extends StatefulWidget {
-  LineChart({Key? key, required this.user, required this.type, this.title})
-      : super(key: key);
+  LineChart({
+    Key? key,
+    required this.user,
+    required this.type,
+    this.title,
+  }) : super(key: key);
   final String type; //weight, ...
   final String? title;
   final User user;
@@ -212,16 +216,16 @@ class LineChartState extends State<LineChart> with TickerProviderStateMixin {
     const gridColors = charts.Color(a: 63, r: 255, g: 255, b: 255);
 
     return GestureDetector(
+
       onDoubleTap: () {
         //reset
         setState(() {
           resetGraph();
         });
       },
-      
       onScaleStart: (details) {
-        if (_controller!.isAnimating) {
-          _controller!.reset();
+        if (_controller?.isAnimating ?? false) {
+          _controller?.reset();
         }
         size = _chartKey.currentContext!.size;
 
