@@ -38,6 +38,10 @@ class ExercisesDao {
     List<ExerciseGroup> exerciseGroups = result.isNotEmpty
         ? result.map((item) => ExerciseGroup.fromJSON(item)).toList()
         : [];
+    if (exerciseGroups.isEmpty) {
+      return exerciseGroups;
+    }
+
     return exerciseGroups
         .map((exerciseGroup) => exerciseGroup.copy(
             exercises: exercises
@@ -77,13 +81,16 @@ class ExercisesDao {
 
   Future<int> updateExercise(Exercise exercise) async {
     /*mettre à jour les données d'un exercice*/
+    
     var db = await dbProvider.db;
-    return await db!.update(
+    var result = await db!.update(
       'exercises',
       exercise.toJSON(),
       where: '${ExerciseFields.id} =  ?',
       whereArgs: [exercise.id],
     );
+    
+    return result;
   }
 
   Future<int> updateExerciseGroup(ExerciseGroup exerciseGroup) async {

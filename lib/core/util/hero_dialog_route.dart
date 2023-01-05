@@ -25,18 +25,33 @@ class HeroDialogRoute<T> extends PageRoute<T> {
   bool get barrierDismissible => true;
 
   @override
-  Duration get transitionDuration => const Duration(milliseconds: 300);
+  Duration get transitionDuration => const Duration(milliseconds: 150);
 
   @override
   bool get maintainState => true;
 
   @override
-  Color get barrierColor => Colors.black54;
+  Color get barrierColor => Color.fromRGBO(0, 0, 0, .7);
 
   @override
   Widget buildTransitions(BuildContext context, Animation<double> animation,
       Animation<double> secondaryAnimation, Widget child) {
-    return child;
+    animation = CurvedAnimation(parent: animation, curve: Curves.easeInOut);
+    return ScaleTransition(
+        alignment: Alignment.center, scale: animation, child: child,);
+
+    /*late final Animation<Offset> _offsetAnimation = Tween<Offset>(
+      begin: const Offset(0.0, 1),
+      end: const Offset(0.0, 0.0),
+    ).animate(CurvedAnimation(
+      parent: animation,
+      curve: Curves.easeIn,
+    ));
+
+    return SlideTransition(
+      position: _offsetAnimation,
+      child: child,
+    );*/
   }
 
   @override

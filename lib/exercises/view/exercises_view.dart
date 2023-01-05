@@ -26,6 +26,7 @@ class ExercisesViewState extends State<ExercisesView> {
   List<ExerciseGroup> exerciseGroups = [];
   List<int> exercisesSelected = [];
   String searchInput = "";
+  bool likedFilterChecked = false;
 
   @override
   void initState() {
@@ -34,6 +35,7 @@ class ExercisesViewState extends State<ExercisesView> {
   }
 
   void synchronize() async {
+    //synchronise l'affichage avec les données de la db pour tous les exercices
     final exercisesDao = ExercisesDao();
     List<ExerciseGroup> _exerciseGroups =
         await exercisesDao.getExerciseGroups();
@@ -56,13 +58,57 @@ class ExercisesViewState extends State<ExercisesView> {
     });
   }
 
+  void updateOneExercise(Exercise exercise, Exercise updatedExercise) {
+    if (exercise.id != updatedExercise.id) {
+      return;
+    }
+    setState(() {
+      //on récupère l'indice de groupe dans la liste des groupes, et celui de l'exercice dans sa liste d'exercise
+      var groupIndex =
+          exerciseGroups.indexWhere((group) => group.id == exercise.groupId);
+      var group = exerciseGroups[groupIndex];
+      var exerciseIndex =
+          group.exercises!.indexWhere((exo) => exo.id == exercise.id);
+      //on récupère la liste d'exercices de ce groupe et on modifie l'exercice à l'indice voulu
+      var exercisesList = group.exercises;
+      exercisesList!
+          .replaceRange(exerciseIndex, exerciseIndex + 1, [updatedExercise]);
+      //on update le groupe avec la liste à jour
+      exerciseGroups.replaceRange(
+          groupIndex, groupIndex + 1, [group.copy(exercises: exercisesList)]);
+    });
+  }
+
   void toggleLikeExercise(Exercise exercise) async {
     var exercisesDao = ExercisesDao();
-    await exercisesDao
-        .updateExercise(exercise.copy(isLiked: !exercise.isLiked!))
-        .then((_) {
-      synchronize();
+    var updatedExercise = exercise.copy(isLiked: !exercise.isLiked!);
+    await exercisesDao.updateExercise(updatedExercise).then((_) {
+      //met à jour l'exercice
+      updateOneExercise(exercise, updatedExercise);
     });
+  }
+
+  void applyFilters(
+      {required bool liked, List<String>? equipments, List<String>? type}) {
+    setState((() {
+      //reset les filtres
+      likedFilterChecked = liked;
+      exerciseGroups = allExerciseGroups
+          .where((exerciseGroup) =>
+              exerciseGroup.getFilteredExercises(searchInput).isNotEmpty)
+          .toList();
+      //applique les nouveaux filtres
+      if (liked == true) {
+        exerciseGroups = allExerciseGroups
+            .where(
+                (exerciseGroup) => exerciseGroup.getLikedExercises().isNotEmpty)
+            .toList();
+        exerciseGroups = exerciseGroups
+            .map((exerciseGroup) => exerciseGroup.copy(
+                exercises: exerciseGroup.getLikedExercises()))
+            .toList();
+      }
+    }));
   }
 
   Widget buildGroup(ExerciseGroup exerciseGroup) {
@@ -81,13 +127,13 @@ class ExercisesViewState extends State<ExercisesView> {
               data:
                   Theme.of(context).copyWith(dividerColor: Colors.transparent),
               child: ExpansionTile(
-                key: ValueKey('${exerciseGroup.id}${searchInput.isNotEmpty}'),
+                key: ValueKey('${exerciseGroup.id}${searchInput.length > 2}'),
                 // leading: const SizedBox(
                 //   height: 40,
                 //   width: 40,
                 //   child: Placeholder(),
                 // ),
-                initiallyExpanded: searchInput.isNotEmpty,
+                initiallyExpanded: searchInput.length > 2,
                 title: Text(exerciseGroup.name ?? "", style: styles.list.title),
                 trailing: Text(exercisesList.length.toString(),
                     style: styles.list.title),
@@ -197,6 +243,9 @@ class ExercisesViewState extends State<ExercisesView> {
             margin: const EdgeInsets.only(top: 54),
             child: SingleChildScrollView(
               padding: styles.page.margin,
+              physics: BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
               child: Column(
                 children: [
                   ListView.builder(
@@ -223,7 +272,9 @@ class ExercisesViewState extends State<ExercisesView> {
                 //ouvre le popup des filtres avec une animation
                 Navigator.of(context).push(
                   HeroDialogRoute(builder: (context) {
-                    return const FilterPopUp();
+                    return FilterPopUp(
+                        applyFilters: applyFilters,
+                        likedFilterChecked: likedFilterChecked);
                   }),
                 );
               },

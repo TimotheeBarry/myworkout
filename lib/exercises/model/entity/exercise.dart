@@ -34,7 +34,7 @@ class Exercise {
         ExerciseFields.type: type,
         ExerciseFields.imageId: imageId,
         ExerciseFields.groupId: groupId,
-        ExerciseFields.steps: steps,
+        ExerciseFields.steps: steps?.join('/').toString(),
         ExerciseFields.primer: primer,
         ExerciseFields.tips: tips?.join('/').toString(),
         ExerciseFields.primary: primary?.join('/').toString(),

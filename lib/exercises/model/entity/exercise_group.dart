@@ -43,6 +43,10 @@ class ExerciseGroup {
             .contains(removeDiacritics(input.toLowerCase())))
         .toList();
   }
+
+  List<Exercise> getLikedExercises() {
+    return exercises!.where((exercise) => exercise.isLiked!).toList();
+  }
 }
 
 class ExerciseGroupFields {
