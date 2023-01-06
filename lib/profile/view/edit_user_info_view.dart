@@ -91,7 +91,9 @@ class _EditUserInfoViewState extends State<EditUserInfoView> {
           },
           child: Ink(
             padding: const EdgeInsets.symmetric(vertical: 8),
-            color:gender == editedUser.gender?Colors.white24:Colors.transparent,
+            color: gender == editedUser.gender
+                ? Colors.white24
+                : Colors.transparent,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -304,6 +306,9 @@ class _EditUserInfoViewState extends State<EditUserInfoView> {
             backgroundColor: Colors.transparent,
             appBar: const CustomAppBar(title: 'Editer les informations'),
             body: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
               child: Column(children: [
                 buildUserInfoFrame(),
                 buildMeasurementsFrame(),

@@ -243,7 +243,7 @@ class ExercisesViewState extends State<ExercisesView> {
             margin: const EdgeInsets.only(top: 54),
             child: SingleChildScrollView(
               padding: styles.page.margin,
-              physics: BouncingScrollPhysics(
+              physics: const BouncingScrollPhysics(
                 parent: AlwaysScrollableScrollPhysics(),
               ),
               child: Column(

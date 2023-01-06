@@ -164,31 +164,32 @@ class _CreateWorkoutViewState extends State<CreateWorkoutView> {
         appBar:
             CustomAppBar(title: edit ? 'Editer la séance' : 'Créer une séance'),
         body: SingleChildScrollView(
-          child: Padding(
-            padding: styles.page.margin,
-            child: Column(
-              children: [
-                buildNameInput(),
-                styles.form.mediumVoidSpace,
-                const Placeholder(
-                  fallbackHeight: 200,
+          padding: styles.page.margin,
+          physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
+          ),
+          child: Column(
+            children: [
+              buildNameInput(),
+              styles.form.mediumVoidSpace,
+              const Placeholder(
+                fallbackHeight: 200,
+              ),
+              styles.form.mediumVoidSpace,
+              EditImagesButtons(edit: edit),
+              styles.form.mediumVoidSpace,
+              buildGroupsSelector(),
+              styles.form.mediumVoidSpace,
+              buildDescriptionArea(),
+              styles.form.mediumVoidSpace,
+              CustomButton(
+                title: Text(
+                  edit ? 'Editer' : 'Créer',
+                  style: styles.button.bigText,
                 ),
-                styles.form.mediumVoidSpace,
-                EditImagesButtons(edit: edit),
-                styles.form.mediumVoidSpace,
-                buildGroupsSelector(),
-                styles.form.mediumVoidSpace,
-                buildDescriptionArea(),
-                styles.form.mediumVoidSpace,
-                CustomButton(
-                  title: Text(
-                    edit ? 'Editer' : 'Créer',
-                    style: styles.button.bigText,
-                  ),
-                  onTap: saveWorkout,
-                ),
-              ],
-            ),
+                onTap: saveWorkout,
+              ),
+            ],
           ),
         ),
       ),

@@ -116,6 +116,9 @@ class _WorkoutStatisticsViewState extends State<WorkoutStatisticsView> {
       child: Scaffold(
           appBar: const CustomAppBar(title: 'Statistiques de séance'),
           body: ListView.builder(
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
               itemCount: workoutSessionList.length,
               itemBuilder: (context, index) {
                 return buildItem(workoutSessionList[index]);

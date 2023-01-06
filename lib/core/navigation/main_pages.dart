@@ -106,6 +106,9 @@ class _MainPagesState extends State<MainPages> {
           onPageChanged: (index) {
             setPage(index);
           },
+          physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
+          ),
           controller: _pageController,
           children: [
             ProfileView(),

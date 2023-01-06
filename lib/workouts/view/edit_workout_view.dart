@@ -304,6 +304,9 @@ class _EditWorkoutViewState extends State<EditWorkoutView> {
             onReorder: _reorderCallback,
             onReorderDone: _reorderDone,
             child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
               child: Column(
                 children: [
                   ListView.builder(

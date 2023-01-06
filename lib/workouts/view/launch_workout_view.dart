@@ -110,6 +110,9 @@ class LaunchWorkoutViewState extends State<LaunchWorkoutView> {
             )),
         body: SingleChildScrollView(
           padding: styles.page.margin,
+          physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
+          ),
           child: Column(
             children: [
               styles.form.littleVoidSpace,

@@ -99,7 +99,11 @@ class _WorkoutSessionViewState extends State<WorkoutSessionView> {
                 ))
             : const SizedBox.shrink(),
         body: SingleChildScrollView(
-            padding: styles.page.margin, child: buildPage()),
+            padding: styles.page.margin,
+            physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics(),
+            ),
+            child: buildPage()),
       ),
     );
   }

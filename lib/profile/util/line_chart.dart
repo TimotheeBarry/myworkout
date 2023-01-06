@@ -10,11 +10,13 @@ class LineChart extends StatefulWidget {
     Key? key,
     required this.user,
     required this.type,
+    required this.data,
     this.title,
   }) : super(key: key);
   final String type; //weight, ...
   final String? title;
   final User user;
+  final List<UserStatistic> data;
   @override
   State<LineChart> createState() => LineChartState();
 }
@@ -48,13 +50,17 @@ class LineChartState extends State<LineChart> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 0),
-      vsync: this,
-    );
-    dxAnimation = Tween<double>(begin: 0, end: 0).animate(_controller!);
-    dyAnimation = Tween<double>(begin: 0, end: 0).animate(_controller!);
-    getData();
+    setState(() {
+      //userStatistics = widget.data;
+      resetGraph();
+      _controller = AnimationController(
+        duration: const Duration(milliseconds: 0),
+        vsync: this,
+      );
+      dxAnimation = Tween<double>(begin: 0, end: 0).animate(_controller!);
+      dyAnimation = Tween<double>(begin: 0, end: 0).animate(_controller!);
+      getData();
+    });
   }
 
   @override
@@ -216,7 +222,6 @@ class LineChartState extends State<LineChart> with TickerProviderStateMixin {
     const gridColors = charts.Color(a: 63, r: 255, g: 255, b: 255);
 
     return GestureDetector(
-
       onDoubleTap: () {
         //reset
         setState(() {

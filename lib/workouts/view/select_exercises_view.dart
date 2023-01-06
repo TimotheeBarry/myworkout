@@ -141,7 +141,7 @@ class _SelectExercisesViewState extends State<SelectExercisesView> {
         exerciseGroup.getFilteredExercises(searchInput);
 
     return Container(
-      margin: styles.list.margin,
+      margin: styles.list.marginV,
       child: ClipRRect(
         borderRadius: styles.list.borderRadius,
         child: Material(
@@ -277,6 +277,10 @@ class _SelectExercisesViewState extends State<SelectExercisesView> {
             Container(
               margin: const EdgeInsets.only(top: 54),
               child: SingleChildScrollView(
+                padding: styles.page.margin,
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
                 child: Column(
                   children: [
                     ListView.builder(

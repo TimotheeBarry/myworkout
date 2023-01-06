@@ -490,6 +490,9 @@ class _EditExercisePerformanceViewState
             title: 'Editer les performances',
           ),
           body: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics(),
+            ),
             child: Column(
               children: [
                 styles.form.littleVoidSpace,

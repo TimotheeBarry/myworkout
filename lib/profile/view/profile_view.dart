@@ -301,11 +301,14 @@ class _ProfileViewState extends State<ProfileView> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
         child: Column(
-      children: [
-        buildPersonalDataFrame(context),
-        buildMeasurementsTable(context),
-      ],
-    ));
+          children: [
+            buildPersonalDataFrame(context),
+            buildMeasurementsTable(context),
+          ],
+        ));
   }
 }

@@ -88,13 +88,16 @@ class _StatisticsViewState extends State<StatisticsView> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(
+        parent: AlwaysScrollableScrollPhysics(),
+      ),
       child: Column(
         children: [
           ChartOptions(
             rangeIndex: rangeIndex,
             setRangeIndex: setRangeIndex,
           ),
-          BarChart(rangeIndex: rangeIndex, chartRawData : chartRawData),
+          BarChart(rangeIndex: rangeIndex, chartRawData: chartRawData),
           ListView.builder(
               itemCount: statisticsList.length,
               shrinkWrap: true,

@@ -144,7 +144,7 @@ class _CreateExerciseViewState extends State<CreateExerciseView> {
   Widget buildDescriptionArea() {
     return InputField(
       maxLines: 7,
-      initialValue: widget.exercise?.steps?.join('/').toString() ,
+      initialValue: widget.exercise?.steps?.join('/').toString(),
       hintText: "Description...",
       onChanged: (String steps) {
         editedExercise = editedExercise.copy(steps: steps.split('/').toList());
@@ -161,39 +161,40 @@ class _CreateExerciseViewState extends State<CreateExerciseView> {
         appBar: CustomAppBar(
             title: edit ? 'Editer l\'exercice' : 'Créer un exercice'),
         body: SingleChildScrollView(
-          child: Padding(
-            padding: styles.page.margin,
-            child: Column(
-              children: [
-                buildNameInput(),
-                styles.form.mediumVoidSpace,
-                Hero(
-                  tag: widget.exercise?.imageId ?? 0,
-                  child: ExerciseImage(
-                    imageId: widget.exercise?.imageId,
-                    size: min(
-                        MediaQuery.of(context).size.width / 2 -
-                            styles.page.marginValue,
-                        MediaQuery.of(context).size.height / 2 -
-                            styles.page.marginValue),
-                  ),
+          padding: styles.page.margin,
+          physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
+          ),
+          child: Column(
+            children: [
+              buildNameInput(),
+              styles.form.mediumVoidSpace,
+              Hero(
+                tag: widget.exercise?.imageId ?? 0,
+                child: ExerciseImage(
+                  imageId: widget.exercise?.imageId,
+                  size: min(
+                      MediaQuery.of(context).size.width / 2 -
+                          styles.page.marginValue,
+                      MediaQuery.of(context).size.height / 2 -
+                          styles.page.marginValue),
                 ),
-                styles.form.mediumVoidSpace,
-                EditImagesButtons(edit: edit),
-                styles.form.mediumVoidSpace,
-                buildGroupsSelector(),
-                styles.form.mediumVoidSpace,
-                buildDescriptionArea(),
-                styles.form.mediumVoidSpace,
-                CustomButton(
-                  title: Text(
-                    edit ? 'Editer' : 'Créer',
-                    style: styles.button.bigText,
-                  ),
-                  onTap: saveExercise,
+              ),
+              styles.form.mediumVoidSpace,
+              EditImagesButtons(edit: edit),
+              styles.form.mediumVoidSpace,
+              buildGroupsSelector(),
+              styles.form.mediumVoidSpace,
+              buildDescriptionArea(),
+              styles.form.mediumVoidSpace,
+              CustomButton(
+                title: Text(
+                  edit ? 'Editer' : 'Créer',
+                  style: styles.button.bigText,
                 ),
-              ],
-            ),
+                onTap: saveExercise,
+              ),
+            ],
           ),
         ),
       ),

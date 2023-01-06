@@ -24,7 +24,7 @@ class BarChart extends StatelessWidget {
       chartRawData.isNotEmpty ? chartRawData.last.date! : now;
 
   List<int> get rangeValues =>
-      [7, 30, 90, 365, max(7,now.difference(minDate).inDays + 1)];
+      [7, 30, 90, 365, max(7, now.difference(minDate).inDays + 1)];
 
   //nombre de jours à afficher
   int get nbDays => rangeValues[rangeIndex];
@@ -92,7 +92,7 @@ class BarChart extends StatelessWidget {
             xValueMapper: (StatisticsChartItem data, _) => data.date!,
             yValueMapper: (StatisticsChartItem data, _) => data.countValue,
             name: chartData[i].isNotEmpty ? chartData[i][0].groupName : "",
-            legendIconType: LegendIconType.diamond),
+            legendIconType: LegendIconType.rectangle),
       );
     }
     return stackedColumnSeries;
@@ -107,12 +107,14 @@ class BarChart extends StatelessWidget {
             text: 'Statistiques de séance',
             alignment: ChartAlignment.center,
             textStyle: styles.frame.subtitle),
+        palette: styles.colors.palette,
         legend: Legend(
-            isVisible: true,
-            position: LegendPosition.bottom,
-            itemPadding: 20,
-            textStyle: styles.frame.legend,
-            overflowMode: LegendItemOverflowMode.wrap),
+          isVisible: true,
+          position: LegendPosition.bottom,
+          itemPadding: 20,
+          textStyle: styles.frame.legend,
+          overflowMode: LegendItemOverflowMode.wrap,
+        ),
         /*zoomPanBehavior: ZoomPanBehavior(
             enablePanning: true, zoomMode: ZoomMode.x, enablePinching: true),*/
         series: buildSeries(),

@@ -170,6 +170,9 @@ class WorkoutsViewState extends State<WorkoutsView> {
       },
       child: ListView.builder(
         padding: styles.page.margin,
+        physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
+          ),
         shrinkWrap: true,
         itemCount: workoutGroups.length,
         itemBuilder: (context, i) {

@@ -251,6 +251,9 @@ class _EditMeasurementsViewState extends State<EditMeasurementsView> {
         backgroundColor: Colors.transparent,
         appBar: const CustomAppBar(title: 'Editer les mensurations'),
         body: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
+          ),
           child: Column(
             children: [
               buildDateFrame(context),

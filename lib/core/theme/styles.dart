@@ -1,4 +1,5 @@
 import 'package:myworkout/core/theme/styles/button.dart';
+import 'package:myworkout/core/theme/styles/colors.dart';
 import 'package:myworkout/core/theme/styles/form.dart';
 import 'package:myworkout/core/theme/styles/input.dart';
 import 'package:myworkout/core/theme/styles/popup.dart';
@@ -14,4 +15,5 @@ final button = Button();
 final input = Input();
 final form = Form();
 final popup = PopUp();
+final colors = ColorStyle();
    
